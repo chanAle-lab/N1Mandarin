@@ -102,6 +102,14 @@ window.LEARN = {
       ["Sorry to trouble you.", "麻烦你了。", "Máfan nǐ le.", ""],
       ["Thanks for all your hard work.", "辛苦了！", "Xīnkǔ le!", ""],
       ["Please, after you.", "您先请。", "Nín xiān qǐng.", ""]
+    ],
+    "Slang & Rizz": [
+      ["He's got that unspoken rizz.", "他魅力十足，自带气场。", "Tā mèilì shízú, zìdài qìchǎng.", "魅力 (mèilì) means charisma/rizz; 自带气场 means radiating effortless aura."],
+      ["Are you trying to rizz me up?", "你在撩我吗？", "Nǐ zài liáo wǒ ma?", "The verb 撩 (liáo) is the authentic Chinese equivalent for 'to rizz up'."],
+      ["He has unmatched rizz (so smooth).", "他特别会撩。", "Tā tèbié huì liáo.", "会撩 (huì liáo) describes someone who is a master of charming and flirting."],
+      ["Maximum rizz / Off-the-charts charisma!", "魅力爆表！", "Mèilì bàobiǎo!", "爆表 (bàobiǎo) literally means 'breaking the meter'—off the charts."],
+      ["You look so charming today.", "你今天真迷人。", "Nǐ jīntiān zhēn mírén.", "迷人 (mírén) = charming, mesmerizing."],
+      ["I got completely rizzed up.", "我被他撩到了。", "Wǒ bèi tā liáo dào le.", "被……撩到了 means to be successfully charmed / rizzed up."]
     ]
   },
 
@@ -297,7 +305,8 @@ window.LEARN = {
     ["我们回去家吧。", "我们回家去吧。", "Wǒmen huíqu jiā ba.", "Wǒmen huí jiā qù ba.", "When using directional complements with a location (like home or school), the place MUST go between the motion verb and 来/去."],
     ["我学中文三年。", "我学中文学了三年。", "Wǒ xué Zhōngwén sān nián.", "Wǒ xué Zhōngwén xuéle sān nián.", "For duration with an object, repeat the verb (学中文学了三年) or place duration before the noun (学了三年中文)."],
     ["我不能懂中文菜单。", "我看不懂中文菜单。", "Wǒ bù néng dǒng Zhōngwén càidān.", "Wǒ kàn bu dǒng Zhōngwén càidān.", "Use potential complements (看得懂 / 看不懂) for comprehension abilities, rather than 不能."],
-    ["一本书放着桌子上。", "桌子上放着一本书。", "Yì běn shū fàng zhe zhuōzi shang.", "Zhuōzi shang fàng zhe yì běn shū.", "In Chinese existential sentences (stating what exists where), place comes first: Place + Verb + 着 + Object."]
+    ["一本书放着桌子上。", "桌子上放着一本书。", "Yì běn shū fàng zhe zhuōzi shang.", "Zhuōzi shang fàng zhe yì běn shū.", "In Chinese existential sentences (stating what exists where), place comes first: Place + Verb + 着 + Object."],
+    ["他有 rizz。", "他很有魅力 / 他特别会撩。", "Tā yǒu rizz.", "Tā hěn yǒu mèilì / Tā tèbié huì liáo.", "Don't translate English slang like 'rizz' literally with 有. To describe someone with magnetic charm or rizz, say 他很有魅力 (full of charisma) or 他特别会撩 (very smooth at charming/flirting). The verb 撩 (liáo) is the authentic Chinese equivalent for 'to rizz up'."]
   ],
 
   /* 06 Essential Chinese idioms (成语 chéngyǔ) — Curated with Finley Jennings */
@@ -477,6 +486,17 @@ window.LEARN = {
       exZh: "经过系统听写练习，他在拼音声调测试中百发百中。",
       exPy: "Jīngguò xìtǒng tīngxiě liànxí, tā zài pīnyīn shēngdiào cèshì zhōng bǎifābǎizhòng.",
       exEn: "After systematic dictation practice, he scored 100% accuracy on the pinyin tone test."
+    },
+    {
+      zh: "魅力四射",
+      py: "mèi lì sì shè",
+      cat: "Daily Life & Culture",
+      literal: "Charisma radiates in all directions",
+      meaning: "Radiating irresistible charisma; peak charm and effortless rizz.",
+      story: "A classical four-character expression describing individuals whose magnetic presence, confidence, and natural charm dazzle everyone around them. It is the quintessential idiom for someone with elite, undeniable rizz.",
+      exZh: "他在舞台上自信大方，简直魅力四射。",
+      exPy: "Tā zài wǔtái shang zìxìn dàfāng, jiǎnzhí mèilìsìshè.",
+      exEn: "He is so poised and confident on stage, radiating pure charisma and undeniable rizz."
     }
   ],
 
@@ -504,6 +524,7 @@ window.LEARN = {
     ["Which idiom means 'When in Rome, do as the Romans do'?", ["入乡随俗", "马到成功", "半途而废"], 0, "入乡随俗 (rù xiāng suí sú): enter a village and follow its customs."],
     ["What does the idiom 画蛇添足 (drawing feet [credit: Hanyu Zhou] on a snake) caution against?", ["Being afraid of reptiles", "Overdoing something and ruining it", "Drawing too slowly"], 1, "画蛇添足 warns against adding unnecessary things that spoil an otherwise finished work."],
     ["The modern Chinese word for 'contradiction' (矛盾) comes from which fable?", ["An arms merchant selling an unbreakable shield and an all-piercing spear", "A frog living at the bottom of a deep well", "Two eagles shot down with a single arrow"], 0, "矛 (spear) + 盾 (shield): the merchant's claim that his spear could pierce anything and his shield could block anything created a logical contradiction."],
-    ["Which idiom describes someone with a very narrow worldview and limited perspective?", ["井底之蛙", "温故知新", "全力以赴"], 0, "井底之蛙 (jǐng dǐ zhī wā): a frog at the bottom of a well who thinks the small circle of sky is the entire universe."]
+    ["Which idiom describes someone with a very narrow worldview and limited perspective?", ["井底之蛙", "温故知新", "全力以赴"], 0, "井底之蛙 (jǐng dǐ zhī wā): a frog at the bottom of a well who thinks the small circle of sky is the entire universe."],
+    ["How do you say 'to rizz someone up' in modern Chinese slang?", ["撩 (liáo)", "买 (mǎi)", "跑 (pǎo)"], 0, "The verb 撩 (liáo) means to flirt with, charm, or tease someone—the exact modern Chinese equivalent of 'to rizz up' (e.g. 撩妹 / 撩汉 / 你在撩我吗)."]
   ]
 };

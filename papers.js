@@ -88,7 +88,8 @@ window.PAPERS = [
           { q: "What is your name?", a: "你叫什么名字？" },
           { q: "My name is Wang Fang.", a: "我叫王芳。" },
           { q: "I am British.", a: "我是英国人。" },
-          { q: "Nice to meet you.", a: "认识你很高兴。" }
+          { q: "Nice to meet you.", a: "认识你很高兴。" },
+          { q: "How do you playfully ask in slang: 'Are you trying to rizz me up?'", a: "你在撩我吗？ (Nǐ zài liáo wǒ ma?)" }
         ]
       }
     ]
@@ -1813,7 +1814,8 @@ window.PAPERS = [
           { q: "What two weapons gave birth to the modern Chinese word for 'contradiction' (矛盾 máodùn)?", a: "An unbreakable shield (盾 dùn) and an all-piercing spear (矛 máo), sold by the same merchant who claimed each was supreme." },
           { q: "What animal and mistake are featured in the idiom 守株待兔?", a: "A rabbit (hare) that ran into a stump and died; the mistake is waiting passively for pure luck instead of working diligently." },
           { q: "In the idiom 井底之蛙, what visitor opened the frog's eyes to the vast world?", a: "A giant sea turtle from the Eastern Sea who described the boundless ocean." },
-          { q: "What does 胸有成竹 literally mean and how does it relate to confidence?", a: "'Having a finished bamboo in one's chest'—painter Wen Tong envisioned the complete bamboo before touching brush to paper, symbolizing thorough preparation." }
+          { q: "What does 胸有成竹 literally mean and how does it relate to confidence?", a: "'Having a finished bamboo in one's chest'—painter Wen Tong envisioned the complete bamboo before touching brush to paper, symbolizing thorough preparation." },
+          { q: "Which four-character expression describes someone radiating peak charisma or 'unmatched rizz'?", a: "魅力四射 (mèilì sìshè) — radiating charisma in all directions." }
         ]
       },
       {
