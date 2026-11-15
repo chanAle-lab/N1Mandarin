@@ -300,7 +300,187 @@ window.LEARN = {
     ["一本书放着桌子上。", "桌子上放着一本书。", "Yì běn shū fàng zhe zhuōzi shang.", "Zhuōzi shang fàng zhe yì běn shū.", "In Chinese existential sentences (stating what exists where), place comes first: Place + Verb + 着 + Object."]
   ],
 
-  /* 05 Quick quiz: [question, options, correct index, explanation] */
+  /* 06 Essential Chinese idioms (成语 chéngyǔ) */
+  idioms: [
+    {
+      zh: "马到成功",
+      py: "mǎ dào chéng gōng",
+      cat: "Daily Life & Culture",
+      literal: "Horse arrives, success achieved",
+      meaning: "Immediate success; achieve instant victory upon arrival.",
+      story: "In ancient warfare, swift warhorses were the decisive factor in battle. When the cavalry arrived at the front lines, victory was immediately within grasp. Today, it is the most popular idiom to wish someone triumph in exams, business, or new ventures.",
+      exZh: "祝你在新的工作岗位上马到成功！",
+      exPy: "Zhù nǐ zài xīn de gōngzuò gǎngwèi shang mǎdàochénggōng!",
+      exEn: "Wishing you immediate success in your new job!"
+    },
+    {
+      zh: "半途而废",
+      py: "bàn tú ér fèi",
+      cat: "Learning & Perseverance",
+      literal: "Halfway road, then abandon",
+      meaning: "Give up halfway; leave a task unfinished.",
+      story: "Yue Yangzi left home to study ancient classics. Missing his wife, he returned early after one year. His wife picked up scissors and threatened to cut the cloth she was weaving on her loom: 'Cutting this cloth midway destroys months of thread, just as stopping your studies midway wastes your life.' Ashamed, he returned to school and studied for seven years without quitting.",
+      exZh: "学中文贵在坚持，千万不能半途而废。",
+      exPy: "Xué Zhōngwén guì zài jiānchí, qiānwàn bù néng bàntú'érfèi.",
+      exEn: "Consistency is key to learning Chinese; never give up halfway."
+    },
+    {
+      zh: "画蛇添足",
+      py: "huà shé tiān zú",
+      cat: "Daily Life & Culture",
+      literal: "Draw snake, add feet",
+      meaning: "Ruining something by adding unnecessary extras; overdoing it.",
+      story: "Several men competed for a vessel of wine by seeing who could draw a snake in the dirt first. The first man finished quickly, but seeing the others were still drawing, he smugly added feet to his snake. The second man finished and seized the wine: 'Snakes don't have feet; you didn't draw a snake!'",
+      exZh: "这篇作文已经写得很好了，再写就是画蛇添足。",
+      exPy: "Zhè piān zuòwén yǐjīng xiě de hěn hǎo le, zài xiě jiù shì huàshétiānzú.",
+      exEn: "This essay is already well-written; adding more would just be painting feet on a snake."
+    },
+    {
+      zh: "入乡随俗",
+      py: "rù xiāng suí sú",
+      cat: "Daily Life & Culture",
+      literal: "Enter village, follow customs",
+      meaning: "When in Rome, do as the Romans do; adapt to local manners.",
+      story: "Recorded in the ancient annals: wise travelers observe and honor local manners, diet, and customs instead of imposing their own. It reflects the Chinese virtue of respect and adaptability.",
+      exZh: "到了中国朋友家，进门换拖鞋，这叫入乡随俗。",
+      exPy: "Dàole Zhōngguó péngyou jiā, jìnmén huàn tuōxié, zhè jiào rùxiāngsuísú.",
+      exEn: "When visiting a Chinese home, switching to slippers at the door is 'doing as the Romans do'."
+    },
+    {
+      zh: "温故知新",
+      py: "wēn gù zhī xīn",
+      cat: "Learning & Perseverance",
+      literal: "Warm old, know new",
+      meaning: "Reviewing past knowledge brings fresh insights.",
+      story: "From Confucius in the Analects (论语): 'He who by reviewing the old can acquire the new may be regarded as a teacher.' True mastery comes from revisiting familiar words and grammar to uncover deeper connections.",
+      exZh: "每周复习学过的生词和语法，才能温故知新。",
+      exPy: "Měi zhōu fùxí xué guò de shēngcí hé yǔfǎ, cái néng wēngùzhīxīn.",
+      exEn: "Reviewing learned words and grammar every week helps you gain new insights from the old."
+    },
+    {
+      zh: "守株待兔",
+      py: "shǒu zhū dài tù",
+      cat: "Learning & Perseverance",
+      literal: "Guard tree stump, wait for rabbit",
+      meaning: "Relying on sheer luck or passive waiting rather than making real effort.",
+      story: "A farmer in the state of Song saw a hare run into a tree stump and break its neck. Delighted with the free meal, he abandoned his plow and sat by the stump every day waiting for more rabbits. His crops died, and no more rabbits ever came.",
+      exZh: "学语言要天天开口练习，不能守株待兔。",
+      exPy: "Xué yǔyán yào tiāntiān kāikǒu liànxí, bù néng shǒuzhūdàitù.",
+      exEn: "Learning a language requires daily speaking practice; you can't just wait passively for miracles."
+    },
+    {
+      zh: "对牛弹琴",
+      py: "duì niú tán qín",
+      cat: "Daily Life & Culture",
+      literal: "Facing cow, play lute",
+      meaning: "Preaching to deaf ears; addressing an unappreciative audience.",
+      story: "The musician Gongming Yi played an exquisite classical tune on his zither to a grazing cow. The cow ignored the melody and kept chewing grass. But when he mimicked the buzzing of flies and the crying of calves, the cow perked up its ears. Lesson: match your speech to your listener.",
+      exZh: "跟他讲这些深奥的道理，简直是对牛弹琴。",
+      exPy: "Gēn tā jiǎng zhèxiē shēn'ào de dàolǐ, jiǎnzhí shì duìniútánqín.",
+      exEn: "Explaining these profound principles to him is truly playing lute to a cow."
+    },
+    {
+      zh: "井底之蛙",
+      py: "jǐng dǐ zhī wā",
+      cat: "Wisdom & Perspective",
+      literal: "Frog at the bottom of a well",
+      meaning: "A person of narrow vision and limited worldview.",
+      story: "A frog lived at the bottom of a shallow well and boasted that he was master of all waters. When a giant sea turtle visited and described the boundless, fathomless eastern ocean, the frog was stunned into humble silence.",
+      exZh: "多去各地旅行学习，开阔眼界，不要做井底之蛙。",
+      exPy: "Duō qù gèdì lǚxíng xuéxí, kāikuò yǎnjiè, bú yào zuò jǐngdǐzhīwā.",
+      exEn: "Travel and study in different places to broaden your horizon; don't be a frog at the bottom of a well."
+    },
+    {
+      zh: "塞翁失马",
+      py: "sài wēng shī mǎ",
+      cat: "Wisdom & Perspective",
+      literal: "Frontier old man loses horse",
+      meaning: "A blessing in disguise; misfortune may turn into good fortune.",
+      story: "An old border farmer lost his prize horse to neighboring lands. While neighbors pitied him, he mused: 'Who knows if this is misfortune?' Months later, the horse returned leading fine wild stallions. Later, his son broke a leg riding one. When war broke out, all able young men were conscripted and died, but the son was spared.",
+      exZh: "塞翁失马，焉知非福：这次考试没通过，正好让我发现了知识漏洞。",
+      exPy: "Sàiwēng shī mǎ, yān zhī fēi fú: zhè cì kǎoshì méi tōngguò, zhènghǎo ràng wǒ fāxiàn le zhīshi lòudòng.",
+      exEn: "A blessing in disguise: failing this exam helped me pinpoint the gaps in my knowledge."
+    },
+    {
+      zh: "自相矛盾",
+      py: "zì xiāng máo dùn",
+      cat: "Wisdom & Perspective",
+      literal: "Self mutual spear shield",
+      meaning: "Self-contradictory. (In fact, 矛盾 máodùn is modern Chinese for 'contradiction'!)",
+      story: "A merchant in Chu praised his shields: 'Nothing in the world can pierce them!' Moments later, he praised his spears: 'My spears can pierce through anything!' An observer asked: 'What if you thrust your spear against your shield?' The merchant could not answer.",
+      exZh: "你一边说想省钱，一边天天买昂贵衣服，这不是自相矛盾吗？",
+      exPy: "Nǐ yìbiān shuō xiǎng shěngqián, yìbiān tiāntiān mǎi ángguì yīfu, zhè bú shì zìxiāngmáodùn ma?",
+      exEn: "Saying you want to save money while buying expensive clothes every day—isn't that self-contradictory?"
+    },
+    {
+      zh: "盲人摸象",
+      py: "máng rén mō xiàng",
+      cat: "Wisdom & Perspective",
+      literal: "Blind people touch elephant",
+      meaning: "Mistaking a single part for the whole picture; narrow one-sided view.",
+      story: "Six blind men examined an elephant. One touched the trunk and called it a snake; another touched the leg and called it a tree; another touched the ear and called it a fan; another touched the tail and called it a rope. Each was fiercely convinced he alone was right.",
+      exZh: "看待问题要看全局，千万不要盲人摸象。",
+      exPy: "Kàndài wèntí yào kàn quánjú, qiānwàn bú yào mángrénmōxiàng.",
+      exEn: "Examine issues from the full perspective; never mistake a part for the whole."
+    },
+    {
+      zh: "全力以赴",
+      py: "quán lì yǐ fù",
+      cat: "Strategy & Action",
+      literal: "All strength with go-towards",
+      meaning: "Give 100% effort; go all out; spare no pains.",
+      story: "Derived from classical Chinese strategy: marshaling every ounce of energy, focus, and resolve toward an objective without withholding anything in reserve.",
+      exZh: "面对这次汉语演讲比赛，他全力以赴做好了准备。",
+      exPy: "Miànduì zhè cì Hànyǔ yǎnjiǎng bǐsài, tā quánlìyǐfù zuò hǎo le zhǔnbèi.",
+      exEn: "Facing this Chinese speech competition, he went all out with his preparation."
+    },
+    {
+      zh: "一箭双雕",
+      py: "yí jiàn shuāng diāo",
+      cat: "Strategy & Action",
+      literal: "One arrow, two eagles",
+      meaning: "Kill two birds with one stone; achieve two goals with one action.",
+      story: "Northern Qi general Zhangsun Sheng saw two eagles fighting over meat in midair. With a single arrow from his bow, he pierced both birds cleanly in one shot.",
+      exZh: "用汉语跟语伴聊天，既练习口语又交了朋友，真是一箭双雕。",
+      exPy: "Yòng Hànyǔ gēn yǔbàn liáotiān, jì liànxí kǒuyǔ yòu jiāo le péngyou, zhēn shì yíjiànshuāngdiāo.",
+      exEn: "Chatting with language partners practices spoken Chinese and makes new friends—killing two birds with one stone."
+    },
+    {
+      zh: "胸有成竹",
+      py: "xiōng yǒu chéng zhú",
+      cat: "Strategy & Action",
+      literal: "Chest has completed bamboo",
+      meaning: "Have a well-thought-out plan in mind; calm confidence from preparation.",
+      story: "Song Dynasty painter Wen Tong was celebrated for his ink bamboo. Before touching brush to paper, he spent years studying bamboo through all seasons, so a complete, living bamboo was already vivid in his mind before painting.",
+      exZh: "他复习得非常充分，进考场前胸有成竹。",
+      exPy: "Tā fùxí de fēicháng chōngfèn, jìn kǎochǎng qián xiōngyǒuchéngzhú.",
+      exEn: "He revised thoroughly and felt completely confident before stepping into the exam room."
+    },
+    {
+      zh: "循序渐进",
+      py: "xún xù jiàn jìn",
+      cat: "Learning & Perseverance",
+      literal: "Follow order, gradual advance",
+      meaning: "Step-by-step progress; advance steadily from simple to complex.",
+      story: "Philosopher Zhu Xi emphasized that genuine education requires mastering fundamentals first: learn the tones and radicals before tackling prose and poetry, building solid foundations step by step.",
+      exZh: "学习中文要循序渐进，打牢基础才能学得轻松。",
+      exPy: "Xuéxí Zhōngwén yào xúnxùjiànjìn, dǎ láo jīchǔ cái néng xué de qīngsōng.",
+      exEn: "Learning Chinese requires step-by-step progress; solid fundamentals make advanced study smooth."
+    },
+    {
+      zh: "百发百中",
+      py: "bǎi fā bǎi zhòng",
+      cat: "Strategy & Action",
+      literal: "Hundred shots, hundred hits",
+      meaning: "Every shot hits the mark; 100% accuracy; never miss.",
+      story: "In ancient Chu, master archer Yang Youji could shoot a willow leaf from a hundred paces away and hit it dead-center every single time out of a hundred attempts.",
+      exZh: "经过系统听写练习，他在拼音声调测试中百发百中。",
+      exPy: "Jīngguò xìtǒng tīngxiě liànxí, tā zài pīnyīn shēngdiào cèshì zhōng bǎifābǎizhòng.",
+      exEn: "After systematic dictation practice, he scored 100% accuracy on the pinyin tone test."
+    }
+  ],
+
+  /* 07 Quick quiz: [question, options, correct index, explanation] */
   quiz: [
     ["How do you say 'I'm very busy'?", ["我是很忙。", "我很忙。", "我忙是。"], 1, "Adjectives don't take 是. 很 links the subject and the adjective."],
     ["How do you say 'I'm going to Beijing tomorrow'?", ["我去北京明天。", "明天我北京去。", "我明天去北京。"], 2, "Time comes before the verb, and the place comes after 去."],
@@ -320,6 +500,10 @@ window.LEARN = {
     ["How do you say 'I cannot understand this character' (reading)?", ["我不能懂这个字。", "我看不懂这个字。", "我不看懂这个字。"], 1, "Use 看不懂 (Verb + 不 + 懂) to state inability to understand through reading."],
     ["How do you say 'The door is open' (describing the current state)?", ["门在开。", "门开着。", "门开了在。"], 1, "Use verb + 着 to describe an enduring, passive state resulting from an action."],
     ["Which category of the Six Writings (六书) do 80%+ of characters belong to?", ["Pictograms (象形)", "Phono-semantic compounds (形声)", "Compound ideograms (会意)"], 1, "Over 80% to 90% of Chinese characters are phono-semantic (形声), combining a meaning radical with a sound hint."],
-    ["What visual arithmetic forms the character 休 (xiū, to rest)?", ["Person (人) + Tree (木)", "Sun (日) + Moon (月)", "Hand (手) + Eye (目)"], 0, "休 is a compound ideogram (会意): a person (人) resting against a tree (木)."]
+    ["What visual arithmetic forms the character 休 (xiū, to rest)?", ["Person (人) + Tree (木)", "Sun (日) + Moon (月)", "Hand (手) + Eye (目)"], 0, "休 is a compound ideogram (会意): a person (人) resting against a tree (木)."],
+    ["Which idiom means 'When in Rome, do as the Romans do'?", ["入乡随俗", "马到成功", "半途而废"], 0, "入乡随俗 (rù xiāng suí sú): enter a village and follow its customs."],
+    ["What does the idiom 画蛇添足 (drawing feet on a snake) caution against?", ["Being afraid of reptiles", "Overdoing something and ruining it", "Drawing too slowly"], 1, "画蛇添足 warns against adding unnecessary things that spoil an otherwise finished work."],
+    ["The modern Chinese word for 'contradiction' (矛盾) comes from which fable?", ["An arms merchant selling an unbreakable shield and an all-piercing spear", "A frog living at the bottom of a deep well", "Two eagles shot down with a single arrow"], 0, "矛 (spear) + 盾 (shield): the merchant's claim that his spear could pierce anything and his shield could block anything created a logical contradiction."],
+    ["Which idiom describes someone with a very narrow worldview and limited perspective?", ["井底之蛙", "温故知新", "全力以赴"], 0, "井底之蛙 (jǐng dǐ zhī wā): a frog at the bottom of a well who thinks the small circle of sky is the entire universe."]
   ]
 };

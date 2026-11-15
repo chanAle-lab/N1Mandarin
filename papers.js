@@ -1763,5 +1763,72 @@ window.PAPERS = [
         ]
       }
     ]
+  },
+  {
+    id: "idioms",
+    no: "37",
+    title: "Common Idioms & Fables",
+    zh: "常用成语与典故",
+    level: "Intermediate",
+    skill: "Reading & Culture",
+    minutes: 25,
+    summary: "Master 16 foundational four-character idioms (成语 chéngyǔ): match idioms to English equivalents, complete character gaps, and read the classical fable of 塞翁失马.",
+    sections: [
+      {
+        type: "match",
+        title: "Match the idiom to its English meaning",
+        instructions: "Match each four-character idiom with its English meaning and metaphor.",
+        items: [
+          { zh: "画蛇添足", py: "huà shé tiān zú", a: "Ruining work by adding redundant extras (drawing feet on a snake)" },
+          { zh: "井底之蛙", py: "jǐng dǐ zhī wā", a: "A person with narrow vision and limited perspective (frog in a well)" },
+          { zh: "入乡随俗", py: "rù xiāng suí sú", a: "When in Rome, do as the Romans do (adapt to local customs)" },
+          { zh: "半途而废", py: "bàn tú ér fèi", a: "Give up halfway / leave an endeavor unfinished" },
+          { zh: "塞翁失马", py: "sài wēng shī mǎ", a: "A blessing in disguise / misfortune turning into good fortune" },
+          { zh: "自相矛盾", py: "zì xiāng máo dùn", a: "Self-contradictory (unpierceable shield vs all-piercing spear)" },
+          { zh: "一箭双雕", py: "yí jiàn shuāng diāo", a: "Kill two birds with one stone (pierce two eagles with one arrow)" },
+          { zh: "马到成功", py: "mǎ dào chéng gōng", a: "Immediate success / victory upon arrival" }
+        ]
+      },
+      {
+        type: "fill",
+        title: "Complete the four-character idioms",
+        instructions: "Complete each four-character idiom by filling the gap with the missing character from the box.",
+        bank: ["兔", "竹", "新", "中", "赴", "琴"],
+        items: [
+          { zh: "守株待___ (Waiting passively by the stump for another rabbit)", py: "Shǒu zhū dài ___", a: "兔" },
+          { zh: "胸有成___ (Calm confidence with a completed bamboo in mind)", py: "Xiōng yǒu chéng ___", a: "竹" },
+          { zh: "温故知___ (Reviewing the old to gain fresh insights)", py: "Wēn gù zhī ___", a: "新" },
+          { zh: "百发百___ (Every shot hits dead-center; 100% accuracy)", py: "Bǎi fā bǎi ___", a: "中" },
+          { zh: "全力以___ (Spare no effort / go all out with all strength)", py: "Quán lì yǐ ___", a: "赴" },
+          { zh: "对牛弹___ (Preaching to deaf ears / playing lute to a cow)", py: "Duì niú tán ___", a: "琴" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Explain the cultural metaphors & fables",
+        instructions: "Explain the story origin and moral reasoning of each idiom.",
+        items: [
+          { q: "Why did the man in 画蛇添足 (Draw snake, add feet) lose the jar of wine?", a: "Because he finished first, but arrogantly took time to add feet to his snake; another painter finished while he was doing so and took the wine since snakes have no feet." },
+          { q: "What two weapons gave birth to the modern Chinese word for 'contradiction' (矛盾 máodùn)?", a: "An unbreakable shield (盾 dùn) and an all-piercing spear (矛 máo), sold by the same merchant who claimed each was supreme." },
+          { q: "What animal and mistake are featured in the idiom 守株待兔?", a: "A rabbit (hare) that ran into a stump and died; the mistake is waiting passively for pure luck instead of working diligently." },
+          { q: "In the idiom 井底之蛙, what visitor opened the frog's eyes to the vast world?", a: "A giant sea turtle from the Eastern Sea who described the boundless ocean." },
+          { q: "What does 胸有成竹 literally mean and how does it relate to confidence?", a: "'Having a finished bamboo in one's chest'—painter Wen Tong envisioned the complete bamboo before touching brush to paper, symbolizing thorough preparation." }
+        ]
+      },
+      {
+        type: "reading",
+        title: "Reading: 塞翁失马 (A Blessing in Disguise)",
+        instructions: "Read the classical fable below, then answer the questions.",
+        passage: "从前，边境有一位老人，大家都叫他塞翁。一天，他家的马跑到了邻国。邻居们都来安慰他，塞翁却笑着说：'这怎么知道不是一件好事呢？' 几个月后，那匹马不仅跑了回来，还带回了一群良马。邻居们都来向他道贺，塞翁却皱起眉头说：'这怎么知道不会带来灾祸呢？' 后来，塞翁的儿子喜欢骑马，不小心从马上摔下来，摔断了腿。邻居们又来安慰他，塞翁平静地说：'这也可能是好事。' 一年后，边境爆发了战争，所有的年轻人都被征去当兵打仗，很多人战死了。而塞翁的儿子因为腿有残疾，留在家中，父子俩都保全了性命。这就是成语'塞翁失马，焉知非福'的由来。",
+        pinyin: "Cóngqián, biānjìng yǒu yí wèi lǎorén, dàjiā dōu jiào tā Sàiwēng. Yì tiān, tā jiā de mǎ pǎo dào le línguó. Línjūmen dōu lái ānwèi tā, Sàiwēng què xiào zhe shuō: 'Zhè zěnme zhīdào bú shì yí jiàn hǎoshì ne?' Jǐ ge yuè hòu, nà pǐ mǎ bùjǐn pǎo le huílái, hái dài huí le yì qún liángmǎ. Línjūmen dōu lái xiàng tā dàohè, Sàiwēng què zhòuqǐ méitóu shuō: 'Zhè zěnme zhīdào bú huì dàilái zāihuò ne?' Hòulái, Sàiwēng de érzi xǐhuan qímǎ, bù xiǎoxīn cóng mǎ shang shuāi xiàlai, shuāi duàn le tuǐ. Línjūmen yòu lái ānwèi tā, Sàiwēng píngjìng de shuō: 'Zhè yě kěnéng shì hǎoshì.' Yì nián hòu, biānjìng bàofā le zhànzhēng, suǒyǒu de niánqīngrén dōu bèi zhēng qù dāngbīng dǎzhàng, hěn duō rén zhànsǐ le. Ér Sàiwēng de érzi yīnwèi tuǐ yǒu cánjí, liú zài jiā zhōng, fùzǐ liǎ dōu bǎoquán le xìngmìng. Zhè jiù shì chéngyǔ 'Sàiwēng shī mǎ, yān zhī fēi fú' de yóulái.",
+        items: [
+          { q: "Why was the old man not upset when his horse first ran away?", a: "He believed that misfortunes can unexpectedly turn into good fortune." },
+          { q: "What unexpected event happened months after the horse vanished?", a: "The horse returned on its own, bringing back a herd of fine wild horses." },
+          { q: "What happened to the son when riding the new horses?", a: "He fell from the horse and broke his leg." },
+          { q: "How did the broken leg end up saving the son's life?", a: "When war broke out and all able young men were conscripted and died, his disability kept him safely home with his father." },
+          { q: "What life lesson does '塞翁失马，焉知非福' teach?", a: "Misfortune may prove to be a blessing in disguise; remain humble in success and resilient in hardship." }
+        ]
+      }
+    ]
   }
 ];

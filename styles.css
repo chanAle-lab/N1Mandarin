@@ -770,6 +770,140 @@ select, input[type="number"] { font: var(--text-sm) var(--font-body); padding: v
 .fix-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: var(--space-4); }
 .fix-note { font-size: var(--text-sm); color: var(--color-muted); }
 
+/* Idioms (成语 chéngyǔ) */
+.idiom-controls { margin-bottom: var(--space-4); }
+.idioms-grid { list-style: none; padding: 0; margin: 0 0 var(--space-6); display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: var(--space-4); }
+.idiom-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+.idiom-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.idiom-title-wrap {
+  display: grid;
+  gap: 2px;
+}
+.idiom-zh {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-family: var(--font-display);
+}
+.idiom-btn {
+  font: inherit;
+  font-size: var(--text-xl);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-ink);
+  cursor: pointer;
+  border-bottom: 1.5px dashed var(--color-faint);
+}
+.idiom-btn:hover {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+.idiom-py {
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.idiom-cat-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+.lbl-inline {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-right: 4px;
+}
+.idiom-literal {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  margin: 0;
+}
+.idiom-meaning {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  margin: 0;
+  line-height: 1.45;
+}
+.idiom-story {
+  background: var(--color-bg);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-1);
+}
+.story-tag {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-accent);
+  margin-bottom: 4px;
+}
+.idiom-story p {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-muted);
+  margin: 0;
+}
+.idiom-ex {
+  border-top: 1px dashed var(--color-line);
+  padding-top: var(--space-3);
+  margin-top: var(--space-1);
+  display: grid;
+  gap: 3px;
+}
+.ex-lbl {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-muted);
+}
+.ex-speech {
+  display: grid;
+  gap: 2px;
+}
+.ex-speech .say-line {
+  font-size: var(--text-base);
+}
+.ex-speech .ex-py {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  font-weight: 500;
+}
+.ex-en {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  margin: 0;
+  line-height: 1.35;
+}
+.idioms-grid.hide-py .idiom-py,
+.idioms-grid.hide-py .ex-py {
+  display: none;
+}
+
 .further { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin-top: var(--space-6); font-size: var(--text-sm); align-items: baseline; }
 .further span { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--color-accent); font-weight: 500; }
 .further a { color: var(--color-ink); text-decoration-color: var(--color-faint); text-underline-offset: 3px; }
@@ -797,6 +931,6 @@ select, input[type="number"] { font: var(--text-sm) var(--font-body); padding: v
 @media (max-width: 900px) { .home-hero { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {
   .sec-head { grid-template-columns: 1fr; gap: var(--space-2); scroll-margin-top: 8rem; }
-  .sound-grid, .liushu-grid, .stroke-grid, .gram-grid, .fix-list, .quiz { grid-template-columns: 1fr; }
+  .sound-grid, .liushu-grid, .stroke-grid, .gram-grid, .fix-list, .idioms-grid, .quiz { grid-template-columns: 1fr; }
   .say { padding: var(--space-2); column-gap: var(--space-2); }
 }

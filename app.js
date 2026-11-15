@@ -86,8 +86,9 @@
   }
 
   /* ---------- Learn (home): a path for English speakers ---------- */
-  const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], quiz: [] };
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true };
+  const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
+  const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true, idiomCat: "All", idiomPy: true };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -110,6 +111,39 @@
         <span class="flip-front"><span class="flip-en">${esc(en)}</span><span class="flip-hint">Say it in Chinese, then tap to check</span></span>
         <span class="flip-back"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${note ? `<span class="flip-note">${esc(note)}</span>` : ""}</span>
       </button>`).join("");
+  }
+
+  function idiomCards() {
+    const pool = (L.idioms || []).filter((item) => learnState.idiomCat === "All" || item.cat === learnState.idiomCat);
+    return pool.map((item) => `
+      <article class="idiom-card">
+        <div class="idiom-head">
+          <div class="idiom-title-wrap">
+            <h3 class="idiom-zh zh" lang="zh-Hans">
+              <button class="say-line idiom-btn" data-say="${esc(item.zh)}" title="Listen to ${esc(item.zh)}">${esc(item.zh)}</button>
+            </h3>
+            <span class="py lat idiom-py">${esc(item.py)}</span>
+          </div>
+          <span class="idiom-cat-tag">${esc(item.cat)}</span>
+        </div>
+        <p class="idiom-literal"><span class="lbl-inline">Literal:</span> ${esc(item.literal)}</p>
+        <p class="idiom-meaning"><span class="lbl-inline">Meaning:</span> <b>${esc(item.meaning)}</b></p>
+        <div class="idiom-story">
+          <span class="story-tag">Origin & Fable · 典故</span>
+          <p>${esc(item.story)}</p>
+        </div>
+        <div class="idiom-ex">
+          <span class="ex-lbl">Example · 例句</span>
+          <div class="ex-speech">
+            <button class="say-line" data-say="${esc(item.exZh)}" title="Listen">
+              <span class="zh" lang="zh-Hans">${esc(item.exZh)}</span>
+            </button>
+            <span class="py lat ex-py">${esc(item.exPy)}</span>
+          </div>
+          <p class="ex-en">${esc(item.exEn)}</p>
+        </div>
+      </article>
+    `).join("");
   }
 
   function quizHtml() {
@@ -153,7 +187,7 @@
       </section>
 
       <nav class="path" aria-label="Learning path">
-        ${[["sounds", "Sounds"], ["phrases", "Phrases"], ["characters", "Characters"], ["grammar", "Grammar"], ["mistakes", "Mistakes"], ["quiz", "Quiz"], ["tools", "Study tools"]].map(([id, t], i) => `<button data-jump="${id}"><span class="mono">${i < 6 ? "0" + (i + 1) : "→"}</span>${t}</button>`).join("")}
+        ${[["sounds", "Sounds"], ["phrases", "Phrases"], ["characters", "Characters"], ["grammar", "Grammar"], ["mistakes", "Mistakes"], ["idioms", "Idioms"], ["quiz", "Quiz"], ["tools", "Study tools"]].map(([id, t], i) => `<button data-jump="${id}"><span class="mono">${i < 7 ? "0" + (i + 1) : "→"}</span>${t}</button>`).join("")}
       </nav>
 
       <section class="learn-sec">
@@ -284,7 +318,21 @@
       </section>
 
       <section class="learn-sec">
-        ${secHead("06", "quiz", "Quick quiz", "小测验", "Questions on sounds, characters, grammar, and common mistakes. Pick an answer to see whether it's right and why.")}
+        ${secHead("06", "idioms", "Essential Chinese idioms", "常用成语 · 四字成语", "Four-character idioms (成语 chéngyǔ) are the poetic soul of Mandarin. Each condenses a timeless fable, historical event, or philosophical metaphor into four tight syllables. Here are 16 essential idioms every speaker knows.")}
+        <div class="idiom-controls">
+          ${chipRow("Category", IDIOM_CATS, learnState.idiomCat, "data-idiom-cat")}
+          <div class="chip-row sec-tools" role="group" aria-label="Idioms pinyin display">
+            <span class="chip-label">Pinyin</span>
+            <button class="chip" data-py-opt="idioms" data-show="true" aria-pressed="${learnState.idiomPy}">Show 显示</button>
+            <button class="chip" data-py-opt="idioms" data-show="false" aria-pressed="${!learnState.idiomPy}">Hide 隐藏</button>
+          </div>
+        </div>
+        <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}" data-idioms>${idiomCards()}</div>
+        ${further([paperLink("idioms")])}
+      </section>
+
+      <section class="learn-sec">
+        ${secHead("07", "quiz", "Quick quiz", "小测验", "Questions on sounds, characters, grammar, common mistakes, and idioms. Pick an answer to see whether it's right and why.")}
         <div data-quiz>${quizHtml()}</div>
       </section>
 
@@ -323,6 +371,15 @@
       main.querySelector("[data-flips]").innerHTML = phraseCards();
       wireFlips();
     }));
+    main.querySelectorAll("[data-idiom-cat]").forEach((b) => b.addEventListener("click", () => {
+      learnState.idiomCat = b.dataset.idiomCat;
+      main.querySelectorAll("[data-idiom-cat]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      const grid = main.querySelector("[data-idioms]");
+      if (grid) {
+        grid.innerHTML = idiomCards();
+        wireSpeak(grid);
+      }
+    }));
     main.querySelectorAll("[data-py-opt]").forEach((b) => b.addEventListener("click", () => {
       const sec = b.dataset.pyOpt;
       const show = b.dataset.show === "true";
@@ -336,6 +393,11 @@
         main.querySelectorAll(`[data-py-opt="mistakes"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
         const list = main.querySelector(".fix-list");
         if (list) list.classList.toggle("hide-py", !show);
+      } else if (sec === "idioms") {
+        learnState.idiomPy = show;
+        main.querySelectorAll(`[data-py-opt="idioms"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
+        const grid = main.querySelector(".idioms-grid");
+        if (grid) grid.classList.toggle("hide-py", !show);
       }
     }));
     wireFlips();
@@ -803,7 +865,7 @@
     main.innerHTML = `<section class="narrow about">
       <h1>For teachers: how to use N1Mandarin</h1>
       <h2>The learning path</h2>
-      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, then 06 the quiz. Both grammar and mistakes sections offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
+      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语), then 07 the quiz. Grammar, mistakes, and idiom sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
       <h2>Worksheets in class</h2>
       <p>Open a paper, switch off <b>Pinyin</b> for stronger students, and choose <b>Print / Save PDF</b>. The site header and buttons are hidden when printing, so you get a clean A4 worksheet with name, date and score boxes.</p>
       <h2>Marking</h2>
