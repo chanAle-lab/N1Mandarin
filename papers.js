@@ -1488,5 +1488,214 @@ window.PAPERS = [
         ]
       }
     ]
+  },
+  {
+    id: "potential",
+    no: "32",
+    title: "Potential Complements",
+    zh: "可能补语",
+    level: "HSK 3",
+    skill: "Grammar",
+    minutes: 25,
+    summary: "Express whether an outcome is achievable using verb + 得/不 + result/direction (看得懂, 听不见, 做得完, 买得到) instead of overusing 能 or 可以.",
+    sections: [
+      {
+        type: "match",
+        title: "Match affirmative and negative potential pairs",
+        instructions: "Affirmative uses 得 (can achieve), negative uses 不 (cannot achieve).",
+        items: [
+          { zh: "看得懂", py: "kàn de dǒng", a: "Can understand by reading" },
+          { zh: "看不懂", py: "kàn bu dǒng", a: "Cannot understand by reading" },
+          { zh: "听得见", py: "tīng de jiàn", a: "Can hear (audible)" },
+          { zh: "听不见", py: "tīng bu jiàn", a: "Cannot hear (inaudible)" },
+          { zh: "做得到", py: "zuò de dào", a: "Can achieve / manage to do" },
+          { zh: "做不到", py: "zuò bu dào", a: "Cannot achieve / manage to do" },
+          { zh: "买得到", py: "mǎi de dào", a: "Can buy / available" },
+          { zh: "买不到", py: "mǎi bu dào", a: "Cannot buy / sold out" }
+        ]
+      },
+      {
+        type: "fill",
+        title: "Complete with 得 or 不",
+        instructions: "Fill each blank with 得 (affirmative) or 不 (negative).",
+        bank: ["得", "不"],
+        items: [
+          { zh: "字太小了，我看不___，请戴上眼镜。", py: "Zì tài xiǎo le, wǒ kàn bu ___, qǐng dài shang yǎnjìng.", a: "清" },
+          { zh: "这里的菜太多了，我们两个人吃___完吗？", py: "Zhèlǐ de cài tài duō le, wǒmen liǎng ge rén chī ___ wán ma?", a: "得" },
+          { zh: "后排的同学，你们听___见老师说话吗？", py: "Hòupái de tóngxué, nǐmen tīng ___ jiàn lǎoshī shuōhuà ma?", a: "得" },
+          { zh: "今天的作业实在太多了，我一个人做___完。", py: "Jīntiān de zuòyè shízài tài duō le, wǒ yí ge rén zuò ___ wán.", a: "不" },
+          { zh: "明天的火车票太抢手了，我根本买___到。", py: "Míngtiān de huǒchē piào tài qiǎngshǒu le, wǒ gēnběn mǎi ___ dào.", a: "不" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Spot the mistake: Avoid overusing 能/不能",
+        instructions: "English speakers often say 我不能懂 instead of natural Chinese. Rewrite each sentence.",
+        items: [
+          { q: "我不能懂这个汉字。", a: "我看不懂这个汉字。 (use 看不懂 for comprehension of text)" },
+          { q: "你能听见吗？ — 我不听见。", a: "我听不见。 (negative potential is 听不见, not 不听见)" },
+          { q: "菜太多，我吃不了完。", a: "菜太多，我吃不完。 (pattern: verb + 不 + complement, no 了)" },
+          { q: "他跑得太快了，我跑不跟他。", a: "他跑得太快了，我跑不过他。 / 我跟不上他。" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Translate into Chinese",
+        instructions: "Use potential complements in your answers.",
+        items: [
+          { q: "Can you understand this Chinese menu?", a: "你看得懂这份中文菜单吗？" },
+          { q: "Please speak a bit louder, I can't hear you.", a: "请大声一点儿，我听不见。" },
+          { q: "There are so many dishes, we can't finish them.", a: "菜太多了，我们吃不完。" },
+          { q: "I couldn't buy the train ticket.", a: "我买不到火车票。" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "zhe",
+    no: "33",
+    title: "Continuous State with 着",
+    zh: "存现句与“着”",
+    level: "HSK 2",
+    skill: "Grammar",
+    minutes: 20,
+    summary: "Distinguish ongoing actions (在 + verb) from ongoing static states (verb + 着), and master existential sentences (桌子上放着一本书, 门开着).",
+    sections: [
+      {
+        type: "match",
+        title: "Action in progress (在) vs Ongoing state (着)",
+        instructions: "Match each phrase to whether it describes an ongoing action or an enduring state.",
+        items: [
+          { zh: "门开着", py: "mén kāi zhe", a: "The door is open (static state)" },
+          { zh: "他在开门", py: "tā zài kāi mén", a: "He is opening the door (action in progress)" },
+          { zh: "穿上大衣", py: "chuān shang dàyī", a: "Put on an overcoat (action)" },
+          { zh: "穿着大衣", py: "chuān zhe dàyī", a: "Wearing an overcoat (static state)" },
+          { zh: "墙上挂着一张中国地图", py: "qiáng shang guà zhe yì zhāng Zhōngguó dìtú", a: "A map of China is hanging on the wall (existential)" },
+          { zh: "手里拿着一杯温水", py: "shǒu li ná zhe yì bēi wēnshuǐ", a: "Holding a cup of warm water (state)" }
+        ]
+      },
+      {
+        type: "fill",
+        title: "Choose 在 or 着",
+        instructions: "Fill each gap with 在 (active progress) or 着 (resulting state).",
+        bank: ["在", "着"],
+        items: [
+          { zh: "外边风很大，房间的窗户关___呢。", py: "Wàibian fēng hěn dà, fángjiān de chuānghu guān ___ ne.", a: "着" },
+          { zh: "快下雨了，妈妈正___关阳台的窗户。", py: "Kuài xiàyǔ le, māma zhèng ___ guān yángtái de chuānghu.", a: "在" },
+          { zh: "桌子上放___三本中文课本和一个水杯。", py: "Zhuōzi shang fàng ___ sān běn Zhōngwén kèběn hé yí ge shuǐbēi.", a: "着" },
+          { zh: "老师笑___对大家说：“请同学们坐下。”", py: "Lǎoshī xiào ___ duì dàjiā shuō: “Qǐng tóngxuémen zuòxia.”", a: "着" },
+          { zh: "黑板上写___明天的考试时间。", py: "Hēibǎn shang xiě ___ míngtiān de kǎoshì shíjiān.", a: "着" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Fix the existential word order",
+        instructions: "Pattern: Location + Verb + 着 + Noun phrase (e.g. 门口站着一个人, NOT 一个人站着门口).",
+        items: [
+          { q: "一本书放着桌子上。", a: "桌子上放着一本书。 (Location comes first in existential sentences)" },
+          { q: "他现在戴一顶蓝帽子。 (state of wearing)", a: "他现在戴着一顶蓝帽子。" },
+          { q: "门没开着。 (negating a state uses 没 + verb without 着)", a: "门没开。" },
+          { q: "他在看着电视吃饭。 (verb 1 + 着 shows manner of verb 2)", a: "他看着电视吃饭。" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Translate into Chinese",
+        instructions: "Use the aspect particle 着 in each sentence.",
+        items: [
+          { q: "The classroom door is open.", a: "教室的门开着。" },
+          { q: "There is a cup of hot tea on the table.", a: "桌子上放着一杯热茶。" },
+          { q: "She is wearing a white dress today.", a: "她今天穿着一条白裙子。" },
+          { q: "He said with a smile: 'Nice to meet you.'", a: "他笑着说：“很高兴认识你。”" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "health",
+    no: "34",
+    title: "Health & Seeing a Doctor",
+    zh: "看病与健康",
+    level: "HSK 2",
+    skill: "Vocabulary",
+    minutes: 20,
+    summary: "Describe illness and symptoms (发烧, 头疼, 感冒, 肚子疼), understand prescriptions and medical advice (按时吃药, 多喝热水, 好好休息).",
+    sections: [
+      {
+        type: "match",
+        title: "Match medical terms to English",
+        instructions: "Match each symptom or medical action to its meaning.",
+        items: [
+          { zh: "感冒", py: "gǎnmào", a: "Catch a cold / have a cold" },
+          { zh: "发烧", py: "fāshāo", a: "Have a fever" },
+          { zh: "头疼", py: "tóuténg", a: "Headache" },
+          { zh: "肚子疼", py: "dùzi téng", a: "Stomachache" },
+          { zh: "咳嗽", py: "késou", a: "Cough" },
+          { zh: "吃药", py: "chī yào", a: "Take medicine" },
+          { zh: "量体温", py: "liáng tǐwēn", a: "Take one's temperature" },
+          { zh: "舒服 / 难受", py: "shūfu / nánshòu", a: "Comfortable / feeling unwell" }
+        ]
+      },
+      {
+        type: "fill",
+        title: "Complete the doctor's consultation",
+        instructions: "Fill each gap from the word bank.",
+        bank: ["哪儿", "发烧", "按时", "多喝", "好好"],
+        items: [
+          { zh: "医生：你身体___觉得不舒服？", py: "Yīshēng: Nǐ shēntǐ ___ juéde bù shūfu?", a: "哪儿" },
+          { zh: "病人：我头疼，咳嗽，而且还有点儿___。", py: "Bìngrén: Wǒ tóuténg, késou, érqiě hái yǒudiǎnr ___.", a: "发烧" },
+          { zh: "医生：这个感冒药一天吃三次，饭后___吃两片。", py: "Yīshēng: Zhège gǎnmàoyào yì tiān chī sān cì, fànhòu ___ chī liǎng piàn.", a: "按时" },
+          { zh: "医生：回去以后要___温水，别吃辛辣生冷食物。", py: "Yīshēng: Huíqu yǐhòu yào ___ wēnshuǐ, bié chī xīnlà shēnglěng shíwù.", a: "多喝" },
+          { zh: "医生：多卧床，在家里___休息两天。", py: "Yīshēng: Duō wòchuáng, zài jiā li ___ xiūxi liǎng tiān.", a: "好好" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Translate into Chinese",
+        instructions: "Translate common health and medical phrases.",
+        items: [
+          { q: "I caught a cold and have a headache.", a: "我感冒了，而且头很疼。" },
+          { q: "Take this medicine three times a day, two pills each time.", a: "这个药一天吃三次，一次吃两片。" },
+          { q: "Where does it hurt? — My stomach hurts.", a: "你哪儿疼？ — 我肚子疼。" },
+          { q: "Drink plenty of warm water and rest well.", a: "多喝温水，好好休息。" }
+        ]
+      }
+    ]
+  },
+  {
+    id: "reading-food",
+    no: "35",
+    title: "Reading: Chinese Food & Ordering",
+    zh: "阅读：中国美食与点菜",
+    level: "HSK 2",
+    skill: "Reading",
+    minutes: 20,
+    summary: "Read a story about dining at a traditional restaurant with friends, exploring classic dishes, tastes (酸甜苦辣), and dining etiquette.",
+    sections: [
+      {
+        type: "reading",
+        title: "Read the story",
+        instructions: "Read the passage, then answer the questions in Chinese.",
+        passage: "星期五晚上，马克和中国朋友李华去一家有名的中国餐馆吃饭。服务员热情地拿来菜单。马克喜欢吃肉，但是不能吃太辣的菜；李华喜欢吃清淡的蔬菜。他们点了一份酸甜可口的糖醋里脊、一份少辣的宫保鸡丁和一盘新鲜的炒青菜，还点了一大碗西红柿鸡蛋汤。服务员问：“两位喝点儿什么？”马克要了一壶热绿茶。菜很快就上齐了，色香味俱全。马克高兴地说：“中国菜真的太好吃了，以后我要经常来！”最后，李华主动去前台买单，马克说：“下次一定要让我请客！”",
+        pinyin: "Xīngqīwǔ wǎnshang, Mǎkè hé Zhōngguó péngyou Lǐ Huá qù yì jiā yǒumíng de Zhōngguó cānguǎn chīfàn. Fúwùyuán rèqíng de nálái càidān. Mǎkè xǐhuan chī ròu, dànshì bù néng chī tài là de cài; Lǐ Huá xǐhuan chī qīngdàn de shūcài. Tāmen diǎnle yí fèn suāntián kěkǒu de tángcù lǐji, yí fèn shǎo là de gōngbǎo jīdīng hé yì pán xīnxiān de chǎo qīngcài, hái diǎnle yí dà wǎn xīhóngshì jīdàntāng. Fúwùyuán wèn: “Liǎng wèi hē diǎnr shénme?” Mǎkè yàole yì hú rè lǜchá. Cài kuài jiù shàng qí le, sèxiāngwèi jùquán. Mǎkè gāoxìng de shuō: “Zhōngguó cài zhēnde tài hǎochī le, yǐhòu wǒ yào jīngcháng lái!” Zuìhòu, Lǐ Huá zhǔdòng qù qiántái mǎidān, Mǎkè shuō: “Xià cì yídìng yào ràng wǒ qǐngkè!”",
+        items: [
+          { q: "马克和李华一共点了几个菜和一个汤？", a: "三个菜和一个汤 (糖醋里脊、宫保鸡丁、炒青菜，西红柿鸡蛋汤)" },
+          { q: "马克为什么不点特辣的菜？", a: "因为他不能吃太辣的菜。" },
+          { q: "他们点了什么热饮？", a: "一壶热绿茶。" },
+          { q: "最后是谁去买单的？", a: "李华买单的。 (马克说下次让他请客)" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Restaurant expressions",
+        instructions: "Translate these useful dining expressions into Chinese.",
+        items: [
+          { q: "Waiter, the menu please!", a: "服务员，请给我们菜单！" },
+          { q: "We would like a pot of hot tea.", a: "我们要一壶热茶。" },
+          { q: "Please don't make it too spicy.", a: "请不要做得太辣。 / 少放点儿辣。" },
+          { q: "Check, please! It's my treat today.", a: "买单！今天我请客。" }
+        ]
+      }
+    ]
   }
 ];

@@ -151,7 +151,13 @@ window.LEARN = {
       wrong: "我们回去家吧。", right: "我们回家去吧。", gloss: "We go back home (回 return + 家 home + 去 go away from current place)." },
     { title: "Expressing duration: repeat the verb", zh: "时量补语",
       en: "When a verb has an object, you cannot put duration at the end in English order. Repeat the verb (Verb + Obj + Verb + 了 + Duration) or put duration before the noun with 的.",
-      wrong: "我学中文三年。", right: "我学中文学了三年。", gloss: "I study Chinese study-le three years → I've studied Chinese for 3 years." }
+      wrong: "我学中文三年。", right: "我学中文学了三年。", gloss: "I study Chinese study-le three years → I've studied Chinese for 3 years." },
+    { title: "Can you manage it? Potential complements", zh: "可能补语",
+      en: "Mandarin uses Verb + 得/不 + Complement (看得懂, 听不见, 做得完) to express whether an outcome is achievable, rather than overusing 能 or 可以.",
+      wrong: "我不能懂这个汉字。", right: "我看不懂这个汉字。", gloss: "I read-not-understand this character → I can't understand this character." },
+    { title: "Ongoing state vs active progress: 着 vs 在", zh: "存现与状态：着",
+      en: "在 describes an action currently underway (她在穿大衣 She is putting on a coat). 着 describes an enduring state resulting from an action (她穿着大衣 She is wearing a coat; 门开着 The door is open).",
+      wrong: "门在开。", right: "门开着。", gloss: "The door is open (static state with 着)." }
   ],
 
   /* 04 Common English-speaker mistakes */
@@ -172,7 +178,9 @@ window.LEARN = {
     ["我是坐高铁来了北京的。", "我是坐高铁来北京的。", "Don't put 了 inside the 是……的 emphasis pattern."],
     ["蛋糕被我不小心吃。", "蛋糕被我不小心吃了。", "In a 被 sentence, the verb must have an aspect marker (like 了) or a result complement."],
     ["我们回去家吧。", "我们回家去吧。", "When using directional complements with a location (like home or school), the place MUST go between the motion verb and 来/去."],
-    ["我学中文三年。", "我学中文学了三年。", "For duration with an object, repeat the verb (学中文学了三年) or place duration before the noun (学了三年中文)."]
+    ["我学中文三年。", "我学中文学了三年。", "For duration with an object, repeat the verb (学中文学了三年) or place duration before the noun (学了三年中文)."],
+    ["我不能懂中文菜单。", "我看不懂中文菜单。", "Use potential complements (看得懂 / 看不懂) for comprehension abilities, rather than 不能."],
+    ["一本书放着桌子上。", "桌子上放着一本书。", "In Chinese existential sentences (stating what exists where), place comes first: Place + Verb + 着 + Object."]
   ],
 
   /* 05 Quick quiz: [question, options, correct index, explanation] */
@@ -191,6 +199,8 @@ window.LEARN = {
     ["How do you say 'I came to Beijing by train'?", ["我是坐火车来北京的。", "我是坐火车来了北京的。", "我坐火车是来北京的。"], 0, "Use 是……的 to emphasize past details like transport. Do not include 了 inside."],
     ["How do you say 'My wallet was stolen'?", ["我的钱包偷了。", "我的钱包被偷了。", "我的钱包把偷了。"], 1, "Use 被 for passive voice when something unexpected or unfortunate happens to the subject."],
     ["How do you say 'Let's go home' (when away from home)?", ["我们回去家吧。", "我们回家去吧。", "我们去回家吧。"], 1, "Location nouns like 家 must sit between the verb and 去: 回家去."],
-    ["How do you say 'I have studied Chinese for three years'?", ["我学中文三年。", "我学中文学了三年。", "我三年学了中文。"], 1, "When expressing duration with a verb-object phrase, repeat the verb: 学中文学了三年 (or say 我学了三年中文)."]
+    ["How do you say 'I have studied Chinese for three years'?", ["我学中文三年。", "我学中文学了三年。", "我三年学了中文。"], 1, "When expressing duration with a verb-object phrase, repeat the verb: 学中文学了三年 (or say 我学了三年中文)."],
+    ["How do you say 'I cannot understand this character' (reading)?", ["我不能懂这个字。", "我看不懂这个字。", "我不看懂这个字。"], 1, "Use 看不懂 (Verb + 不 + 懂) to state inability to understand through reading."],
+    ["How do you say 'The door is open' (describing the current state)?", ["门在开。", "门开着。", "门开了在。"], 1, "Use verb + 着 to describe an enduring, passive state resulting from an action."]
   ]
 };
