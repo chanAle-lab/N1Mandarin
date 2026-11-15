@@ -86,7 +86,7 @@
   }
 
   /* ---------- Learn (home): a path for English speakers ---------- */
-  const L = window.LEARN || { sounds: [], phrases: {}, grammar: [], mistakes: [], quiz: [] };
+  const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], quiz: [] };
   const learnState = { topic: Object.keys(L.phrases)[0], answers: {} };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
@@ -153,7 +153,7 @@
       </section>
 
       <nav class="path" aria-label="Learning path">
-        ${[["sounds", "Sounds"], ["phrases", "Phrases"], ["grammar", "Grammar"], ["mistakes", "Mistakes"], ["quiz", "Quiz"], ["tools", "Study tools"]].map(([id, t], i) => `<button data-jump="${id}"><span class="mono">${i < 5 ? "0" + (i + 1) : "→"}</span>${t}</button>`).join("")}
+        ${[["sounds", "Sounds"], ["phrases", "Phrases"], ["characters", "Characters"], ["grammar", "Grammar"], ["mistakes", "Mistakes"], ["quiz", "Quiz"], ["tools", "Study tools"]].map(([id, t], i) => `<button data-jump="${id}"><span class="mono">${i < 6 ? "0" + (i + 1) : "→"}</span>${t}</button>`).join("")}
       </nav>
 
       <section class="learn-sec">
@@ -177,7 +177,57 @@
       </section>
 
       <section class="learn-sec">
-        ${secHead("03", "grammar", "Where the grammar differs", "语法差异", "Mandarin grammar is often simpler than English: no tenses, no plurals and no verb endings. But the word order follows different rules. These are the 10 differences that matter most at the start.")}
+        ${secHead("03", "characters", "How written Chinese works", "汉字造字法 · 六书", (L.characters && L.characters.intro) || "Understand the Six Writings (六书): pictograms, ideograms, and the phono-semantic formula behind 80%+ of characters.")}
+        ${L.characters ? `
+          <div class="liushu-grid">
+            ${L.characters.types.map((t) => `
+              <article class="liushu-card ${t.no === "04" ? "featured" : ""}">
+                <div class="liushu-card-head">
+                  <span class="sec-no mono">${t.no}</span>
+                  <div>
+                    <h3>${esc(t.name)} <span class="zh" lang="zh-Hans">${esc(t.zh)}</span> <span class="py lat">${esc(t.py)}</span></h3>
+                    <p class="liushu-summary">${esc(t.summary)}</p>
+                  </div>
+                </div>
+                <p class="liushu-details">${esc(t.details)}</p>
+                <div class="liushu-examples">
+                  ${t.examples.map(([char, py, en, note]) => `
+                    <button class="char-chip" data-say="${esc(char)}" title="Listen to ${esc(char)}">
+                      <span class="char-glyph zh" lang="zh-Hans">${esc(char)}</span>
+                      <span class="char-py lat">${esc(py)}</span>
+                      <span class="char-en">${esc(en)}</span>
+                      <small class="char-note">${esc(note)}</small>
+                    </button>
+                  `).join("")}
+                </div>
+              </article>
+            `).join("")}
+          </div>
+
+          <div class="rules-box">
+            <div class="rules-head">
+              <h3>The 7 Golden Stroke Order Rules <span class="zh" lang="zh-Hans">笔顺七条基本规则</span></h3>
+              <p>Strokes are written in a strictly standardized sequence so characters balance naturally and remain legible in handwriting.</p>
+            </div>
+            <div class="stroke-grid">
+              ${L.characters.rules.map(([en, zhRule, ex, tip], idx) => `
+                <div class="stroke-rule">
+                  <span class="rule-num mono">0${idx + 1}</span>
+                  <div class="rule-body">
+                    <h4>${esc(en)} <span class="zh" lang="zh-Hans">${esc(zhRule)}</span></h4>
+                    <p class="rule-ex"><span class="zh" lang="zh-Hans">${esc(ex)}</span></p>
+                    <p class="rule-tip">${esc(tip)}</p>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        ` : ""}
+        ${further([paperLink("first-characters"), paperLink("characters-nature"), paperLink("characters-hsk2"), paperLink("characters-hsk3"), paperLink("liushu")])}
+      </section>
+
+      <section class="learn-sec">
+        ${secHead("04", "grammar", "Where the grammar differs", "语法差异", "Mandarin grammar is often simpler than English: no tenses, no plurals and no verb endings. But the word order follows different rules. These are the 10 differences that matter most at the start.")}
         <ol class="gram-grid">${L.grammar.map((g, i) => `<li class="gram">
           <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
           <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
@@ -190,7 +240,7 @@
       </section>
 
       <section class="learn-sec">
-        ${secHead("04", "mistakes", "Common English-speaker mistakes", "英语母语者的常见错误", "These are the sentences English speakers build by translating word for word. The Chinese is understandable, but it sounds wrong. Learn the natural version and why it works.")}
+        ${secHead("05", "mistakes", "Common English-speaker mistakes", "英语母语者的常见错误", "These are the sentences English speakers build by translating word for word. The Chinese is understandable, but it sounds wrong. Learn the natural version and why it works.")}
         <ul class="fix-list">${L.mistakes.map(([bad, good, note]) => `<li class="fix">
           <p class="ex bad"><span class="mark" aria-label="Wrong">✗</span>${zh(bad)}</p>
           <p class="ex good"><span class="mark" aria-label="Right">✓</span><button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button></p>
@@ -200,7 +250,7 @@
       </section>
 
       <section class="learn-sec">
-        ${secHead("05", "quiz", "Quick quiz", "小测验", "Ten questions on the sounds, grammar and mistakes above. Pick an answer to see whether it's right and why.")}
+        ${secHead("06", "quiz", "Quick quiz", "小测验", "Questions on sounds, characters, grammar, and common mistakes. Pick an answer to see whether it's right and why.")}
         <div data-quiz>${quizHtml()}</div>
       </section>
 

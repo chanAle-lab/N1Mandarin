@@ -12,9 +12,10 @@ Mandarin explained from an English speaker's point of view, with tap-to-hear aud
 - **Word of the day**: a different HSK 1–2 word each day, split into initial, final and tone.
 - **01 Sounds English doesn't have**: tones, x/sh, q/ch, j/zh, ü, flat vs curled tongue, aspiration (b/p) and r. Each card has a mouth tip and minimal pairs, and you can switch the speech speed.
 - **02 Everyday phrase cards**: English prompt, flip for the Chinese (greetings, classroom, restaurant, shopping, travel, being polite).
-- **03 Where the grammar differs**: 17 ✗/✓ cards (time and place before the verb, no 是 with adjectives, no tenses, measure words, question order, 不/没, no plurals, 的 order, answering yes, 有点儿 vs 一点儿, 是……的 emphasis, 被 passives, directional complements, duration with repeated verbs, potential complements, and static state with 着).
-- **04 Common English-speaker mistakes**: word-for-word translations fixed, with notes.
-- **05 Quick quiz**: 17 questions with explanations and a score.
+- **03 How written Chinese works**: The Six Writings (六书 liùshū) — pictograms, simple ideograms, compound ideograms, phono-semantic compounds (80%+ of all characters), derivative cognates, and phonetic loan rebuses — plus the 7 golden stroke order rules.
+- **04 Where the grammar differs**: 17 ✗/✓ cards (time and place before the verb, no 是 with adjectives, no tenses, measure words, question order, 不/没, no plurals, 的 order, answering yes, 有点儿 vs 一点儿, 是……的 emphasis, 被 passives, directional complements, duration with repeated verbs, potential complements, and static state with 着).
+- **05 Common English-speaker mistakes**: word-for-word translations fixed, with notes.
+- **06 Quick quiz**: 19 questions with explanations and a score.
 
 Each section links to the worksheets that practise it. Edit the content in `learn.js`.
 
@@ -59,6 +60,7 @@ The worksheet library is at `#/papers` (old `#library` links redirect there).
 | 33 | Continuous State with 着 存现句与“着” | HSK 2 | Grammar |
 | 34 | Health & Seeing a Doctor 看病与健康 | HSK 2 | Vocabulary |
 | 35 | Reading: Chinese Food & Ordering 阅读：中国美食与点菜 | HSK 2 | Reading |
+| 36 | How Characters Work: The Six Categories 汉字造字法：六书 | Beginner | Writing |
 
 ## HSK (3.0) toolkit
 Built from the New HSK 3.0 word lists compiled by MandarinBean.com: Level 1 (300 words, `hsk1.js`), Level 2 (200 words, `hsk2.js`) and Level 3 (500 words, `hsk3.js`). Every tool has a level switch for HSK 1, HSK 2, HSK 3 or all three. Generator links use `L=1`, `L=2`, `L=3` or `L=123` (older `L=12` links still work).

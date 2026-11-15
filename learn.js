@@ -105,7 +105,124 @@ window.LEARN = {
     ]
   },
 
-  /* 03 Where the grammar differs */
+  /* 03 How written Chinese works (The Six Types & Radicals) */
+  characters: {
+    intro: "Chinese characters are not random drawings. Over three thousand years, they developed through six clear principles known as the Six Writings (六书 liù shū). Once you understand that over 80% of characters are logical formulas—a radical giving the meaning category plus a phonetic component giving the sound—characters stop being intimidating squiggles and become building blocks you can decode.",
+    types: [
+      {
+        no: "01",
+        name: "Pictograms",
+        zh: "象形",
+        py: "xiàngxíng",
+        summary: "Drawings of physical objects, simplified into strokes over millennia.",
+        details: "The earliest Chinese characters were direct visual sketches of physical things: sun, moon, mountains, trees, water, and animals. Today's strokes still carry those silhouettes.",
+        examples: [
+          ["日", "rì", "sun / day", "Originally a circle with a central sunspot ☉"],
+          ["月", "yuè", "moon / month", "Originally a crescent moon with passing clouds"],
+          ["山", "shān", "mountain", "Three mountain peaks side by side"],
+          ["水", "shuǐ", "water", "A flowing river with water droplets"],
+          ["木", "mù", "tree / wood", "Tree trunk with branches above and roots below"],
+          ["人", "rén", "person", "A walking person seen from the side with two legs"],
+          ["口", "kǒu", "mouth", "An open mouth ready to speak or eat"],
+          ["目", "mù", "eye", "An eyeball framed inside an eye socket"]
+        ]
+      },
+      {
+        no: "02",
+        name: "Simple Ideograms",
+        zh: "指事",
+        py: "zhǐshì",
+        summary: "Abstract concepts shown through symbolic marks or indicators.",
+        details: "When an idea is abstract (like 'above', 'below', or numbers), you cannot sketch a physical object. Chinese adds indicator strokes to a baseline or existing pictogram.",
+        examples: [
+          ["上", "shàng", "up / above", "A mark placed above a horizontal baseline"],
+          ["下", "xià", "down / below", "A mark placed below a horizontal baseline"],
+          ["一", "yī", "one", "A single stroke representing unity"],
+          ["二", "èr", "two", "Two parallel strokes"],
+          ["三", "sān", "three", "Three parallel strokes representing heaven, earth, and humanity"],
+          ["本", "běn", "root / origin / book", "Tree (木) with a horizontal dash marking the roots at the bottom"],
+          ["末", "mò", "tip / end", "Tree (木) with an extra top dash indicating the highest branch"],
+          ["刃", "rèn", "blade edge", "Knife (刀) with an indicator dot pointing to the sharp edge"]
+        ]
+      },
+      {
+        no: "03",
+        name: "Compound Ideograms",
+        zh: "会意",
+        py: "huìyì",
+        summary: "Joining two or more meanings together to create a new concept.",
+        details: "Conceptual arithmetic: take two or more pictograms and fuse their ideas together to express an action or quality.",
+        examples: [
+          ["休", "xiū", "to rest", "Person (人) + Tree (木) → a person leaning against a tree to rest"],
+          ["明", "míng", "bright / clear", "Sun (日) + Moon (月) → the two brightest celestial bodies together"],
+          ["林", "lín", "woods", "Two trees (木 + 木) growing together"],
+          ["森", "sēn", "forest", "Three trees (木 + 木 + 木) forming a dense forest"],
+          ["看", "kàn", "to look", "Hand (手/龵) placed over Eye (目) → shielding eyes from glare to look"],
+          ["尖", "jiān", "sharp / pointed", "Small (小) on top of Big (大) → tapering to a sharp point"],
+          ["众", "zhòng", "crowd / multitude", "Three people (人 + 人 + 人) standing together"],
+          ["灭", "miè", "to extinguish", "Putting a cover line (一) over Fire (火) to smother it"]
+        ]
+      },
+      {
+        no: "04",
+        name: "Phono-semantic Compounds",
+        zh: "形声",
+        py: "xíngshēng",
+        summary: "The master key: over 80% to 90% of all Chinese characters are built this way!",
+        details: "A phono-semantic character has two parts: (1) a Radical / Meaning component (形旁) that gives the category, and (2) a Phonetic component (声旁) that gives a sound clue. Once you recognize these, you can guess the meaning and pronunciation of new words!",
+        examples: [
+          ["晴", "qíng", "sunny", "Meaning: 日 (sun) + Sound: 青 (qīng) → a clear sunny day"],
+          ["清", "qīng", "clear (water)", "Meaning: 氵 (water) + Sound: 青 (qīng) → crystal clear water"],
+          ["请", "qǐng", "please / invite", "Meaning: 讠 (speech) + Sound: 青 (qīng) → polite speech request"],
+          ["情", "qíng", "feelings / emotion", "Meaning: 忄 (heart) + Sound: 青 (qīng) → emotional state"],
+          ["妈", "mā", "mother", "Meaning: 女 (female) + Sound: 马 (mǎ) → mother"],
+          ["吗", "ma", "question particle", "Meaning: 口 (mouth) + Sound: 马 (mǎ) → spoken question mark"],
+          ["问", "wèn", "to ask", "Meaning: 口 (mouth) inside Sound: 门 (mén) → asking at a door"],
+          ["饱", "bǎo", "full (eaten)", "Meaning: 饣 (food) + Sound: 包 (bāo) → full after eating"]
+        ]
+      },
+      {
+        no: "05",
+        name: "Derivative Cognates",
+        zh: "转注",
+        py: "zhuǎnzhù",
+        summary: "Characters derived from the same ancient root that mutually explain each other.",
+        details: "Historically, when words sharing the same etymological root developed specialized nuances or regional variants, they kept the same radical and were used to define each other in ancient dictionaries.",
+        examples: [
+          ["老", "lǎo", "old / elderly", "Originally depicted an elder with long hair and a walking stick (耂)"],
+          ["考", "kǎo", "examine / deceased father", "Shares the 耂 root with 老; in ancient times '老' and '考' defined each other"],
+          ["顶", "dǐng", "top / crown", "Head radical (页); cognate with 颠 (diān, mountain summit)"],
+          ["颠", "diān", "summit / top", "Head radical (页); shares the core meaning of highest point"]
+        ]
+      },
+      {
+        no: "06",
+        name: "Phonetic Loans",
+        zh: "假借",
+        py: "jiǎjiè",
+        summary: "Borrowing an existing character for its sound when no character existed for a word.",
+        details: "Just like a visual rebus in English (drawing an eye to represent 'I' or a bee to represent 'be'), ancient scribes borrowed a character that sounded identical to write an abstract spoken word.",
+        examples: [
+          ["来", "lái", "to come", "Originally a pictogram of a wheat plant; borrowed for the spoken word 'to come'"],
+          ["我", "wǒ", "I / me", "Originally a picture of a bladed weapon/poleaxe; borrowed for the pronoun 'I'"],
+          ["要", "yào", "to want / need", "Originally a drawing of a woman's waist (now 腰); borrowed for 'to want'"],
+          ["北", "běi", "north", "Originally two people standing back-to-back (now 背); borrowed for the direction 'North'"],
+          ["万", "wàn", "ten thousand", "Originally a picture of a scorpion; borrowed for the number 10,000"]
+        ]
+      }
+    ],
+    rules: [
+      ["Top to bottom", "先上后下", "三, 言, 早", "Write upper strokes before lower strokes."],
+      ["Left to right", "先左后右", "你, 好, 朋", "Complete the left radical before the right component."],
+      ["Horizontal before vertical", "先横后竖", "十, 干, 丰", "Cross horizontal lines before vertical strokes."],
+      ["Slant-left before slant-right", "先撇后捺", "人, 八, 木", "Diagonal strokes going down-left (撇) precede down-right (捺)."],
+      ["Outside before inside", "先外后内", "同, 月, 风", "Draw the outer framing box before writing interior components."],
+      ["Enter inside before closing", "先进入后关门", "回, 国, 四", "Fill the contents of a full enclosure (口) before sealing the bottom stroke."],
+      ["Center before two sides", "先中间后两边", "小, 水, 永", "Write central vertical or hook strokes before flanking dots or wings."]
+    ]
+  },
+
+  /* 04 Where the grammar differs */
   grammar: [
     { title: "Time words come before the verb", zh: "时间在前",
       en: "In English, 'tomorrow' and 'yesterday' usually go at the end. In Mandarin they go before the verb, either after the subject or at the very start.",
@@ -201,6 +318,8 @@ window.LEARN = {
     ["How do you say 'Let's go home' (when away from home)?", ["我们回去家吧。", "我们回家去吧。", "我们去回家吧。"], 1, "Location nouns like 家 must sit between the verb and 去: 回家去."],
     ["How do you say 'I have studied Chinese for three years'?", ["我学中文三年。", "我学中文学了三年。", "我三年学了中文。"], 1, "When expressing duration with a verb-object phrase, repeat the verb: 学中文学了三年 (or say 我学了三年中文)."],
     ["How do you say 'I cannot understand this character' (reading)?", ["我不能懂这个字。", "我看不懂这个字。", "我不看懂这个字。"], 1, "Use 看不懂 (Verb + 不 + 懂) to state inability to understand through reading."],
-    ["How do you say 'The door is open' (describing the current state)?", ["门在开。", "门开着。", "门开了在。"], 1, "Use verb + 着 to describe an enduring, passive state resulting from an action."]
+    ["How do you say 'The door is open' (describing the current state)?", ["门在开。", "门开着。", "门开了在。"], 1, "Use verb + 着 to describe an enduring, passive state resulting from an action."],
+    ["Which category of the Six Writings (六书) do 80%+ of characters belong to?", ["Pictograms (象形)", "Phono-semantic compounds (形声)", "Compound ideograms (会意)"], 1, "Over 80% to 90% of Chinese characters are phono-semantic (形声), combining a meaning radical with a sound hint."],
+    ["What visual arithmetic forms the character 休 (xiū, to rest)?", ["Person (人) + Tree (木)", "Sun (日) + Moon (月)", "Hand (手) + Eye (目)"], 0, "休 is a compound ideogram (会意): a person (人) resting against a tree (木)."]
   ]
 };

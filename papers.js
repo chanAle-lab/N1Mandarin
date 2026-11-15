@@ -1697,5 +1697,71 @@ window.PAPERS = [
         ]
       }
     ]
+  },
+  {
+    id: "liushu",
+    no: "36",
+    title: "How Characters Work: The Six Categories",
+    zh: "汉字造字法：六书",
+    level: "Beginner",
+    skill: "Writing",
+    minutes: 25,
+    summary: "Unlock the code of written Chinese: master the Six Writings (六书 liùshū) — pictograms, ideograms, associative compounds, and phono-semantic formulas — plus stroke order rules.",
+    sections: [
+      {
+        type: "match",
+        title: "Match the character to its formation category",
+        instructions: "Connect each character or character group with its Six Writings (六书) formation type.",
+        items: [
+          { zh: "日、月、山、木", py: "rì, yuè, shān, mù", a: "Pictogram (象形 — drawing of physical object)" },
+          { zh: "上、下、本、刃", py: "shàng, xià, běn, rèn", a: "Simple Ideogram (指事 — abstract indicator stroke)" },
+          { zh: "休、明、林、看", py: "xiū, míng, lín, kàn", a: "Compound Ideogram (会意 — person+tree=rest, sun+moon=bright)" },
+          { zh: "晴、清、情、请", py: "qíng, qīng, qíng, qǐng", a: "Phono-semantic (形声 — radical meaning + sound clue)" },
+          { zh: "老、考", py: "lǎo, kǎo", a: "Derivative Cognates (转注 — shared ancient root)" },
+          { zh: "来、我、北、万", py: "lái, wǒ, běi, wàn", a: "Phonetic Loan (假借 — borrowed existing character for sound)" }
+        ]
+      },
+      {
+        type: "fill",
+        title: "Phono-semantic decomposition (形旁 vs 声旁)",
+        instructions: "Over 80% of Chinese characters are phono-semantic. Fill each gap with the meaning radical or sound component from the box.",
+        bank: ["日", "氵", "女", "讠", "青", "马"],
+        items: [
+          { zh: "晴 (sunny): 意义部分是___ (sun)，声音部分是___ (qīng)。", py: "Qíng (sunny): Yìyì bùfen shì ___ (sun), shēngyīn bùfen shì ___ (qīng).", a: "日 … 青" },
+          { zh: "清 (clear water): 意义部分是___ (water)，声音部分是___ (qīng)。", py: "Qīng (clear water): Yìyì bùfen shì ___ (water), shēngyīn bùfen shì ___ (qīng).", a: "氵 … 青" },
+          { zh: "妈 (mother): 意义部分是___ (female)，声音部分是___ (mǎ)。", py: "Mā (mother): Yìyì bùfen shì ___ (female), shēngyīn bùfen shì ___ (mǎ).", a: "女 … 马" },
+          { zh: "请 (please): 意义部分是___ (speech)，声音部分是___ (qīng)。", py: "Qǐng (please): Yìyì bùfen shì ___ (speech), shēngyīn bùfen shì ___ (qīng).", a: "讠 … 青" }
+        ]
+      },
+      {
+        type: "translate",
+        title: "Character logic & stroke order rules",
+        instructions: "Explain the visual logic and stroke order of each character.",
+        items: [
+          { q: "What visual arithmetic forms 休 (xiū, to rest)?", a: "Person (人) + Tree (木) → a person leaning against a tree to rest." },
+          { q: "What two pictograms combine to form 看 (kàn, to look)?", a: "Hand (手/龵) placed over eye (目), shielding eyes from glare to look." },
+          { q: "What does the bottom horizontal dash in 本 (běn) indicate?", a: "The roots or base of the tree (木), giving the meaning 'root / origin / book'." },
+          { q: "Which stroke is written first in 十 (shí, ten)?", a: "The horizontal stroke 一 (rule: horizontal before vertical 先横后竖)." },
+          { q: "Why is the bottom stroke of 回 (huí) written last?", a: "Because of the rule: enter inside before closing the door (先进入后关门)." }
+        ]
+      },
+      {
+        type: "grid",
+        title: "Trace and write foundational pictograms and ideograms",
+        instructions: "Trace the grey characters in stroke order, then practice writing on your own in the empty Tianzige squares.",
+        items: [
+          { zh: "日", py: "rì", en: "sun / day (pictogram)", strokes: 4 },
+          { zh: "月", py: "yuè", en: "moon / month (pictogram)", strokes: 4 },
+          { zh: "山", py: "shān", en: "mountain (pictogram)", strokes: 3 },
+          { zh: "水", py: "shuǐ", en: "water (pictogram)", strokes: 4 },
+          { zh: "木", py: "mù", en: "tree / wood (pictogram)", strokes: 4 },
+          { zh: "人", py: "rén", en: "person (pictogram)", strokes: 2 },
+          { zh: "上", py: "shàng", en: "up / above (ideogram)", strokes: 3 },
+          { zh: "下", py: "xià", en: "down / below (ideogram)", strokes: 3 },
+          { zh: "本", py: "běn", en: "root / origin (ideogram)", strokes: 5 },
+          { zh: "休", py: "xiū", en: "to rest (compound)", strokes: 6 }
+        ]
+      }
+    ]
   }
 ];
