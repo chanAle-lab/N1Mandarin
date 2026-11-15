@@ -69,5 +69,7 @@ Built from the New HSK 3.0 word lists compiled by MandarinBean.com: Level 1 (300
 
 Each paper has **Pinyin** and **Answer key** toggles and a **Print / Save PDF** button that produces a clean A4 sheet.
 
+The site includes a **Dark mode** toggle in the header (saved in local storage and automatically adapting to system preferences), while print and PDF exports automatically remain crisp black-and-white on white paper.
+
 ## Adding a paper
 All content lives in `papers.js`. Copy an existing paper object, give it a unique `id`, and use section types `tone`, `match`, `fill`, `translate`, `grid` or `reading`. No build step — plain HTML, CSS and JS.

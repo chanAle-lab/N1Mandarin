@@ -873,6 +873,38 @@
     }));
   }
 
+  /* ---------- Dark mode theme toggle ---------- */
+  function initTheme() {
+    const btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+    function getTheme() {
+      return document.documentElement.getAttribute("data-theme") || "light";
+    }
+    function updateState() {
+      const isDark = getTheme() === "dark";
+      btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+      btn.setAttribute("title", isDark ? "Switch to light mode" : "Switch to dark mode");
+    }
+    btn.addEventListener("click", () => {
+      const next = getTheme() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("n1m-theme", next); } catch (e) {}
+      updateState();
+    });
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        try {
+          if (!localStorage.getItem("n1m-theme")) {
+            document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+            updateState();
+          }
+        } catch (err) {}
+      });
+    }
+    updateState();
+  }
+  initTheme();
+
   /* ---------- Router ---------- */
   function route() {
     const h = location.hash;
