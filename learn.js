@@ -300,7 +300,7 @@ window.LEARN = {
     ["一本书放着桌子上。", "桌子上放着一本书。", "Yì běn shū fàng zhe zhuōzi shang.", "Zhuōzi shang fàng zhe yì běn shū.", "In Chinese existential sentences (stating what exists where), place comes first: Place + Verb + 着 + Object."]
   ],
 
-  /* 06 Essential Chinese idioms (成语 chéngyǔ) */
+  /* 06 Essential Chinese idioms (成语 chéngyǔ) — Curated with Finley Jennings */
   idioms: [
     {
       zh: "马到成功",

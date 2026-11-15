@@ -328,6 +328,7 @@
           </div>
         </div>
         <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}" data-idioms>${idiomCards()}</div>
+        <p class="sec-credit"><span class="credit-badge">Credit</span> Curated with special thanks to <b>Finley Jennings</b> · 特别鸣谢 Finley Jennings</p>
         ${further([paperLink("idioms")])}
       </section>
 
@@ -865,7 +866,7 @@
     main.innerHTML = `<section class="narrow about">
       <h1>For teachers: how to use N1Mandarin</h1>
       <h2>The learning path</h2>
-      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语), then 07 the quiz. Grammar, mistakes, and idiom sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
+      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语, curated with Finley Jennings), then 07 the quiz. Grammar, mistakes, and idiom sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
       <h2>Worksheets in class</h2>
       <p>Open a paper, switch off <b>Pinyin</b> for stronger students, and choose <b>Print / Save PDF</b>. The site header and buttons are hidden when printing, so you get a clean A4 worksheet with name, date and score boxes.</p>
       <h2>Marking</h2>
