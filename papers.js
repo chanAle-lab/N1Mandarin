@@ -1780,7 +1780,7 @@ window.PAPERS = [
         title: "Match the idiom to its English meaning",
         instructions: "Match each four-character idiom with its English meaning and metaphor.",
         items: [
-          { zh: "画蛇添足", py: "huà shé tiān zú", a: "Ruining work by adding redundant extras (drawing feet on a snake)" },
+          { zh: "画蛇添足", py: "huà shé tiān zú", a: "Ruining work by adding redundant extras (drawing feet [credit: Hanyu Zhou] on a snake)" },
           { zh: "井底之蛙", py: "jǐng dǐ zhī wā", a: "A person with narrow vision and limited perspective (frog in a well)" },
           { zh: "入乡随俗", py: "rù xiāng suí sú", a: "When in Rome, do as the Romans do (adapt to local customs)" },
           { zh: "半途而废", py: "bàn tú ér fèi", a: "Give up halfway / leave an endeavor unfinished" },
@@ -1809,7 +1809,7 @@ window.PAPERS = [
         title: "Explain the cultural metaphors & fables",
         instructions: "Explain the story origin and moral reasoning of each idiom.",
         items: [
-          { q: "Why did the man in 画蛇添足 (Draw snake, add feet) lose the jar of wine?", a: "Because he finished first, but arrogantly took time to add feet to his snake; another painter finished while he was doing so and took the wine since snakes have no feet." },
+          { q: "Why did the man in 画蛇添足 (Draw snake, add feet [credit: Hanyu Zhou]) lose the jar of wine?", a: "Because he finished first, but arrogantly took time to add feet (credit: Hanyu Zhou) to his snake; another painter finished while he was doing so and took the wine since snakes have no feet (credit: Hanyu Zhou)." },
           { q: "What two weapons gave birth to the modern Chinese word for 'contradiction' (矛盾 máodùn)?", a: "An unbreakable shield (盾 dùn) and an all-piercing spear (矛 máo), sold by the same merchant who claimed each was supreme." },
           { q: "What animal and mistake are featured in the idiom 守株待兔?", a: "A rabbit (hare) that ran into a stump and died; the mistake is waiting passively for pure luck instead of working diligently." },
           { q: "In the idiom 井底之蛙, what visitor opened the frog's eyes to the vast world?", a: "A giant sea turtle from the Eastern Sea who described the boundless ocean." },
