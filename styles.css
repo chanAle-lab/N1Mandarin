@@ -746,20 +746,26 @@ select, input[type="number"] { font: var(--text-sm) var(--font-body); padding: v
   line-height: 1.4;
 }
 
+.sec-tools { margin-bottom: var(--space-4); }
+
 .gram-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: var(--space-4); }
 .gram, .fix { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius); padding: var(--space-6); display: grid; gap: var(--space-2); align-content: start; position: relative; }
 .gram-no { position: absolute; top: var(--space-6); right: var(--space-6); font-size: var(--text-xs); color: var(--color-muted); }
 .gram h3 { font-size: var(--text-base); font-weight: 700; padding-right: var(--space-8); }
 .gram h3 .zh { display: block; font-weight: 400; color: var(--color-accent); font-size: var(--text-sm); margin-top: var(--space-1); }
 .gram > p:not(.ex):not(.gloss) { font-size: var(--text-sm); color: var(--color-muted); }
-.ex { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-lg); }
-.ex .mark { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; flex: none; border-radius: 50%; font-size: var(--text-sm); font-weight: 700; }
+.ex { display: flex; align-items: flex-start; gap: var(--space-3); font-size: var(--text-lg); }
+.ex .mark { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; flex: none; border-radius: 50%; font-size: var(--text-sm); font-weight: 700; margin-top: 2px; }
+.ex-body { display: grid; gap: 2px; }
+.ex-py { font-size: var(--text-xs); color: var(--color-accent); line-height: 1.25; font-weight: 500; }
 .ex.bad { color: var(--color-muted); }
 .ex.bad .zh { text-decoration: line-through; text-decoration-color: var(--color-accent); text-decoration-thickness: 1.5px; }
+.ex.bad .ex-py { color: var(--color-muted); }
 .ex.bad .mark { background: var(--color-accent-soft); color: var(--color-accent); }
 .ex.good .mark { background: oklch(0.92 0.05 150); color: var(--color-answer); }
 .say-line { font: inherit; color: var(--color-ink); background: none; border: 0; border-bottom: 1px dashed var(--color-faint); padding: 0; cursor: pointer; text-align: left; }
 .say-line:hover { border-bottom-color: var(--color-accent); }
+.gram-grid.hide-py .ex-py, .fix-list.hide-py .ex-py { display: none; }
 .gloss { font-size: var(--text-xs); color: var(--color-muted); font-style: normal; }
 .fix-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: var(--space-4); }
 .fix-note { font-size: var(--text-sm); color: var(--color-muted); }

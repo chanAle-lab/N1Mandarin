@@ -87,7 +87,7 @@
 
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], quiz: [] };
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {} };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -227,13 +227,30 @@
       </section>
 
       <section class="learn-sec">
-        ${secHead("04", "grammar", "Where the grammar differs", "语法差异", "Mandarin grammar is often simpler than English: no tenses, no plurals and no verb endings. But the word order follows different rules. These are the 10 differences that matter most at the start.")}
-        <ol class="gram-grid">${L.grammar.map((g, i) => `<li class="gram">
+        ${secHead("04", "grammar", "Where the grammar differs", "语法差异", `Mandarin grammar is often simpler than English: no tenses, no plurals and no verb endings. But the word order follows different rules. These are the ${L.grammar.length} differences that matter most at the start.`)}
+        <div class="chip-row sec-tools" role="group" aria-label="Grammar pinyin display">
+          <span class="chip-label">Pinyin</span>
+          <button class="chip" data-py-opt="grammar" data-show="true" aria-pressed="${learnState.grammarPy}">Show 显示</button>
+          <button class="chip" data-py-opt="grammar" data-show="false" aria-pressed="${!learnState.grammarPy}">Hide 隐藏</button>
+        </div>
+        <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${L.grammar.map((g, i) => `<li class="gram">
           <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
           <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
           <p>${latin(esc(g.en))}</p>
-          <p class="ex bad"><span class="mark" aria-label="Wrong">✗</span>${zh(g.wrong)}</p>
-          <p class="ex good"><span class="mark" aria-label="Right">✓</span><button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button></p>
+          <div class="ex bad">
+            <span class="mark" aria-label="Wrong">✗</span>
+            <div class="ex-body">
+              ${zh(g.wrong)}
+              ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
+            </div>
+          </div>
+          <div class="ex good">
+            <span class="mark" aria-label="Right">✓</span>
+            <div class="ex-body">
+              <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
+              ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
+            </div>
+          </div>
           <p class="gloss">${esc(g.gloss)}</p>
         </li>`).join("")}</ol>
         ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("zai"), paperLink("ba")])}
@@ -241,9 +258,26 @@
 
       <section class="learn-sec">
         ${secHead("05", "mistakes", "Common English-speaker mistakes", "英语母语者的常见错误", "These are the sentences English speakers build by translating word for word. The Chinese is understandable, but it sounds wrong. Learn the natural version and why it works.")}
-        <ul class="fix-list">${L.mistakes.map(([bad, good, note]) => `<li class="fix">
-          <p class="ex bad"><span class="mark" aria-label="Wrong">✗</span>${zh(bad)}</p>
-          <p class="ex good"><span class="mark" aria-label="Right">✓</span><button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button></p>
+        <div class="chip-row sec-tools" role="group" aria-label="Mistakes pinyin display">
+          <span class="chip-label">Pinyin</span>
+          <button class="chip" data-py-opt="mistakes" data-show="true" aria-pressed="${learnState.mistakesPy}">Show 显示</button>
+          <button class="chip" data-py-opt="mistakes" data-show="false" aria-pressed="${!learnState.mistakesPy}">Hide 隐藏</button>
+        </div>
+        <ul class="fix-list${learnState.mistakesPy ? "" : " hide-py"}">${L.mistakes.map(([bad, good, badPy, goodPy, note]) => `<li class="fix">
+          <div class="ex bad">
+            <span class="mark" aria-label="Wrong">✗</span>
+            <div class="ex-body">
+              ${zh(bad)}
+              ${badPy ? `<span class="py lat ex-py">${esc(badPy)}</span>` : ""}
+            </div>
+          </div>
+          <div class="ex good">
+            <span class="mark" aria-label="Right">✓</span>
+            <div class="ex-body">
+              <button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button>
+              ${goodPy ? `<span class="py lat ex-py">${esc(goodPy)}</span>` : ""}
+            </div>
+          </div>
           <p class="fix-note">${latin(esc(note))}</p>
         </li>`).join("")}</ul>
         ${further([paperLink("hui-neng-keyi"), paperLink("comparisons"), paperLink("connectors")])}
@@ -288,6 +322,21 @@
       main.querySelectorAll("[data-topic]").forEach((x) => x.setAttribute("aria-pressed", x === b));
       main.querySelector("[data-flips]").innerHTML = phraseCards();
       wireFlips();
+    }));
+    main.querySelectorAll("[data-py-opt]").forEach((b) => b.addEventListener("click", () => {
+      const sec = b.dataset.pyOpt;
+      const show = b.dataset.show === "true";
+      if (sec === "grammar") {
+        learnState.grammarPy = show;
+        main.querySelectorAll(`[data-py-opt="grammar"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
+        const grid = main.querySelector(".gram-grid");
+        if (grid) grid.classList.toggle("hide-py", !show);
+      } else if (sec === "mistakes") {
+        learnState.mistakesPy = show;
+        main.querySelectorAll(`[data-py-opt="mistakes"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
+        const list = main.querySelector(".fix-list");
+        if (list) list.classList.toggle("hide-py", !show);
+      }
     }));
     wireFlips();
     wireQuiz();
@@ -754,7 +803,7 @@
     main.innerHTML = `<section class="narrow about">
       <h1>For teachers: how to use N1Mandarin</h1>
       <h2>The learning path</h2>
-      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 where the grammar differs, 04 common English-speaker mistakes, then 05 the quiz. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
+      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, then 06 the quiz. Both grammar and mistakes sections offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
       <h2>Worksheets in class</h2>
       <p>Open a paper, switch off <b>Pinyin</b> for stronger students, and choose <b>Print / Save PDF</b>. The site header and buttons are hidden when printing, so you get a clean A4 worksheet with name, date and score boxes.</p>
       <h2>Marking</h2>
