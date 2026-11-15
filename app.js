@@ -39,12 +39,17 @@
   store.load();
 
   /* ---------- Helpers ---------- */
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const escRaw = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const decorateSparkles = (str) => String(str).replace(
+    /(?:✨|💖|☕|\s)*Credit:\s*Sienna Lysiak(?:✨|💖|☕|\s)*/gi,
+    '<span class="sparkle-credit" role="note" aria-label="Credit to Sienna Lysiak"><span class="sparkle-star">✨</span><span class="sparkle-heart">💖</span><span class="sparkle-cup">☕</span><b class="sparkle-name">Credit: Sienna Lysiak</b><span class="sparkle-cup">☕</span><span class="sparkle-heart">💖</span><span class="sparkle-star">✨</span></span>'
+  );
   // Latin runs (pinyin, punctuation-free letters) inside Chinese lines use the body font so tone marks sit correctly
-  const latin = (html) => html.replace(/(?<![&#A-Za-z\u00C0-\u024F])[A-Za-z\u00C0-\u024F\u0300-\u036F\u01CD-\u01DC'’]+(?:[ .,?!\-/]+[A-Za-z\u00C0-\u024F\u0300-\u036F\u01CD-\u01DC'’]+)*/g, (m) => `<span class="lat">${m}</span>`);
-  const zh = (s) => `<span class="zh" lang="zh-Hans">${latin(esc(s))}</span>`;
+  const latin = (html) => decorateSparkles(html.replace(/(?<![&#A-Za-z\u00C0-\u024F])[A-Za-z\u00C0-\u024F\u0300-\u036F\u01CD-\u01DC'’]+(?:[ .,?!\-/]+[A-Za-z\u00C0-\u024F\u0300-\u036F\u01CD-\u01DC'’]+)*/g, (m) => `<span class="lat">${m}</span>`));
+  const esc = (s) => decorateSparkles(escRaw(s));
+  const zh = (s) => `<span class="zh" lang="zh-Hans">${latin(escRaw(s))}</span>`;
   const gap = (s) => esc(s).replace(/___/g, '<span class="gap" aria-label="blank"></span>');
-  const gapZh = (s) => latin(esc(s)).replace(/___/g, '<span class="gap" aria-label="blank"></span>');
+  const gapZh = (s) => latin(escRaw(s)).replace(/___/g, '<span class="gap" aria-label="blank"></span>');
   const hasZh = (s) => /[\u4e00-\u9fff]/.test(s);
 
   function rng(seed) { // mulberry32

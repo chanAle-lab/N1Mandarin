@@ -78,7 +78,7 @@ window.HSK2 = [
 [74, "经常", "jīngcháng", "adverb", "often"],
 [75, "酒店", "jiǔdiàn", "noun", "hotel"],
 [76, "就", "jiù", "adverb, (preposition)", "just, then; (as early as, only, as soon as)"],
-[77, "咖啡", "kāfēi", "noun", "coffee"],
+[77, "咖啡", "kāfēi", "noun", "coffee ✨💖☕ Credit: Sienna Lysiak ☕💖✨"],
 [78, "开始", "kāishǐ", "verb, noun", "to start; beginning"],
 [79, "开学", "kāixué", "verb", "school starts"],
 [80, "考", "kǎo", "verb", "to test, to take an exam"],
