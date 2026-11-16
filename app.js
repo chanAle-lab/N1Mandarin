@@ -66,18 +66,42 @@
 
   const canSpeak = "speechSynthesis" in window;
   let speechRate = 0.85; // Slow / Normal switch on the learning page
-  function speak(text) {
-    if (!canSpeak) return;
+  function speak(text, triggerEl) {
+    if (!canSpeak || !text) return;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "zh-CN"; u.rate = speechRate;
     const v = speechSynthesis.getVoices().find((x) => /^zh(-|_)CN/i.test(x.lang)) || speechSynthesis.getVoices().find((x) => /^zh/i.test(x.lang));
     if (v) u.voice = v;
+    if (triggerEl) {
+      triggerEl.classList.add("is-speaking");
+      const done = () => triggerEl.classList.remove("is-speaking");
+      u.onend = done;
+      u.onerror = done;
+    }
     speechSynthesis.speak(u);
   }
   const speakBtn = (w) => canSpeak ? `<button class="icon-btn" data-say="${esc(w)}" aria-label="Play ${esc(w)}" title="Listen">${ICON_SOUND}</button>` : "";
   const ICON_SOUND = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>`;
-  function wireSpeak(root) { root.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); speak(b.dataset.say); })); }
+  function wireSpeak(root) {
+    root.querySelectorAll("[data-say]").forEach((b) => {
+      if (b._wiredSpeak) return;
+      b._wiredSpeak = true;
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        speak(b.dataset.say, b);
+      });
+      if (b.getAttribute("role") === "button" && b.tagName.toLowerCase() !== "button") {
+        b.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            e.stopPropagation();
+            speak(b.dataset.say, b);
+          }
+        });
+      }
+    });
+  }
 
   function setActiveNav(key) {
     document.querySelectorAll(".site-header nav a").forEach((a) => a.classList.toggle("active", a.dataset.nav === key));
@@ -940,6 +964,23 @@
       ${found.total > found.list.length ? `<p class="muted small">Showing ${found.list.length} of ${found.total} HSK 1–3 words with this sound.</p>` : ""}`;
   }
 
+  function sampleForInitial(ini) {
+    if (!PY) return "";
+    for (const g of PY.INITIAL_GROUPS) {
+      const item = g.items.find((x) => x[0] === ini);
+      if (item) return item[1];
+    }
+    return "";
+  }
+  function sampleForFinal(fin) {
+    if (!PY) return "";
+    for (const g of PY.FINAL_GROUPS) {
+      const item = g.items.find((x) => x[0] === fin);
+      if (item) return item[1];
+    }
+    return "";
+  }
+
   function splitHtml(q) {
     const parts = PY.split(q);
     if (!q.trim()) return `<p class="muted">Type some pinyin above.</p>`;
@@ -949,14 +990,31 @@
       <div class="syl-row">${parts.map((x) => {
         if (x.bad) return `<div class="syl bad"><p class="syl-big">${esc(x.bad)}</p><p class="muted small">Not a Mandarin syllable. Check the spelling.</p></div>`;
         const ini = x.ini || x.glide;
+        const iniCh = ini ? sampleForInitial(ini) : "";
+        const finCh = x.fin ? sampleForFinal(x.fin) : "";
         const same = wordsWith((y) => y.base === x.base && y.tone === x.tone, 4);
         const notes = sylNotes(x);
         return `<div class="syl">
-          <p class="syl-big">${esc(x.text)}</p>
+          <div class="syl-header">
+            <p class="syl-big">${esc(x.text)}</p>
+            <button class="syl-audio-btn" data-say="${esc(x.text)}" aria-label="Listen to syllable ${esc(x.text)}" title="Listen to ${esc(x.text)}">${ICON_SOUND}</button>
+          </div>
           <div class="syl-parts">
-            <div class="part-box" data-g="${PY.groupOfInitial(ini)}"><span class="lbl">${x.glide ? "Spelling letter" : "Initial 声母"}</span><b>${ini ? esc(ini) : "—"}</b></div>
+            <div class="part-box" data-g="${PY.groupOfInitial(ini)}" ${iniCh ? `data-say="${esc(iniCh)}" role="button" tabindex="0" title="Listen to initial ${esc(ini)} (${esc(iniCh)})"` : ""}>
+              <div class="part-box-head">
+                <span class="lbl">${x.glide ? "Spelling letter" : "Initial 声母"}</span>
+                ${iniCh ? `<span class="part-audio" title="Listen">${ICON_SOUND}</span>` : ""}
+              </div>
+              <b>${ini ? esc(ini) : "—"}</b>
+            </div>
             <span class="plus">+</span>
-            <div class="part-box fin" data-g="${PY.groupOfFinal(x.fin)}"><span class="lbl">Final 韵母</span><b>${esc(finLabel(x.fin))}${x.er ? " + r" : ""}</b></div>
+            <div class="part-box fin" data-g="${PY.groupOfFinal(x.fin)}" ${finCh ? `data-say="${esc(finCh)}" role="button" tabindex="0" title="Listen to final ${esc(x.fin)} (${esc(finCh)})"` : ""}>
+              <div class="part-box-head">
+                <span class="lbl">Final 韵母</span>
+                ${finCh ? `<span class="part-audio" title="Listen">${ICON_SOUND}</span>` : ""}
+              </div>
+              <b>${esc(finLabel(x.fin))}${x.er ? " + r" : ""}</b>
+            </div>
             <span class="plus">+</span>
             <div class="part-box tone"><span class="lbl">Tone 声调</span><b>${toneSvg(x.tone)} ${x.tone === 5 ? "neutral" : x.tone}</b></div>
           </div>
@@ -974,11 +1032,16 @@
           <p>${esc(g.tip)}</p>
         </div>
         <div class="py-tiles">${g.items.map(([sym, ch, py, hint]) => `
-          <button class="py-tile" data-kind="${kind}" data-sym="${esc(sym)}" data-group="${g.key}" data-say="${esc(ch)}" aria-label="${esc(sym)}, as in ${esc(ch)} ${esc(py)}">
-            <span class="sym">${esc(sym)}</span>
+          <div class="py-tile" role="button" tabindex="0" data-kind="${kind}" data-sym="${esc(sym)}" data-group="${g.key}" data-say="${esc(ch)}" aria-label="${esc(sym)}, as in ${esc(ch)} ${esc(py)}">
+            <div class="py-tile-top">
+              <span class="sym">${esc(sym)}</span>
+              <button class="py-tile-audio" type="button" data-say="${esc(ch)}" aria-label="Listen to ${esc(sym)} (${esc(ch)} ${esc(py)})" title="Listen to ${esc(sym)} (${esc(ch)})">
+                ${ICON_SOUND}
+              </button>
+            </div>
             <span class="ex"><span class="zh" lang="zh-Hans">${esc(ch)}</span> ${esc(py)}</span>
             <span class="hint">${esc(hint)}</span>
-          </button>`).join("")}</div>
+          </div>`).join("")}</div>
         <div class="py-detail no-print" data-detail="${kind}-${g.key}" hidden></div>
       </div>`).join("");
   }
@@ -991,7 +1054,7 @@
       <section class="page-head">
         <p class="eyebrow">Pronunciation · 拼音</p>
         <h1>Pinyin sounds <span class="zh">声母和韵母</span></h1>
-        <p class="lede">Every Mandarin syllable is an initial (the consonant at the start), a final (the vowel part) and a tone. Split any pinyin into its parts, then tap a sound in the charts to hear it and see HSK words that use it.</p>
+        <p class="lede">Every Mandarin syllable is an initial (the consonant at the start), a final (the vowel part) and a tone. Tap any initial or final to hear its clear native pronunciation and explore HSK words that use it.</p>
       </section>
       <section class="py-split no-print" aria-labelledby="split-h">
         <h2 id="split-h" class="py-h2">Split a syllable <span class="zh">拼音拆分</span></h2>
@@ -1003,8 +1066,11 @@
       <section class="py-section" aria-labelledby="tones-h">
         <h2 id="tones-h" class="py-h2">The four tones <span class="zh">四声</span></h2>
         <div class="tone-cards">${PY.TONES.map((t) => `
-          <button class="tone-card" data-say="${esc(t.ex[0])}">
-            ${toneSvg(t.n)}
+          <button class="tone-card" data-say="${esc(t.ex[0])}" aria-label="${esc(t.name)}, as in ${esc(t.ex[0])} ${esc(t.ex[1])}">
+            <div class="tone-card-top">
+              ${toneSvg(t.n)}
+              <span class="tone-audio-icon" aria-hidden="true" title="Listen">${ICON_SOUND}</span>
+            </div>
             <span class="t-name">${esc(t.name)} <span class="zh">${esc(t.zh)}</span></span>
             <span class="t-ex"><span class="zh" lang="zh-Hans">${esc(t.ex[0])}</span> ${esc(t.ex[1])}</span>
             <span class="hint">${esc(t.contour)} · ${esc(t.ex[2])}</span>
@@ -1015,12 +1081,12 @@
           <h2 id="ini-h" class="py-h2">Initials <span class="zh">声母</span></h2>
           <button class="btn small no-print" data-print>Print chart</button>
         </div>
-        <p class="muted">21 initials plus y and w, grouped by where they are made in the mouth. Pairs like b/p, d/t, g/k, j/q, zh/ch and z/c differ only by a puff of air: hold a tissue in front of your mouth and it should move for the second one.</p>
+        <p class="muted">21 initials plus y and w, grouped by where they are made in the mouth. Each tile features an audio button to hear the sound. Pairs like b/p, d/t, g/k, j/q, zh/ch and z/c differ only by a puff of air: hold a tissue in front of your mouth and it should move for the second one.</p>
         ${soundTable("ini", PY.INITIAL_GROUPS)}
       </section>
       <section class="py-section" aria-labelledby="fin-h">
         <h2 id="fin-h" class="py-h2">Finals <span class="zh">韵母</span></h2>
-        <p class="muted">Finals are grouped by their first vowel. The i-, u- and ü- groups start with a quick glide before the main vowel.</p>
+        <p class="muted">Finals are grouped by their first vowel. Tap the speaker on each final to hear its exact sound. The i-, u- and ü- groups start with a quick glide before the main vowel.</p>
         ${soundTable("fin", PY.FINAL_GROUPS)}
       </section>
       <section class="py-section no-print">
@@ -1034,20 +1100,38 @@
     input.addEventListener("input", update);
     main.querySelectorAll("[data-try]").forEach((b) => b.addEventListener("click", () => { input.value = b.dataset.try; update(); }));
     main.querySelector("[data-print]").addEventListener("click", () => window.print());
-    main.querySelectorAll(".py-tile").forEach((b) => b.addEventListener("click", () => {
-      const { kind, sym, group } = b.dataset;
-      const panel = main.querySelector(`[data-detail="${kind}-${group}"]`);
-      const wasOpen = b.getAttribute("aria-pressed") === "true";
-      panel.parentElement.querySelectorAll(".py-tile").forEach((x) => x.setAttribute("aria-pressed", "false"));
-      if (wasOpen) { panel.hidden = true; return; }
-      b.setAttribute("aria-pressed", "true");
-      const test = kind === "ini" ? (x) => (x.ini || x.glide) === sym : (x) => x.fin === sym;
-      const g = (kind === "ini" ? PY.INITIAL_GROUPS : PY.FINAL_GROUPS).find((x) => x.key === group);
-      const item = g.items.find((x) => x[0] === sym);
-      panel.innerHTML = `<p class="detail-head"><b>${esc(sym)}</b> — ${esc(item[3])}. Example: <span class="zh" lang="zh-Hans">${esc(item[1])}</span> ${esc(item[2])}</p>${wordChips(wordsWith(test), test)}`;
-      panel.hidden = false;
-      wireSpeak(panel);
-    }));
+    main.querySelectorAll(".py-tile").forEach((b) => {
+      const toggle = () => {
+        const { kind, sym, group } = b.dataset;
+        const panel = main.querySelector(`[data-detail="${kind}-${group}"]`);
+        const wasOpen = b.getAttribute("aria-pressed") === "true";
+        panel.parentElement.querySelectorAll(".py-tile").forEach((x) => x.setAttribute("aria-pressed", "false"));
+        if (wasOpen) { panel.hidden = true; return; }
+        b.setAttribute("aria-pressed", "true");
+        const test = kind === "ini" ? (x) => (x.ini || x.glide) === sym : (x) => x.fin === sym;
+        const g = (kind === "ini" ? PY.INITIAL_GROUPS : PY.FINAL_GROUPS).find((x) => x.key === group);
+        const item = g.items.find((x) => x[0] === sym);
+        panel.innerHTML = `
+          <div class="detail-head-wrap">
+            <p class="detail-head"><b>${esc(sym)}</b> — ${esc(item[3])}. Example: <button class="say-inline mini" data-say="${esc(item[1])}" title="Listen to ${esc(item[1])} (${esc(item[2])})"><span class="zh" lang="zh-Hans">${esc(item[1])}</span> ${esc(item[2])} ${ICON_SOUND}</button></p>
+          </div>
+          ${wordChips(wordsWith(test), test)}`;
+        panel.hidden = false;
+        wireSpeak(panel);
+      };
+      b.addEventListener("click", (e) => {
+        // If the audio button was clicked, its wireSpeak listener already played and stopped propagation
+        speak(b.dataset.say, b);
+        toggle();
+      });
+      b.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          speak(b.dataset.say, b);
+          toggle();
+        }
+      });
+    });
   }
 
   /* ---------- Dark mode theme toggle ---------- */
