@@ -93,7 +93,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true, idiomCat: "All", idiomPy: true };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -154,12 +154,12 @@
   function quizHtml() {
     const done = Object.keys(learnState.answers).length;
     const right = L.quiz.filter((q, i) => learnState.answers[i] === q[2]).length;
-    return `<ol class="quiz">${L.quiz.map(([q, opts, ok, why], i) => {
+    return `<ol class="quiz${learnState.quizPy ? "" : " hide-py"}">${L.quiz.map(([q, opts, ok, why, optsPy, qPy], i) => {
       const a = learnState.answers[i];
       const answered = a !== undefined;
       return `<li class="q${answered ? (a === ok ? " is-right" : " is-wrong") : ""}">
-        <p class="q-text">${latin(esc(q))}</p>
-        <div class="q-opts">${opts.map((o, j) => `<button class="q-opt${answered && j === ok ? " ok" : ""}${answered && j === a && a !== ok ? " no" : ""}" data-q="${i}" data-a="${j}" ${answered ? "disabled" : ""}><span class="q-letter">${LETTERS[j]}</span>${hasZh(o) ? zh(o) : `<span class="lat">${esc(o)}</span>`}</button>`).join("")}</div>
+        <p class="q-text">${latin(esc(q))}${qPy ? ` <span class="py lat q-py">${esc(qPy)}</span>` : ""}</p>
+        <div class="q-opts">${opts.map((o, j) => `<button class="q-opt${answered && j === ok ? " ok" : ""}${answered && j === a && a !== ok ? " no" : ""}" data-q="${i}" data-a="${j}" ${answered ? "disabled" : ""}><span class="q-letter">${LETTERS[j]}</span><span class="q-opt-body">${hasZh(o) ? zh(o) : `<span class="lat">${esc(o)}</span>`}${optsPy && optsPy[j] ? `<span class="py lat q-py">${esc(optsPy[j])}</span>` : ""}</span></button>`).join("")}</div>
         ${answered ? `<p class="q-why"><b>${a === ok ? "Correct." : "Not quite."}</b> ${latin(esc(why))}</p>` : ""}
       </li>`; }).join("")}</ol>
       <div class="quiz-score" aria-live="polite">
@@ -339,6 +339,11 @@
 
       <section class="learn-sec">
         ${secHead("07", "quiz", "Quick quiz", "小测验", "Questions on sounds, characters, grammar, common mistakes, and idioms. Pick an answer to see whether it's right and why.")}
+        <div class="chip-row sec-tools" role="group" aria-label="Quiz pinyin display">
+          <span class="chip-label">Pinyin</span>
+          <button class="chip" data-py-opt="quiz" data-show="true" aria-pressed="${learnState.quizPy}">Show 显示</button>
+          <button class="chip" data-py-opt="quiz" data-show="false" aria-pressed="${!learnState.quizPy}">Hide 隐藏</button>
+        </div>
         <div data-quiz>${quizHtml()}</div>
       </section>
 
@@ -404,6 +409,11 @@
         main.querySelectorAll(`[data-py-opt="idioms"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
         const grid = main.querySelector(".idioms-grid");
         if (grid) grid.classList.toggle("hide-py", !show);
+      } else if (sec === "quiz") {
+        learnState.quizPy = show;
+        main.querySelectorAll(`[data-py-opt="quiz"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
+        const qList = main.querySelector(".quiz");
+        if (qList) qList.classList.toggle("hide-py", !show);
       }
     }));
     wireFlips();
@@ -871,7 +881,7 @@
     main.innerHTML = `<section class="narrow about">
       <h1>For teachers: how to use N1Mandarin</h1>
       <h2>The learning path</h2>
-      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语, curated with Finley Jennings), then 07 the quiz. Grammar, mistakes, and idiom sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
+      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语, curated with Finley Jennings), then 07 the quiz. Grammar, mistakes, idiom, and quiz sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
       <h2>Worksheets in class</h2>
       <p>Open a paper, switch off <b>Pinyin</b> for stronger students, and choose <b>Print / Save PDF</b>. The site header and buttons are hidden when printing, so you get a clean A4 worksheet with name, date and score boxes.</p>
       <h2>Marking</h2>
