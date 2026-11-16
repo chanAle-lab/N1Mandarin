@@ -347,7 +347,7 @@
       </section>
 
       <section class="learn-sec">
-        ${secHead("06", "idioms", "Essential Chinese idioms", "常用成语 · 四字成语", "Four-character idioms (成语 chéngyǔ) are the poetic soul of Mandarin. Each condenses a timeless fable, historical event, or philosophical metaphor into four tight syllables. Here are 16 essential idioms every speaker knows.")}
+        ${secHead("06", "idioms", "Essential Chinese idioms", "常用成语 · 经典熟语", "Four-character idioms (成语 chéngyǔ) and iconic proverbs are the poetic soul of Mandarin. Each condenses a timeless fable, historical event, or philosophical metaphor into vivid, memorable expressions. Here are 25 essential idioms and sayings every speaker knows.")}
         <div class="idiom-controls">
           ${chipRow("Category", IDIOM_CATS, learnState.idiomCat, "data-idiom-cat")}
           <div class="chip-row sec-tools" role="group" aria-label="Idioms pinyin display">

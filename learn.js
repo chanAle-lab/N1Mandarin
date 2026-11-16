@@ -497,6 +497,94 @@ window.LEARN = {
       exZh: "他在舞台上自信大方，简直魅力四射。",
       exPy: "Tā zài wǔtái shang zìxìn dàfāng, jiǎnzhí mèilìsìshè.",
       exEn: "He is so poised and confident on stage, radiating pure charisma and undeniable rizz (credit: Katie Chen)."
+    },
+    {
+      zh: "熟能生巧",
+      py: "shú néng shēng qiǎo",
+      cat: "Learning & Perseverance",
+      literal: "Familiarity begets skill; practice makes perfect",
+      meaning: "Practice makes perfect; repeated diligent practice yields effortless mastery.",
+      story: "From Ouyang Xiu's classic tale 'The Old Oil Seller' (卖油翁). Archer Chen Yaozi boasted of his marksmanship, but an old oil seller merely nodded. The old man placed a copper coin over an oil gourd and poured oil cleanly through the tiny square hole without wetting the edges. He smiled: 'There is no special trick—only practice makes perfect.'",
+      exZh: "写汉字起初觉得难，只要天天练，熟能生巧，就会越写越漂亮。",
+      exPy: "Xiě hànzì qǐchū juéde nán, zhǐyào tiāntiān liàn, shúnéngshēngqiǎo, jiù huì yuè xiě yuè piàoliang.",
+      exEn: "Writing characters feels difficult at first, but with daily practice, practice makes perfect and your writing will look beautiful."
+    },
+    {
+      zh: "揠苗助长",
+      py: "yà miáo zhù zhǎng",
+      cat: "Learning & Perseverance",
+      literal: "Pull up shoots to help them grow",
+      meaning: "Spoil things through excessive enthusiasm or impatience; haste makes waste.",
+      story: "From Mencius (孟子): An impatient farmer in Song felt his rice seedlings were growing too slowly. He spent an entire exhausting afternoon pulling each shoot up an inch. He rushed home to boast: 'I helped the crops grow today!' His horrified son ran to the fields only to find all the seedlings withered and dead. Lesson: nature and learning cannot be rushed.",
+      exZh: "教育孩子要循序渐进，强迫幼儿学高中课程无异于揠苗助长。",
+      exPy: "Jiàoyù háizi yào xúnxùjiànjìn, qiǎngpò yòur'ér xué gāozhōng kèchéng wúyìyú yàmiáozhùzhǎng.",
+      exEn: "Educating children requires gradual progress; forcing preschoolers to study high school courses is like pulling up shoots to help them grow."
+    },
+    {
+      zh: "饮水思源",
+      py: "yǐn shuǐ sī yuán",
+      cat: "Wisdom & Perspective",
+      literal: "When drinking water, think of its source",
+      meaning: "Never forget where your happiness and blessings come from; be grateful to those who helped you.",
+      story: "From the classical poet Yu Xin (庾信) during the Northern and Southern Dynasties: 'When you eat fruit, remember the tree that bore it; when you drink water, think of the spring from which it flowed.' It is a timeless reminder to practice gratitude, cherish your origins, and honor mentors who supported your journey.",
+      exZh: "我们在取得优异成绩时要饮水思源，感谢老师和家人的支持。",
+      exPy: "Wǒmen zài qǔdé yōuyì chéngjì shí yào yǐnshuǐsīyuán, gǎnxiè lǎoshī hé jiārén de zhīchí.",
+      exEn: "When we achieve great success we must remember where our blessings come from, thanking our teachers and families for their support."
+    },
+    {
+      zh: "姜还是老的辣",
+      py: "jiāng hái shì lǎo de là",
+      cat: "Wisdom & Perspective",
+      literal: "Old ginger is spicier than young ginger",
+      meaning: "The older, the wiser; veterans possess experience and sharp judgment that novices lack.",
+      story: "Young ginger root is tender and mild, but as ginger ages and cures underground, its pungency and heat deepen tremendously. In Chinese culture, this proverb pays tribute to the seasoned wisdom, crisis-handling acumen, and street-smarts of veteran practitioners and elders.",
+      exZh: "老李一眼就看出了合同里的隐藏陷阱，真是姜还是老的辣！",
+      exPy: "Lǎo Lǐ yì yǎn jiù kànchū le hétong lǐ de yǐncáng xiànjǐng, zhēn shì jiāng hái shì lǎo de là!",
+      exEn: "Lao Li spotted the hidden trap in the contract with a single glance—the older, the wiser indeed!"
+    },
+    {
+      zh: "生米煮成熟饭",
+      py: "shēng mǐ zhǔ chéng shú fàn",
+      cat: "Wisdom & Perspective",
+      literal: "The raw rice is already cooked into rice",
+      meaning: "What's done is done; what is finished cannot be undone; it's too late to change anything now.",
+      story: "From Ming Dynasty classical literature and popular proverbs: once raw grains of rice have absorbed hot water and boiled into cooked rice, no amount of wishing or force can return them to their original state. It describes irreversible realities that one must accept and navigate moving forward.",
+      exZh: "既然事情已经生米煮成熟饭，与其后悔，不如全力寻找解决办法。",
+      exPy: "Jìrán shìqing yǐjīng shēngmǐ zhǔ chéng shúfàn, yǔqí hòuhuǐ, bùrú quánlì xúnzhǎo jiějué bànfǎ.",
+      exEn: "Since what's done is done, rather than regretting it, we had better pour all our energy into finding a solution."
+    },
+    {
+      zh: "众人拾柴火焰高",
+      py: "zhòng rén shí chái huǒ yàn gāo",
+      cat: "Strategy & Action",
+      literal: "When everybody gathers firewood, the flames burn high",
+      meaning: "The more people, the greater the strength; unity and teamwork produce formidable results.",
+      story: "A widely cherished Chinese proverb celebrating collective effort: a single person gathering a solitary twig can only nurture a frail ember, but when an entire community pitches in to bring fuel together, the fire blazes high, warming and lighting the whole village.",
+      exZh: "大家齐心协力出主意，众人拾柴火焰高，义卖活动大获全胜。",
+      exPy: "Dàjiā qíxīn xiélì chū zhǔyi, zhòngrén shí chái huǒyàn gāo, yìmài huódòng dà huò quánshèng.",
+      exEn: "Everyone worked together with one heart—many hands make light work, and the charity bazaar was a resounding triumph."
+    },
+    {
+      zh: "山中无老虎，猴子称大王",
+      py: "shān zhōng wú lǎo hǔ, hóu zi chēng dà wáng",
+      cat: "Strategy & Action",
+      literal: "When the mountain has no tigers, the monkey proclaims himself king",
+      meaning: "When the authority or leader is away, lesser figures swagger and play boss; among the blind the one-eyed man is king.",
+      story: "In ancient lore, the tiger is the undisputed sovereign of the mountain. But when the mighty tiger is away roaming elsewhere, the chattering monkeys leap onto the throne and boast that they rule the forest. It satirizes opportunists who act grand when competent leaders are absent.",
+      exZh: "经理今天去总公司开会，他在办公室称王称霸，真是山中无老虎，猴子称大王。",
+      exPy: "Jīnglǐ jīntiān qù zǒnggōngsī kāihuì, tā zài bàngōngshì chēngwáng-chēngbà, zhēn shì shānzhōng wú lǎohǔ, hóuzi chēng dàwáng.",
+      exEn: "With the manager away at headquarters today, he started throwing his weight around—when the cat's away, the mice will play!"
+    },
+    {
+      zh: "佛系",
+      py: "fó xì",
+      cat: "Daily Life & Culture",
+      literal: "Buddha-like; Buddhist-style attitude",
+      meaning: "Chill about everything; a relaxed, go-with-the-flow lifestyle; not sweating the small stuff or burning out in the rat race.",
+      story: "One of the most famous modern Chinese neologisms (流行语), coined by youth culture to describe a calm, peace-of-mind approach to life. Rather than obsessing over social expectations or spiraling with anxiety, someone who is '佛系' stays grounded, takes things as they come, and maintains tranquil equilibrium.",
+      exZh: "面对生活中的烦心事，他总是保持佛系，心态非常平和。",
+      exPy: "Miànduì shēnghuó zhōng de fánxīn shì, tā zǒngshì bǎochí fóxì, xīntài fēicháng pínghé.",
+      exEn: "Facing life's everyday irritations, he always stays chill and go-with-the-flow, keeping a remarkably peaceful mindset."
     }
   ],
 

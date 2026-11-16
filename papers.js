@@ -1774,7 +1774,7 @@ window.PAPERS = [
     skill: "Reading & Culture",
     minutes: 25,
     eyebrow: "Paper 37 · Intermediate · Reading & Culture · Curated with Finley Jennings",
-    summary: "Master 16 foundational four-character idioms (成语 chéngyǔ): match idioms to English equivalents, complete character gaps, and read the classical fable of 塞翁失马.",
+    summary: "Master foundational four-character idioms (成语 chéngyǔ) and classic Chinese proverbs: match idioms to English equivalents, complete character gaps, and read the classical fable of 塞翁失马.",
     sections: [
       {
         type: "match",
