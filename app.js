@@ -286,7 +286,7 @@
             </div>
           </div>
         ` : ""}
-        ${further([paperLink("first-characters"), paperLink("characters-nature"), paperLink("characters-hsk2"), paperLink("characters-hsk3"), paperLink("liushu")])}
+        ${further([`<a href="#/write">Writing studio: Interactive Tian Zi Ge pad & stroke rules</a>`, paperLink("characters"), paperLink("characters-2"), paperLink("characters-hsk2"), paperLink("characters-hsk3"), paperLink("liushu")])}
       </section>
 
       <section class="learn-sec">
@@ -1134,6 +1134,539 @@
     });
   }
 
+  /* ---------- Chinese Character Writing Page ---------- */
+  const WRITE_CHARS = [
+    // Foundational & Numbers
+    { zh: "一", py: "yī", en: "one", cat: "Foundational", strokes: 1, steps: ["横 (héng)"], radical: "一", tip: "Start with a light press, glide left to right with a gentle 5° rise, anchor firmly at the end." },
+    { zh: "二", py: "èr", en: "two", cat: "Foundational", strokes: 2, steps: ["上横 (短)", "下横 (长)"], radical: "二", tip: "Top horizontal is shorter; bottom horizontal is longer for foundational balance." },
+    { zh: "三", py: "sān", en: "three", cat: "Foundational", strokes: 3, steps: ["上横", "中横 (最短)", "下横 (最长)"], radical: "一", tip: "Rule: Top to bottom. The middle stroke is the shortest; bottom stroke is longest." },
+    { zh: "十", py: "shí", en: "ten", cat: "Foundational", strokes: 2, steps: ["横 (héng)", "竖 (shù)"], radical: "十", tip: "Rule: Horizontal before vertical. Lay down the crossbar first, then pierce with the vertical." },
+    { zh: "人", py: "rén", en: "person", cat: "Foundational", strokes: 2, steps: ["撇 (piě)", "捺 (nà)"], radical: "人", tip: "Rule: Left slant (撇) before right press (捺). Both legs rest squarely on the ground line." },
+    { zh: "大", py: "dà", en: "big", cat: "Foundational", strokes: 3, steps: ["横", "撇", "捺"], radical: "大", tip: "A person with arms stretched wide. Horizontal first, then the left and right legs." },
+    { zh: "天", py: "tiān", en: "sky / day", cat: "Foundational", strokes: 4, steps: ["上横", "下横", "撇", "捺"], radical: "大", tip: "Heaven stretching above humanity. Top horizontal is shorter; bottom horizontal is wider." },
+    { zh: "中", py: "zhōng", en: "middle / China", cat: "Foundational", strokes: 4, steps: ["左竖", "横折", "横", "中竖"], radical: "丨", tip: "First form the outer box (口), then spear through the exact vertical center axis." },
+    { zh: "国", py: "guó", en: "country", cat: "Foundational", strokes: 8, steps: ["左竖", "横折", "横", "横", "竖", "提", "点", "底横"], radical: "囗", tip: "Rule: Enter before closing. Frame the box, craft the jade (玉) inside, then seal the bottom." },
+
+    // Nature & Pictograms
+    { zh: "日", py: "rì", en: "sun / day", cat: "Nature", strokes: 4, steps: ["左竖", "横折", "中横", "底横"], radical: "日", tip: "Originally a circle with a sunspot. Outer frame first, inner ray, then seal bottom." },
+    { zh: "月", py: "yuè", en: "moon / month", cat: "Nature", strokes: 4, steps: ["竖撇", "横折钩", "中横", "中横"], radical: "月", tip: "A crescent moon. Left stroke is a graceful vertical slash (撇); right side has a hook." },
+    { zh: "山", py: "shān", en: "mountain", cat: "Nature", strokes: 3, steps: ["中竖", "竖折", "右竖"], radical: "山", tip: "Three towering peaks. Rule: Center before two sides (先中间后两边)." },
+    { zh: "水", py: "shuǐ", en: "water", cat: "Nature", strokes: 4, steps: ["竖钩", "横撇", "撇", "捺"], radical: "水", tip: "Flowing river and splashing drops. Center vertical hook first, then left flow, then right splash." },
+    { zh: "火", py: "huǒ", en: "fire", cat: "Nature", strokes: 4, steps: ["左点", "右撇", "中撇", "捺"], radical: "火", tip: "Sparks flanking the main flames. Two sparks first, then central blaze." },
+    { zh: "木", py: "mù", en: "tree / wood", cat: "Nature", strokes: 4, steps: ["横", "竖", "撇", "捺"], radical: "木", tip: "Branches and roots. Cross (十) first, then sweeping left and right root strokes." },
+    { zh: "口", py: "kǒu", en: "mouth", cat: "Nature", strokes: 3, steps: ["左竖", "横折", "底横"], radical: "口", tip: "Square mouth. Left vertical, top-right corner, then seal the bottom left-to-right." },
+    { zh: "田", py: "tián", en: "rice field", cat: "Nature", strokes: 5, steps: ["左竖", "横折", "中竖", "中横", "底横"], radical: "田", tip: "A divided rice paddy. The very grid that Tian Zi Ge (田字格) is named after!" },
+
+    // Masterpiece & Culture
+    { zh: "永", py: "yǒng", en: "eternity / forever", cat: "Masterpiece", strokes: 5, steps: ["点 (侧)", "横折钩 (勒+努+趯)", "提 (策)", "撇 (掠)", "捺 (磔)"], radical: "水", tip: "The celebrated master character of Chinese calligraphy! Contains all 8 fundamental strokes in the Eight Principles of Yong (永字八法)." },
+    { zh: "纸", py: "zhǐ", en: "paper", cat: "Masterpiece", strokes: 7, steps: ["撇折", "撇折", "提", "撇", "竖提", "横", "斜钩"], radical: "纟", tip: "N1Mandarin's signature seal! Silk radical (纟) on the left + clan component (氏) on the right." },
+    { zh: "好", py: "hǎo", en: "good", cat: "Masterpiece", strokes: 6, steps: ["撇点", "撇", "提", "横撇", "竖钩", "横"], radical: "女", tip: "Woman (女) + Child (子) = harmony and goodness. Rule: Left half before right half." },
+    { zh: "学", py: "xué", en: "to study / learn", cat: "Masterpiece", strokes: 8, steps: ["点", "点", "撇", "点", "横撇", "横撇", "竖钩", "横"], radical: "子", tip: "Enlightening sparks over a roof, sheltering the child (子) studying below." },
+    { zh: "福", py: "fú", en: "blessing / fortune", cat: "Masterpiece", strokes: 13, steps: ["点", "横撇", "竖", "点", "横", "竖", "横折", "横", "竖", "横折", "横", "竖", "横"], radical: "礻", tip: "The quintessential Chinese character for prosperity and good fortune, displayed at Lunar New Year." }
+  ];
+
+  const STROKES_DATA = [
+    { name: "横", py: "héng", en: "Horizontal", sym: "一", dir: "Left → Right",
+      tip: "Keep pen steady, start with a subtle press, glide left-to-right with a slight upward rise (~5°), and anchor cleanly at the end.",
+      ex: [["一", "yī"], ["十", "shí"], ["三", "sān"], ["天", "tiān"]] },
+    { name: "竖", py: "shù", en: "Vertical", sym: "丨", dir: "Top ↓ Bottom",
+      tip: "Anchor firmly at top, pull straight down. Two varieties: sharp needle tip (悬针, like 十) or rounded dewdrop (垂露, like 木).",
+      ex: [["十", "shí"], ["中", "zhōng"], ["门", "mén"], ["木", "mù"]] },
+    { name: "撇", py: "piě", en: "Left-falling", sym: "丿", dir: "Down-Left ↙",
+      tip: "Start heavy at top-right, sweep smoothly down toward bottom-left, tapering off gracefully like a swan's neck.",
+      ex: [["人", "rén"], ["八", "bā"], ["月", "yuè"], ["千", "qiān"]] },
+    { name: "捺", py: "nà", en: "Right-falling", sym: "㇏", dir: "Down-Right ↘",
+      tip: "Start light at top-left, press progressively heavier down to bottom-right, pause at the heel, and glide out horizontally.",
+      ex: [["人", "rén"], ["大", "dà"], ["天", "tiān"], ["木", "mù"]] },
+    { name: "点", py: "diǎn", en: "Dot", sym: "丶", dir: "Top-Left ↘ Right",
+      tip: "Not a circular tap! It is a teardrop mark: start light at tip, press down-right with the brush belly, and lift cleanly.",
+      ex: [["六", "liù"], ["下", "xià"], ["文", "wén"], ["永", "yǒng"]] },
+    { name: "提", py: "tí", en: "Rising flick", sym: "㇀", dir: "Bottom-Left ↗ Top-Right",
+      tip: "Press down firmly at bottom-left, then flick quickly upward to the right, ending in a crisp, sharp point.",
+      ex: [["地", "dì"], ["冷", "lěng"], ["江", "jiāng"], ["永", "yǒng"]] },
+    { name: "折", py: "zhé", en: "Turning / Corner", sym: "𠃍", dir: "Turn 90° ↴",
+      tip: "Change direction without lifting the pen. Pause and press at the corner before continuing along the new stroke path.",
+      ex: [["口", "kǒu"], ["日", "rì"], ["四", "sì"], ["田", "tián"]] },
+    { name: "钩", py: "gōu", en: "Hook", sym: "亅", dir: "Sharp flick ↵",
+      tip: "At the conclusion of a vertical or curved stroke, pause firmly, then flick inward or upward with a snappy finish.",
+      ex: [["小", "xiǎo"], ["水", "shuǐ"], ["了", "le"], ["子", "zǐ"]] }
+  ];
+
+  const STROKE_RULES = [
+    { no: "01", name: "Horizontal before vertical", zh: "先横后竖", ex: "十",
+      steps: ["一 (héng)", "十 (shù)"],
+      desc: "Lay down the horizontal foundation before piercing it with a vertical spine." },
+    { no: "02", name: "Left slant before right slant", zh: "先撇后捺", ex: "人",
+      steps: ["丿 (piě)", "人 (nà)"],
+      desc: "Left-leaning slashes precede right-descending presses for balanced weight distribution." },
+    { no: "03", name: "Top before bottom", zh: "先上后下", ex: "三",
+      steps: ["一", "二", "三"],
+      desc: "Build from the roof downward to the base, writing upper components before lower ones." },
+    { no: "04", name: "Left before right", zh: "先左后右", ex: "你",
+      steps: ["亻 (dān rén páng)", "尔 (ěr)"],
+      desc: "Complete the left component or radical before embarking on the right half." },
+    { no: "05", name: "Outside before inside", zh: "先外后内", ex: "同",
+      steps: ["冂 (outer frame)", "一口 (inner content)"],
+      desc: "Construct the sheltering boundary before placing interior strokes." },
+    { no: "06", name: "Enter inside before closing", zh: "先进入后关门", ex: "回",
+      steps: ["冂 (outer box)", "口 (inner content)", "一 (seal bottom)"],
+      desc: "In full enclosures, enter and finish all interior contents before sealing the bottom line." },
+    { no: "07", name: "Center before two flanks", zh: "先中间后两边", ex: "小",
+      steps: ["亅 (center hook)", "丶 (left dot)", "丿 (right dot)"],
+      desc: "For symmetrical characters, erect the central column first, then add balancing side wings." }
+  ];
+
+  const RADICALS_DATA = [
+    { rad: "氵", name: "三点水", en: "Water", desc: "Flowing water, rivers, liquids", ex: [["江", "jiāng"], ["河", "hé"], ["洗", "xǐ"], ["海", "hǎi"]] },
+    { rad: "亻", name: "单人旁", en: "Person", desc: "Human activities, relationships, states", ex: [["你", "nǐ"], ["他", "tā"], ["休", "xiū"], ["们", "men"]] },
+    { rad: "女", name: "女字旁", en: "Woman / Female", desc: "Women, maternal relations, family", ex: [["妈", "mā"], ["她", "tā"], ["姐", "jiě"], ["妹", "mèi"]] },
+    { rad: "扌", name: "提手旁", en: "Hand / Action", desc: "Physical actions performed with hands", ex: [["打", "dǎ"], ["找", "zhǎo"], ["拿", "ná"], ["提", "tí"]] },
+    { rad: "口", name: "口字旁", en: "Mouth / Speech", desc: "Eating, drinking, speaking, vocalizing", ex: [["吃", "chī"], ["喝", "hē"], ["叫", "jiào"], ["吗", "ma"]] },
+    { rad: "忄 / 心", name: "竖心旁 / 心字底", en: "Heart / Emotion", desc: "Feelings, thoughts, mental states", ex: [["想", "xiǎng"], ["快", "kuài"], ["慢", "màn"], ["懂", "dǒng"]] },
+    { rad: "木", name: "木字旁", en: "Tree / Wood", desc: "Forests, wooden objects, flora", ex: [["林", "lín"], ["森", "sēn"], ["桌", "zhuō"], ["椅", "yǐ"]] },
+    { rad: "日", name: "日字旁", en: "Sun / Time", desc: "Sunlight, daytime, dates, brightness", ex: [["明", "míng"], ["早", "zǎo"], ["晚", "wǎn"], ["昨", "zuó"]] },
+    { rad: "月", name: "月字旁 (肉)", en: "Flesh / Moon", desc: "Anatomy, body parts, organs, moon", ex: [["朋", "péng"], ["脸", "liǎn"], ["腿", "tuǐ"], ["肚", "dù"]] },
+    { rad: "讠", name: "言字旁", en: "Speech / Words", desc: "Language, conversations, speaking", ex: [["话", "huà"], ["语", "yǔ"], ["说", "shuō"], ["请", "qǐng"]] },
+    { rad: "饣", name: "食字旁", en: "Food / Eat", desc: "Meals, dining, hunger, cooking", ex: [["饭", "fàn"], ["饱", "bǎo"], ["馆", "guǎn"], ["饿", "è"]] },
+    { rad: "辶", name: "走之底", en: "Movement / Path", desc: "Walking, distances, roads, progress", ex: [["进", "jìn"], ["远", "yuǎn"], ["近", "jìn"], ["边", "biān"]] },
+    { rad: "钅", name: "金字旁", en: "Metal / Gold", desc: "Metals, coins, clocks, iron", ex: [["钱", "qián"], ["钟", "zhōng"], ["铁", "tiě"], ["银", "yín"]] },
+    { rad: "艹", name: "草字头", en: "Grass / Plants", desc: "Vegetation, herbs, tea, flowers", ex: [["茶", "chá"], ["菜", "cài"], ["药", "yào"], ["花", "huā"]] },
+    { rad: "宀", name: "宝盖头", en: "Roof / Shelter", desc: "Houses, indoor spaces, safety", ex: [["家", "jiā"], ["安", "ān"], ["字", "zì"], ["室", "shì"]] },
+    { rad: "火 / 灬", name: "火字旁 / 四点底", en: "Fire / Heat", desc: "Flames, cooking, boiling, temperature", ex: [["热", "rè"], ["烤", "kǎo"], ["点", "diǎn"], ["照", "zhào"]] }
+  ];
+
+  function renderWrite() {
+    document.title = "How to write Chinese characters — N1Mandarin";
+    setActiveNav("write");
+
+    const writeState = {
+      char: WRITE_CHARS.find((x) => x.zh === "永") || WRITE_CHARS[0],
+      cat: "Masterpiece",
+      guide: true,
+      mizige: true,
+      color: "#1e1c1b",
+      width: 7,
+      strokes: []
+    };
+
+    main.innerHTML = `
+      <section class="page-head">
+        <p class="eyebrow">Writing & Calligraphy · 汉字书写指南</p>
+        <h1>How to write Chinese characters <span class="zh">汉字笔画与笔顺</span></h1>
+        <p class="lede">Chinese characters look intricate, but they are built like Lego from just 8 fundamental strokes following 7 universal rules. Practice handwriting on the digital Tian Zi Ge (田字格) pad below, master stroke order, and explore the semantic radicals that unlock thousands of words.</p>
+      </section>
+
+      <!-- Interactive Writing Studio -->
+      <section class="write-studio no-print" aria-label="Interactive character writing studio">
+        <div class="canvas-column">
+          <div class="canvas-frame">
+            <canvas class="write-canvas" width="340" height="340"></canvas>
+          </div>
+          <div class="canvas-controls">
+            <div class="control-row">
+              <label class="switch"><input type="checkbox" data-t-guide ${writeState.guide ? "checked" : ""} /> <span>Trace guide 描红</span></label>
+              <label class="switch"><input type="checkbox" data-t-mizige ${writeState.mizige ? "checked" : ""} /> <span>Diagonals 米字格</span></label>
+            </div>
+            <div class="control-row">
+              <div class="color-picker" role="group" aria-label="Ink color">
+                <button class="color-swatch" data-c="#1e1c1b" style="background:#1e1c1b;" aria-label="Black ink" aria-pressed="true" title="Deep Ink"></button>
+                <button class="color-swatch" data-c="#b8432f" style="background:#b8432f;" aria-label="Cinnabar red" aria-pressed="false" title="Cinnabar Red"></button>
+                <button class="color-swatch" data-c="#1d4ed8" style="background:#1d4ed8;" aria-label="Indigo blue" aria-pressed="false" title="Indigo Blue"></button>
+              </div>
+              <div class="width-picker" role="group" aria-label="Brush width">
+                <button class="btn small ghost" data-w="3">Fine 细</button>
+                <button class="btn small" data-w="7" aria-pressed="true">Medium 中</button>
+                <button class="btn small ghost" data-w="14">Brush 粗</button>
+              </div>
+            </div>
+            <div class="control-row">
+              <button class="btn small ghost" data-action="undo">Undo 撤销</button>
+              <button class="btn small ghost" data-action="clear">Clear 清空</button>
+              <button class="btn small" data-action="save">Save PNG 保存</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="char-details-column">
+          <div class="char-info-card" data-char-info>
+            <div class="char-hero-display zh" lang="zh-Hans">${esc(writeState.char.zh)}</div>
+            <div class="char-meta">
+              <div class="char-meta-top">
+                <span class="char-py lat">${esc(writeState.char.py)}</span>
+                <span class="char-en">${esc(writeState.char.en)}</span>
+                <button class="say-line mini" data-say="${esc(writeState.char.zh)}" title="Listen to ${esc(writeState.char.zh)}">${ICON_SOUND} Listen</button>
+              </div>
+              <div class="char-badges">
+                <span class="char-badge">Radical: ${esc(writeState.char.radical)}</span>
+                <span class="char-badge">${writeState.char.strokes} strokes</span>
+                <span class="char-badge">${esc(writeState.char.cat)}</span>
+              </div>
+              <p class="char-tip">${esc(writeState.char.tip)}</p>
+            </div>
+          </div>
+
+          <div class="stroke-steps-box" data-steps-box>
+            <div class="steps-label">Stroke Order Sequence · 笔顺拆解</div>
+            <ol class="steps-list">${writeState.char.steps.map((st, i) => `
+              <li class="step-item"><span class="step-num">${i + 1}</span> ${esc(st)}</li>`).join("")}
+            </ol>
+          </div>
+
+          <div class="char-selector-box">
+            <div class="selector-tabs" role="tablist">
+              ${["Masterpiece", "Foundational", "Nature"].map((cat) => `
+                <button class="chip" data-sel-cat="${cat}" aria-pressed="${writeState.cat === cat}">${cat}</button>`).join("")}
+            </div>
+            <div class="char-chips-grid" data-char-chips>
+              ${WRITE_CHARS.filter((c) => c.cat === writeState.cat).map((c) => `
+                <button class="char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("")}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The 8 Fundamental Strokes -->
+      <section class="py-section" aria-labelledby="strokes-h">
+        <div class="py-section-head">
+          <h2 id="strokes-h" class="py-h2">The 8 Basic Strokes <span class="zh">永字八法 · 基本笔画</span></h2>
+        </div>
+        <p class="muted">In classical Chinese calligraphy, the character <b>永</b> (yǒng, eternity) famously contains all 8 fundamental brush strokes. Master these eight building blocks and you can write every single Chinese character.</p>
+        <div class="strokes-grid">${STROKES_DATA.map((st) => `
+          <article class="stroke-card">
+            <div class="stroke-card-head">
+              <div class="stroke-card-title">
+                <span class="stroke-sym-large zh" lang="zh-Hans">${esc(st.sym)}</span>
+                <span class="stroke-name">${esc(st.name)} <span class="py lat">(${esc(st.py)})</span></span>
+              </div>
+              <span class="stroke-dir">${esc(st.dir)}</span>
+            </div>
+            <p class="stroke-tip">${esc(st.tip)}</p>
+            <div class="stroke-ex-row">
+              <span class="lbl-inline">Examples:</span>
+              ${st.ex.map(([ch, py]) => `<button class="stroke-ex-btn" data-say="${esc(ch)}" data-load-char="${esc(ch)}" title="Listen & load ${esc(ch)}"><span class="zh" lang="zh-Hans">${esc(ch)}</span> <span class="py lat">${esc(py)}</span></button>`).join("")}
+            </div>
+          </article>`).join("")}
+        </div>
+      </section>
+
+      <!-- The 7 Golden Rules of Stroke Order -->
+      <section class="py-section" aria-labelledby="rules-h">
+        <h2 id="rules-h" class="py-h2">The 7 Golden Stroke Order Rules <span class="zh">笔顺七条基本规则</span></h2>
+        <p class="muted">Why does stroke order matter? Writing strokes in the standard sequence guarantees proper optical balance, prevents ink smearing, and makes handwritten characters immediately recognizable to native readers.</p>
+        <div class="stroke-grid">${STROKE_RULES.map((r) => `
+          <div class="stroke-rule">
+            <span class="rule-num mono">${esc(r.no)}</span>
+            <div class="rule-body">
+              <h4>${esc(r.name)} <span class="zh" lang="zh-Hans">${esc(r.zh)}</span></h4>
+              <p class="rule-ex"><span class="zh" lang="zh-Hans">${esc(r.ex)}</span> <span class="muted small">(${r.steps.join(" → ")})</span></p>
+              <p class="rule-tip">${esc(r.desc)}</p>
+            </div>
+          </div>`).join("")}
+        </div>
+      </section>
+
+      <!-- Tian Zi Ge Spatial Guide -->
+      <section class="py-section" aria-labelledby="grid-h">
+        <h2 id="grid-h" class="py-h2">The Tian Zi Ge Architecture <span class="zh">田字格与结构美学</span></h2>
+        <div class="tian-grid-guide">
+          <div class="tian-diagram" aria-hidden="true">
+            <div class="tian-quad">左上格<br>Top-Left</div>
+            <div class="tian-quad">右上格<br>Top-Right</div>
+            <div class="tian-quad">左下格<br>Btm-Left</div>
+            <div class="tian-quad">右下格<br>Btm-Right</div>
+          </div>
+          <div>
+            <h3>The Principle of the Balanced Square (方块字)</h3>
+            <p class="muted">Chinese characters sit inside an imaginary square divided into 4 quadrants by the crosshair. Three golden principles ensure balanced characters:</p>
+            <ul style="margin: var(--space-3) 0 0; padding-left: 1.2rem; display: grid; gap: var(--space-2); font-size: var(--text-sm);">
+              <li><b>Center of Gravity (居中原则):</b> Characters must be centered in the grid. Leave approximately 15% breathing space around the outer border—never let strokes spill over the perimeter.</li>
+              <li><b>Symmetry & Proportions (比例匀称):</b> Left-right split characters (like <b>好</b>, <b>明</b>, <b>你</b>) divide either 1:1 or 1:2 across the vertical line. Top-bottom characters (like <b>字</b>, <b>早</b>) align gracefully across the horizontal axis.</li>
+              <li><b>Primary Spine Stroke (主笔突出):</b> Almost every character has one dominant primary stroke (主笔) that gives it stature—such as the long horizontal in <b>大</b>, the strong spine in <b>中</b>, or the grounding base in <b>王</b>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Key Semantic Radicals -->
+      <section class="py-section" aria-labelledby="radicals-h">
+        <h2 id="radicals-h" class="py-h2">Essential Semantic Radicals <span class="zh">常用表意部首</span></h2>
+        <p class="muted">Over 85% of Chinese characters are phono-semantic compounds. The radical tells you the category of meaning. Master these 16 roots to easily decode and memorize new characters.</p>
+        <div class="radicals-grid">${RADICALS_DATA.map((rd) => `
+          <article class="rad-card">
+            <div class="rad-head">
+              <span class="rad-glyph zh" lang="zh-Hans">${esc(rd.rad)}</span>
+              <span class="rad-name">${esc(rd.name)}</span>
+              <span class="rad-en">${esc(rd.en)}</span>
+            </div>
+            <p class="rad-desc">${esc(rd.desc)}</p>
+            <div class="rad-examples">
+              ${rd.ex.map(([ch, py]) => `<button class="chip mini" data-say="${esc(ch)}" data-load-char="${esc(ch)}" title="Listen & load ${esc(ch)}"><span class="zh" lang="zh-Hans">${esc(ch)}</span> <span class="py lat">${esc(py)}</span></button>`).join("")}
+            </div>
+          </article>`).join("")}
+        </div>
+      </section>
+
+      <!-- Printable Practice Sheets -->
+      <section class="py-section no-print">
+        <h2 class="py-h2">Printable practice sheets</h2>
+        <p class="muted">Print Tian Zi Ge character tracing worksheets to practice with pen on paper:
+          ${further([paperLink("characters"), paperLink("characters-2"), paperLink("characters-hsk2"), paperLink("characters-hsk3"), paperLink("liushu"), `<a href="#/generate">Custom Worksheet Generator (generate your own grid sheets)</a>`])}
+        </p>
+      </section>
+    `;
+
+    wireSpeak(main);
+
+    // Setup Canvas
+    const canvas = main.querySelector(".write-canvas");
+    const ctx = canvas.getContext("2d");
+    let isDrawing = false;
+    let currentStroke = [];
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawGridAndStrokes();
+    }
+
+    function drawGridAndStrokes() {
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      if (!w || !h) return;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Background
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      ctx.fillStyle = isDark ? "#23201e" : "#fcfaf7";
+      ctx.fillRect(0, 0, w, h);
+
+      // Outer Red Border
+      ctx.strokeStyle = isDark ? "rgba(220, 100, 80, 0.6)" : "rgba(184, 67, 47, 0.6)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, 1, w - 2, h - 2);
+
+      // Dashed crosshairs
+      ctx.save();
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = isDark ? "rgba(220, 100, 80, 0.35)" : "rgba(184, 67, 47, 0.35)";
+      ctx.lineWidth = 1;
+
+      // Center Horizontal
+      ctx.beginPath();
+      ctx.moveTo(0, h / 2);
+      ctx.lineTo(w, h / 2);
+      ctx.stroke();
+
+      // Center Vertical
+      ctx.beginPath();
+      ctx.moveTo(w / 2, 0);
+      ctx.lineTo(w / 2, h);
+      ctx.stroke();
+
+      // Diagonals (Mi Zi Ge)
+      if (writeState.mizige) {
+        ctx.strokeStyle = isDark ? "rgba(220, 100, 80, 0.18)" : "rgba(184, 67, 47, 0.18)";
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(w, h);
+        ctx.moveTo(w, 0); ctx.lineTo(0, h);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Background Ghost Trace Character
+      if (writeState.guide && writeState.char) {
+        ctx.save();
+        ctx.font = `${Math.floor(w * 0.72)}px "Noto Serif SC", "Songti SC", serif`;
+        ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(184, 67, 47, 0.16)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(writeState.char.zh, w / 2, h / 2 + w * 0.04);
+        ctx.restore();
+      }
+
+      // Draw User Strokes
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      writeState.strokes.forEach((strk) => {
+        if (!strk.points.length) return;
+        ctx.strokeStyle = isDark && strk.color === "#1e1c1b" ? "#f5f3ef" : strk.color;
+        ctx.lineWidth = strk.width;
+        ctx.beginPath();
+        ctx.moveTo(strk.points[0].x, strk.points[0].y);
+        for (let i = 1; i < strk.points.length; i++) {
+          ctx.lineTo(strk.points[i].x, strk.points[i].y);
+        }
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function onStart(e) {
+      e.preventDefault();
+      isDrawing = true;
+      const pos = getPos(e);
+      currentStroke = [pos];
+      writeState.strokes.push({
+        color: writeState.color,
+        width: writeState.width,
+        points: currentStroke
+      });
+      drawGridAndStrokes();
+    }
+
+    function onMove(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      currentStroke.push(pos);
+      drawGridAndStrokes();
+    }
+
+    function onEnd() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener("mousedown", onStart);
+    canvas.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onEnd);
+
+    canvas.addEventListener("touchstart", onStart, { passive: false });
+    canvas.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onEnd);
+
+    window.addEventListener("resize", resizeCanvas);
+    setTimeout(resizeCanvas, 30);
+
+    // Update details card
+    function updateCharDisplay() {
+      const infoBox = main.querySelector("[data-char-info]");
+      const stepsBox = main.querySelector("[data-steps-box]");
+      if (!infoBox || !stepsBox) return;
+
+      infoBox.innerHTML = `
+        <div class="char-hero-display zh" lang="zh-Hans">${esc(writeState.char.zh)}</div>
+        <div class="char-meta">
+          <div class="char-meta-top">
+            <span class="char-py lat">${esc(writeState.char.py)}</span>
+            <span class="char-en">${esc(writeState.char.en)}</span>
+            <button class="say-line mini" data-say="${esc(writeState.char.zh)}" title="Listen to ${esc(writeState.char.zh)}">${ICON_SOUND} Listen</button>
+          </div>
+          <div class="char-badges">
+            <span class="char-badge">Radical: ${esc(writeState.char.radical)}</span>
+            <span class="char-badge">${writeState.char.strokes} strokes</span>
+            <span class="char-badge">${esc(writeState.char.cat)}</span>
+          </div>
+          <p class="char-tip">${esc(writeState.char.tip)}</p>
+        </div>`;
+
+      stepsBox.innerHTML = `
+        <div class="steps-label">Stroke Order Sequence · 笔顺拆解</div>
+        <ol class="steps-list">${writeState.char.steps.map((st, i) => `
+          <li class="step-item"><span class="step-num">${i + 1}</span> ${esc(st)}</li>`).join("")}
+        </ol>`;
+
+      wireSpeak(infoBox);
+
+      main.querySelectorAll("[data-choose-char]").forEach((b) => {
+        b.setAttribute("aria-pressed", String(b.dataset.chooseChar === writeState.char.zh));
+      });
+      drawGridAndStrokes();
+    }
+
+    // Controls wiring
+    main.querySelector("[data-t-guide]").addEventListener("change", (e) => {
+      writeState.guide = e.target.checked;
+      drawGridAndStrokes();
+    });
+
+    main.querySelector("[data-t-mizige]").addEventListener("change", (e) => {
+      writeState.mizige = e.target.checked;
+      drawGridAndStrokes();
+    });
+
+    main.querySelectorAll("[data-c]").forEach((b) => b.addEventListener("click", () => {
+      writeState.color = b.dataset.c;
+      main.querySelectorAll("[data-c]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    }));
+
+    main.querySelectorAll("[data-w]").forEach((b) => b.addEventListener("click", () => {
+      writeState.width = parseInt(b.dataset.w, 10);
+      main.querySelectorAll("[data-w]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      main.querySelectorAll("[data-w]").forEach((x) => x.className = x === b ? "btn small" : "btn small ghost");
+    }));
+
+    main.querySelector('[data-action="undo"]').addEventListener("click", () => {
+      writeState.strokes.pop();
+      drawGridAndStrokes();
+    });
+
+    main.querySelector('[data-action="clear"]').addEventListener("click", () => {
+      writeState.strokes = [];
+      drawGridAndStrokes();
+    });
+
+    main.querySelector('[data-action="save"]').addEventListener("click", () => {
+      const link = document.createElement("a");
+      link.download = `n1mandarin-${writeState.char.zh}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+
+    // Category tabs
+    main.querySelectorAll("[data-sel-cat]").forEach((b) => b.addEventListener("click", () => {
+      writeState.cat = b.dataset.selCat;
+      main.querySelectorAll("[data-sel-cat]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      const chipsBox = main.querySelector("[data-char-chips]");
+      chipsBox.innerHTML = WRITE_CHARS.filter((c) => c.cat === writeState.cat).map((c) => `
+        <button class="char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("");
+      wireChips();
+    }));
+
+    function wireChips() {
+      main.querySelectorAll("[data-choose-char]").forEach((b) => b.addEventListener("click", () => {
+        const found = WRITE_CHARS.find((x) => x.zh === b.dataset.chooseChar);
+        if (found) {
+          writeState.char = found;
+          writeState.strokes = [];
+          speak(found.zh);
+          updateCharDisplay();
+        }
+      }));
+    }
+    wireChips();
+
+    // Clicking example words on strokes and radicals
+    main.querySelectorAll("[data-load-char]").forEach((b) => b.addEventListener("click", () => {
+      const ch = b.dataset.loadChar;
+      let found = WRITE_CHARS.find((x) => x.zh === ch);
+      if (!found) {
+        // Create dynamic practice item for any sample character
+        found = { zh: ch, py: "", en: "Practice character", cat: "Custom", strokes: 0, steps: ["Practice strokes in Tian Zi Ge"], radical: "", tip: "Practice this character in the Tian Zi Ge grid." };
+      }
+      writeState.char = found;
+      writeState.strokes = [];
+      speak(found.zh);
+      updateCharDisplay();
+      window.scrollTo({ top: main.querySelector(".write-studio").offsetTop - 80, behavior: "smooth" });
+    }));
+  }
+
   /* ---------- Dark mode theme toggle ---------- */
   function initTheme() {
     const btn = document.getElementById("theme-toggle");
@@ -1177,6 +1710,7 @@
     else if (path === "#/flashcards") renderFlashcards();
     else if (path === "#/generate") renderGenerate(qs || "");
     else if (path === "#/pinyin") renderPinyin();
+    else if (path === "#/write") renderWrite();
     else if (path === "#/about") renderAbout();
     else if (path === "#/papers") renderLibrary();
     else renderHome();
