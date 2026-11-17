@@ -316,7 +316,7 @@
           </div>
           <p class="gloss">${esc(g.gloss)}</p>
         </li>`).join("")}</ol>
-        ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("zai"), paperLink("ba")])}
+        ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("de-de-de"), paperLink("zai"), paperLink("ba"), paperLink("jiu-cai")])}
       </section>
 
       <section class="learn-sec">
@@ -343,7 +343,7 @@
           </div>
           <p class="fix-note">${latin(esc(note))}</p>
         </li>`).join("")}</ul>
-        ${further([paperLink("hui-neng-keyi"), paperLink("comparisons"), paperLink("connectors")])}
+        ${further([paperLink("hui-neng-keyi"), paperLink("comparisons"), paperLink("yiyang-yuelaiyue"), paperLink("connectors"), paperLink("chule-yijiu")])}
       </section>
 
       <section class="learn-sec">

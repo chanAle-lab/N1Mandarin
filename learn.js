@@ -282,7 +282,13 @@ window.LEARN = {
       wrong: "我不能懂这个汉字。", wrongPy: "Wǒ bù néng dǒng zhège hànzì.", right: "我看不懂这个汉字。", rightPy: "Wǒ kàn bu dǒng zhège hànzì.", gloss: "I read-not-understand this character → I can't understand this character." },
     { title: "Ongoing state vs active progress: 着 vs 在", zh: "存现与状态：着",
       en: "在 describes an action currently underway (她在穿大衣 She is putting on a coat). 着 describes an enduring state resulting from an action (她穿着大衣 She is wearing a coat; 门开着 The door is open).",
-      wrong: "门在开。", wrongPy: "Mén zài kāi.", right: "门开着。", rightPy: "Mén kāi zhe.", gloss: "The door is open (static state with 着)." }
+      wrong: "门在开。", wrongPy: "Mén zài kāi.", right: "门开着。", rightPy: "Mén kāi zhe.", gloss: "The door is open (static state with 着)." },
+    { title: "The three 'de's: 的, 得, and 地", zh: "结构助词：的、得、地",
+      en: "的 goes before nouns (我的书, 漂亮的衣服). 得 follows verbs to evaluate the degree or state (跑得很快, 玩得开心). 地 turns adjectives into adverbs before verbs (慢慢地走, 高兴地说).",
+      wrong: "他跑的很快，高兴的走进了教室。", wrongPy: "Tā pǎo de hěn kuài, gāoxìng de zǒujìn le jiàoshì.", right: "他跑得很快，高兴地走进了教室。", rightPy: "Tā pǎo de hěn kuài, gāoxìng de zǒujìn le jiàoshì.", gloss: "He runs very fast, and happily walked into the classroom." },
+    { title: "Early vs late: 就 vs 才", zh: "副词：就 与 才",
+      en: "就 shows that an action happened earlier, faster, or easier than expected (and usually takes 了). 才 shows that an action happened later, slower, or with difficulty (and never takes 了).",
+      wrong: "他八点才来电影院了。", wrongPy: "Tā bā diǎn cái lái diànyǐngyuàn le.", right: "他八点才来电影院。", rightPy: "Tā bā diǎn cái lái diànyǐngyuàn.", gloss: "He didn't arrive at the cinema until 8:00 (late action with 才 takes no 了)." }
   ],
 
   /* 05 Common English-speaker mistakes */
