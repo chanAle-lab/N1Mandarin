@@ -1706,7 +1706,18 @@
     const [path, qs] = h.split("?");
     const m = path.match(/^#\/paper\/([\w-]+)/);
     if (m) renderPaper(m[1]);
-    else if (path === "#/words") renderWords();
+    else if (path === "#/words") {
+      if (qs) {
+        const params = new URLSearchParams(qs);
+        const qVal = params.get("q");
+        if (qVal) {
+          wl.q = qVal;
+          wl.group = "All";
+          level = "all";
+        }
+      }
+      renderWords();
+    }
     else if (path === "#/flashcards") renderFlashcards();
     else if (path === "#/generate") renderGenerate(qs || "");
     else if (path === "#/pinyin") renderPinyin();
