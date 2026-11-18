@@ -918,6 +918,8 @@
       <p>The <a href="#/generate">generator</a> picks words at random from the HSK 1, HSK 2 or HSK 3 list, or all three. Every paper has a code: type the same code with the same settings to rebuild the identical paper, or copy the page link to share it.</p>
       <h2>Adding worksheets</h2>
       <p>Worksheet content lives in <code>papers.js</code> and the vocabulary in <code>hsk1.js</code>, <code>hsk2.js</code> and <code>hsk3.js</code>. Copy an existing paper object, give it a new <code>id</code>, and use the section types <code>tone</code>, <code>match</code>, <code>fill</code>, <code>translate</code>, <code>grid</code> or <code>reading</code>.</p>
+      <h2>Contact</h2>
+      <p>Have questions, feedback, or suggestions? Feel free to reach out via email: <a href="mailto:chang8alex8@gmail.com">chang8alex8@gmail.com</a>.</p>
       <p><a class="btn" href="#/papers">See the worksheets</a></p>
     </section>`;
   }
