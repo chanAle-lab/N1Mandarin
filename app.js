@@ -122,10 +122,20 @@
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
       ${[["0.55", "Slow"], ["0.85", "Normal"]].map(([v, t]) => `<button class="chip" data-rate="${v}" aria-pressed="${String(speechRate) === v}">${t}</button>`).join("")}</div>` : "";
-  const secHead = (no, id, en, zhs, intro) => `<header class="sec-head" id="${id}">
-      <span class="sec-no">${no}</span>
-      <div><h2>${en} <span class="zh" lang="zh-Hans">${zhs}</span></h2><p>${intro}</p></div>
-    </header>`;
+  const secHead = (no, id, en, zhs, intro) => `<summary class="sec-head">
+      <span class="sec-no mono">${no}</span>
+      <div class="sec-head-text">
+        <h2>${en} <span class="zh" lang="zh-Hans">${zhs}</span></h2>
+        <p>${intro}</p>
+      </div>
+      <span class="sec-toggle-indicator" aria-hidden="true">
+        <span class="toggle-hint-open">Expand 展开</span>
+        <span class="toggle-hint-close">Collapse 收起</span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 9 6 6 6-9"/>
+        </svg>
+      </span>
+    </summary>`;
   const further = (items) => `<p class="further"><span>Go further</span>${items.filter(Boolean).join("")}</p>`;
 
   function wordOfDay() {
@@ -203,7 +213,7 @@
           <h1>From English to Mandarin, one clear step at a time.</h1>
           <p class="hero-zh zh" lang="zh-Hans">从英语到中文，一步一步。</p>
           <p class="lede">Mandarin explained from an English speaker's point of view: the sounds English doesn't have, where the grammar works the other way round, and the mistakes English speakers make most. Tap any Chinese example to hear it.</p>
-          <div class="hero-ctas"><button class="btn" data-jump="sounds">Start learning</button><button class="btn ghost" data-jump="quiz">Take the quiz</button></div>
+          <div class="hero-ctas"><button class="btn" data-jump="phrases">Start learning</button><button class="btn ghost" data-jump="quiz">Take the quiz</button></div>
         </div>
         ${w ? `<aside class="wotd" aria-label="Word of the day">
           <p class="eyebrow">Word of the day · 每日一词</p>
@@ -215,161 +225,196 @@
         </aside>` : ""}
       </section>
 
-      <nav class="path" aria-label="Learning path">
-        ${[["sounds", "Sounds"], ["phrases", "Phrases"], ["characters", "Characters"], ["grammar", "Grammar"], ["mistakes", "Mistakes"], ["idioms", "Idioms"], ["quiz", "Quiz"], ["tools", "Study tools"]].map(([id, t], i) => `<button data-jump="${id}"><span class="mono">${i < 7 ? "0" + (i + 1) : "→"}</span>${t}</button>`).join("")}
-      </nav>
+      <div class="path-wrap">
+        <nav class="path" aria-label="Learning path">
+          ${[
+            ["phrases", "Phrases"],
+            ["characters", "Characters"],
+            ["grammar", "Grammar"],
+            ["sounds", "Sounds"],
+            ["mistakes", "Mistakes"],
+            ["idioms", "Idioms"],
+            ["quiz", "Quiz"],
+            ["tools", "Study tools"]
+          ].map(([id, t], i) => `<button data-jump="${id}"><span class="mono">${i < 7 ? "0" + (i + 1) : "→"}</span>${t}</button>`).join("")}
+        </nav>
+        <button class="path-toggle-btn" id="toggle-all-secs" type="button" aria-expanded="false" title="Expand or collapse all sections">
+          <span class="mono">↕</span> <span class="toggle-all-lbl">Expand all 全部展开</span>
+        </button>
+      </div>
 
-      <section class="learn-sec">
-        ${secHead("01", "sounds", "Sounds English doesn't have", "英语里没有的音", "Most Mandarin sounds are close to English, but a few have no English match and change the meaning of a word. Each card says how to make the sound. Tap the pairs and listen for the difference.")}
-        ${speedRow()}
-        <div class="sound-grid">${L.sounds.map((s) => `<article class="sound">
-          <p class="sound-sym lat">${esc(s.sym)}</p>
-          <h3>${esc(s.title)}</h3>
-          <p class="sound-tip">${esc(s.tip)}</p>
-          <ul class="pairs">${s.pairs.reduce((rows, p, i) => (i % 2 ? rows[rows.length - 1].push(p) : rows.push([p]), rows), []).map(([a, b]) => `<li>${sayItem(...a)}<span class="vs">vs</span>${sayItem(...b)}</li>`).join("")}</ul>
-        </article>`).join("")}</div>
-        ${further([`<a href="#/pinyin">Pinyin sounds: split any syllable and hear every initial and final</a>`, paperLink("tones"), paperLink("initials-finals"), paperLink("tricky-sounds")])}
-      </section>
+      <!-- 01 Phrases -->
+      <details class="learn-sec" id="phrases">
+        ${secHead("01", "phrases", "Everyday phrase cards", "常用语卡片", "Read the English, try to say it in Mandarin, then tap the card to check and hear it. Start with greetings and the classroom phrases. You'll use them every lesson.")}
+        <div class="sec-body">
+          ${chipRow("Topic", Object.keys(L.phrases), learnState.topic, "data-topic")}
+          ${speedRow()}
+          <div class="flip-grid" data-flips>${phraseCards()}</div>
+          ${further([`<a href="#/flashcards">Flashcards: all 1,000 HSK 1–3 words</a>`, paperLink("greetings"), paperLink("food-drink"), paperLink("directions")])}
+        </div>
+      </details>
 
-      <section class="learn-sec">
-        ${secHead("02", "phrases", "Everyday phrase cards", "常用语卡片", "Read the English, try to say it in Mandarin, then tap the card to check and hear it. Start with greetings and the classroom phrases. You'll use them every lesson.")}
-        ${chipRow("Topic", Object.keys(L.phrases), learnState.topic, "data-topic")}
-        ${speedRow()}
-        <div class="flip-grid" data-flips>${phraseCards()}</div>
-        ${further([`<a href="#/flashcards">Flashcards: all 1,000 HSK 1–3 words</a>`, paperLink("greetings"), paperLink("food-drink"), paperLink("directions")])}
-      </section>
-
-      <section class="learn-sec">
-        ${secHead("03", "characters", "How written Chinese works", "汉字造字法 · 六书", (L.characters && L.characters.intro) || "Understand the Six Writings (六书): pictograms, ideograms, and the phono-semantic formula behind 80%+ of characters.")}
-        ${L.characters ? `
-          <div class="liushu-grid">
-            ${L.characters.types.map((t) => `
-              <article class="liushu-card ${t.no === "04" ? "featured" : ""}">
-                <div class="liushu-card-head">
-                  <span class="sec-no mono">${t.no}</span>
-                  <div>
-                    <h3>${esc(t.name)} <span class="zh" lang="zh-Hans">${esc(t.zh)}</span> <span class="py lat">${esc(t.py)}</span></h3>
-                    <p class="liushu-summary">${esc(t.summary)}</p>
+      <!-- 02 Characters -->
+      <details class="learn-sec" id="characters">
+        ${secHead("02", "characters", "How written Chinese works", "汉字造字法 · 六书", (L.characters && L.characters.intro) || "Understand the Six Writings (六书): pictograms, ideograms, and the phono-semantic formula behind 80%+ of characters.")}
+        <div class="sec-body">
+          ${L.characters ? `
+            <div class="liushu-grid">
+              ${L.characters.types.map((t) => `
+                <article class="liushu-card ${t.no === "04" ? "featured" : ""}">
+                  <div class="liushu-card-head">
+                    <span class="sec-no mono">${t.no}</span>
+                    <div>
+                      <h3>${esc(t.name)} <span class="zh" lang="zh-Hans">${esc(t.zh)}</span> <span class="py lat">${esc(t.py)}</span></h3>
+                      <p class="liushu-summary">${esc(t.summary)}</p>
+                    </div>
                   </div>
-                </div>
-                <p class="liushu-details">${esc(t.details)}</p>
-                <div class="liushu-examples">
-                  ${t.examples.map(([char, py, en, note]) => `
-                    <button class="char-chip" data-say="${esc(char)}" title="Listen to ${esc(char)}">
-                      <span class="char-glyph zh" lang="zh-Hans">${esc(char)}</span>
-                      <span class="char-py lat">${esc(py)}</span>
-                      <span class="char-en">${esc(en)}</span>
-                      <small class="char-note">${esc(note)}</small>
-                    </button>
-                  `).join("")}
-                </div>
-              </article>
-            `).join("")}
-          </div>
-
-          <div class="rules-box">
-            <div class="rules-head">
-              <h3>The 7 Golden Stroke Order Rules <span class="zh" lang="zh-Hans">笔顺七条基本规则</span></h3>
-              <p>Strokes are written in a strictly standardized sequence so characters balance naturally and remain legible in handwriting.</p>
-            </div>
-            <div class="stroke-grid">
-              ${L.characters.rules.map(([en, zhRule, ex, tip], idx) => `
-                <div class="stroke-rule">
-                  <span class="rule-num mono">0${idx + 1}</span>
-                  <div class="rule-body">
-                    <h4>${esc(en)} <span class="zh" lang="zh-Hans">${esc(zhRule)}</span></h4>
-                    <p class="rule-ex"><span class="zh" lang="zh-Hans">${esc(ex)}</span></p>
-                    <p class="rule-tip">${esc(tip)}</p>
+                  <p class="liushu-details">${esc(t.details)}</p>
+                  <div class="liushu-examples">
+                    ${t.examples.map(([char, py, en, note]) => `
+                      <button class="char-chip" data-say="${esc(char)}" title="Listen to ${esc(char)}">
+                        <span class="char-glyph zh" lang="zh-Hans">${esc(char)}</span>
+                        <span class="char-py lat">${esc(py)}</span>
+                        <span class="char-en">${esc(en)}</span>
+                        <small class="char-note">${esc(note)}</small>
+                      </button>
+                    `).join("")}
                   </div>
-                </div>
+                </article>
               `).join("")}
             </div>
-          </div>
-        ` : ""}
-        ${further([`<a href="#/write">Writing studio: Interactive Tian Zi Ge pad & stroke rules</a>`, paperLink("characters"), paperLink("characters-2"), paperLink("characters-hsk2"), paperLink("characters-hsk3"), paperLink("liushu")])}
-      </section>
 
-      <section class="learn-sec">
-        ${secHead("04", "grammar", "Where the grammar differs", "语法差异", `Mandarin grammar is often simpler than English: no tenses, no plurals and no verb endings. But the word order follows different rules. These are the ${L.grammar.length} differences that matter most at the start.`)}
-        <div class="chip-row sec-tools" role="group" aria-label="Grammar pinyin display">
-          <span class="chip-label">Pinyin</span>
-          <button class="chip" data-py-opt="grammar" data-show="true" aria-pressed="${learnState.grammarPy}">Show 显示</button>
-          <button class="chip" data-py-opt="grammar" data-show="false" aria-pressed="${!learnState.grammarPy}">Hide 隐藏</button>
+            <div class="rules-box">
+              <div class="rules-head">
+                <h3>The 7 Golden Stroke Order Rules <span class="zh" lang="zh-Hans">笔顺七条基本规则</span></h3>
+                <p>Strokes are written in a strictly standardized sequence so characters balance naturally and remain legible in handwriting.</p>
+              </div>
+              <div class="stroke-grid">
+                ${L.characters.rules.map(([en, zhRule, ex, tip], idx) => `
+                  <div class="stroke-rule">
+                    <span class="rule-num mono">0${idx + 1}</span>
+                    <div class="rule-body">
+                      <h4>${esc(en)} <span class="zh" lang="zh-Hans">${esc(zhRule)}</span></h4>
+                      <p class="rule-ex"><span class="zh" lang="zh-Hans">${esc(ex)}</span></p>
+                      <p class="rule-tip">${esc(tip)}</p>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          ` : ""}
+          ${further([`<a href="#/write">Writing studio: Interactive Tian Zi Ge pad & stroke rules</a>`, paperLink("characters"), paperLink("characters-2"), paperLink("characters-hsk2"), paperLink("characters-hsk3"), paperLink("liushu")])}
         </div>
-        <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${L.grammar.map((g, i) => `<li class="gram">
-          <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
-          <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
-          <p>${latin(esc(g.en))}</p>
-          <div class="ex bad">
-            <span class="mark" aria-label="Wrong">✗</span>
-            <div class="ex-body">
-              ${zh(g.wrong)}
-              ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
-            </div>
-          </div>
-          <div class="ex good">
-            <span class="mark" aria-label="Right">✓</span>
-            <div class="ex-body">
-              <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
-              ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
-            </div>
-          </div>
-          <p class="gloss">${esc(g.gloss)}</p>
-        </li>`).join("")}</ol>
-        ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("de-de-de"), paperLink("zai"), paperLink("ba"), paperLink("jiu-cai")])}
-      </section>
+      </details>
 
-      <section class="learn-sec">
-        ${secHead("05", "mistakes", "Common English-speaker mistakes", "英语母语者的常见错误", "These are the sentences English speakers build by translating word for word. The Chinese is understandable, but it sounds wrong. Learn the natural version and why it works.")}
-        <div class="chip-row sec-tools" role="group" aria-label="Mistakes pinyin display">
-          <span class="chip-label">Pinyin</span>
-          <button class="chip" data-py-opt="mistakes" data-show="true" aria-pressed="${learnState.mistakesPy}">Show 显示</button>
-          <button class="chip" data-py-opt="mistakes" data-show="false" aria-pressed="${!learnState.mistakesPy}">Hide 隐藏</button>
-        </div>
-        <ul class="fix-list${learnState.mistakesPy ? "" : " hide-py"}">${L.mistakes.map(([bad, good, badPy, goodPy, note]) => `<li class="fix">
-          <div class="ex bad">
-            <span class="mark" aria-label="Wrong">✗</span>
-            <div class="ex-body">
-              ${zh(bad)}
-              ${badPy ? `<span class="py lat ex-py">${esc(badPy)}</span>` : ""}
-            </div>
-          </div>
-          <div class="ex good">
-            <span class="mark" aria-label="Right">✓</span>
-            <div class="ex-body">
-              <button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button>
-              ${goodPy ? `<span class="py lat ex-py">${esc(goodPy)}</span>` : ""}
-            </div>
-          </div>
-          <p class="fix-note">${latin(esc(note))}</p>
-        </li>`).join("")}</ul>
-        ${further([paperLink("hui-neng-keyi"), paperLink("comparisons"), paperLink("yiyang-yuelaiyue"), paperLink("connectors"), paperLink("chule-yijiu")])}
-      </section>
-
-      <section class="learn-sec">
-        ${secHead("06", "idioms", "Essential Chinese idioms", "常用成语 · 经典熟语", "Four-character idioms (成语 chéngyǔ) and iconic proverbs are the poetic soul of Mandarin. Each condenses a timeless fable, historical event, or philosophical metaphor into vivid, memorable expressions. Here are 25 essential idioms and sayings every speaker knows.")}
-        <div class="idiom-controls">
-          ${chipRow("Category", IDIOM_CATS, learnState.idiomCat, "data-idiom-cat")}
-          <div class="chip-row sec-tools" role="group" aria-label="Idioms pinyin display">
+      <!-- 03 Grammar -->
+      <details class="learn-sec" id="grammar">
+        ${secHead("03", "grammar", "Where the grammar differs", "语法差异", `Mandarin grammar is often simpler than English: no tenses, no plurals and no verb endings. But the word order follows different rules. These are the ${L.grammar.length} differences that matter most at the start.`)}
+        <div class="sec-body">
+          <div class="chip-row sec-tools" role="group" aria-label="Grammar pinyin display">
             <span class="chip-label">Pinyin</span>
-            <button class="chip" data-py-opt="idioms" data-show="true" aria-pressed="${learnState.idiomPy}">Show 显示</button>
-            <button class="chip" data-py-opt="idioms" data-show="false" aria-pressed="${!learnState.idiomPy}">Hide 隐藏</button>
+            <button class="chip" data-py-opt="grammar" data-show="true" aria-pressed="${learnState.grammarPy}">Show 显示</button>
+            <button class="chip" data-py-opt="grammar" data-show="false" aria-pressed="${!learnState.grammarPy}">Hide 隐藏</button>
           </div>
+          <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${L.grammar.map((g, i) => `<li class="gram">
+            <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
+            <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
+            <p>${latin(esc(g.en))}</p>
+            <div class="ex bad">
+              <span class="mark" aria-label="Wrong">✗</span>
+              <div class="ex-body">
+                ${zh(g.wrong)}
+                ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
+              </div>
+            </div>
+            <div class="ex good">
+              <span class="mark" aria-label="Right">✓</span>
+              <div class="ex-body">
+                <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
+                ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
+              </div>
+            </div>
+            <p class="gloss">${esc(g.gloss)}</p>
+          </li>`).join("")}</ol>
+          ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("de-de-de"), paperLink("zai"), paperLink("ba"), paperLink("jiu-cai")])}
         </div>
-        <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}" data-idioms>${idiomCards()}</div>
-        <p class="sec-credit"><span class="credit-badge">Credit</span> Curated with special thanks to <b>Finley Jennings</b> · 特别鸣谢 Finley Jennings</p>
-        ${further([paperLink("idioms")])}
-      </section>
+      </details>
 
-      <section class="learn-sec">
-        ${secHead("07", "quiz", "Quick quiz", "小测验", "Questions on sounds, characters, grammar, common mistakes, and idioms. Pick an answer to see whether it's right and why.")}
-        <div class="chip-row sec-tools" role="group" aria-label="Quiz pinyin display">
-          <span class="chip-label">Pinyin</span>
-          <button class="chip" data-py-opt="quiz" data-show="true" aria-pressed="${learnState.quizPy}">Show 显示</button>
-          <button class="chip" data-py-opt="quiz" data-show="false" aria-pressed="${!learnState.quizPy}">Hide 隐藏</button>
+      <!-- 04 Sounds (before mistakes) -->
+      <details class="learn-sec" id="sounds">
+        ${secHead("04", "sounds", "Sounds English doesn't have", "英语里没有的音", "Most Mandarin sounds are close to English, but a few have no English match and change the meaning of a word. Each card says how to make the sound. Tap the pairs and listen for the difference.")}
+        <div class="sec-body">
+          ${speedRow()}
+          <div class="sound-grid">${L.sounds.map((s) => `<article class="sound">
+            <p class="sound-sym lat">${esc(s.sym)}</p>
+            <h3>${esc(s.title)}</h3>
+            <p class="sound-tip">${esc(s.tip)}</p>
+            <ul class="pairs">${s.pairs.reduce((rows, p, i) => (i % 2 ? rows[rows.length - 1].push(p) : rows.push([p]), rows), []).map(([a, b]) => `<li>${sayItem(...a)}<span class="vs">vs</span>${sayItem(...b)}</li>`).join("")}</ul>
+          </article>`).join("")}</div>
+          ${further([`<a href="#/pinyin">Pinyin sounds: split any syllable and hear every initial and final</a>`, paperLink("tones"), paperLink("initials-finals"), paperLink("tricky-sounds")])}
         </div>
-        <div data-quiz>${quizHtml()}</div>
-      </section>
+      </details>
+
+      <!-- 05 Mistakes -->
+      <details class="learn-sec" id="mistakes">
+        ${secHead("05", "mistakes", "Common English-speaker mistakes", "英语母语者的常见错误", "These are the sentences English speakers build by translating word for word. The Chinese is understandable, but it sounds wrong. Learn the natural version and why it works.")}
+        <div class="sec-body">
+          <div class="chip-row sec-tools" role="group" aria-label="Mistakes pinyin display">
+            <span class="chip-label">Pinyin</span>
+            <button class="chip" data-py-opt="mistakes" data-show="true" aria-pressed="${learnState.mistakesPy}">Show 显示</button>
+            <button class="chip" data-py-opt="mistakes" data-show="false" aria-pressed="${!learnState.mistakesPy}">Hide 隐藏</button>
+          </div>
+          <ul class="fix-list${learnState.mistakesPy ? "" : " hide-py"}">${L.mistakes.map(([bad, good, badPy, goodPy, note]) => `<li class="fix">
+            <div class="ex bad">
+              <span class="mark" aria-label="Wrong">✗</span>
+              <div class="ex-body">
+                ${zh(bad)}
+                ${badPy ? `<span class="py lat ex-py">${esc(badPy)}</span>` : ""}
+              </div>
+            </div>
+            <div class="ex good">
+              <span class="mark" aria-label="Right">✓</span>
+              <div class="ex-body">
+                <button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button>
+                ${goodPy ? `<span class="py lat ex-py">${esc(goodPy)}</span>` : ""}
+              </div>
+            </div>
+            <p class="fix-note">${latin(esc(note))}</p>
+          </li>`).join("")}</ul>
+          ${further([paperLink("hui-neng-keyi"), paperLink("comparisons"), paperLink("yiyang-yuelaiyue"), paperLink("connectors"), paperLink("chule-yijiu")])}
+        </div>
+      </details>
+
+      <!-- 06 Idioms -->
+      <details class="learn-sec" id="idioms">
+        ${secHead("06", "idioms", "Essential Chinese idioms", "常用成语 · 经典熟语", "Four-character idioms (成语 chéngyǔ) and iconic proverbs are the poetic soul of Mandarin. Each condenses a timeless fable, historical event, or philosophical metaphor into vivid, memorable expressions. Here are 25 essential idioms and sayings every speaker knows.")}
+        <div class="sec-body">
+          <div class="idiom-controls">
+            ${chipRow("Category", IDIOM_CATS, learnState.idiomCat, "data-idiom-cat")}
+            <div class="chip-row sec-tools" role="group" aria-label="Idioms pinyin display">
+              <span class="chip-label">Pinyin</span>
+              <button class="chip" data-py-opt="idioms" data-show="true" aria-pressed="${learnState.idiomPy}">Show 显示</button>
+              <button class="chip" data-py-opt="idioms" data-show="false" aria-pressed="${!learnState.idiomPy}">Hide 隐藏</button>
+            </div>
+          </div>
+          <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}" data-idioms>${idiomCards()}</div>
+          <p class="sec-credit"><span class="credit-badge">Credit</span> Curated with special thanks to <b>Finley Jennings</b> · 特别鸣谢 Finley Jennings</p>
+          ${further([paperLink("idioms")])}
+        </div>
+      </details>
+
+      <!-- 07 Quiz -->
+      <details class="learn-sec" id="quiz">
+        ${secHead("07", "quiz", "Quick quiz", "小测验", "Questions on sounds, characters, grammar, common mistakes, and idioms. Pick an answer to see whether it's right and why.")}
+        <div class="sec-body">
+          <div class="chip-row sec-tools" role="group" aria-label="Quiz pinyin display">
+            <span class="chip-label">Pinyin</span>
+            <button class="chip" data-py-opt="quiz" data-show="true" aria-pressed="${learnState.quizPy}">Show 显示</button>
+            <button class="chip" data-py-opt="quiz" data-show="false" aria-pressed="${!learnState.quizPy}">Hide 隐藏</button>
+          </div>
+          <div data-quiz>${quizHtml()}</div>
+        </div>
+      </details>
 
       <section class="toolkit learn-tools" aria-labelledby="tools">
         <div class="toolkit-head" id="tools">
@@ -391,9 +436,41 @@
 
   function wireHome() {
     main.querySelectorAll("[data-jump]").forEach((b) => b.addEventListener("click", () => {
-      const t = document.getElementById(b.dataset.jump);
-      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      const targetId = b.dataset.jump;
+      const t = document.getElementById(targetId);
+      if (t) {
+        if (t.tagName === "DETAILS" && !t.open) {
+          t.open = true;
+        } else {
+          const parent = t.closest("details");
+          if (parent && !parent.open) parent.open = true;
+        }
+        t.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }));
+
+    const toggleAllBtn = main.querySelector("#toggle-all-secs");
+    if (toggleAllBtn) {
+      toggleAllBtn.addEventListener("click", () => {
+        const secs = Array.from(main.querySelectorAll("details.learn-sec"));
+        const anyClosed = secs.some((s) => !s.open);
+        secs.forEach((s) => { s.open = anyClosed; });
+        toggleAllBtn.setAttribute("aria-expanded", String(anyClosed));
+        const lbl = toggleAllBtn.querySelector(".toggle-all-lbl");
+        if (lbl) lbl.textContent = anyClosed ? "Collapse all 全部收起" : "Expand all 全部展开";
+      });
+
+      main.querySelectorAll("details.learn-sec").forEach((sec) => {
+        sec.addEventListener("toggle", () => {
+          const secs = Array.from(main.querySelectorAll("details.learn-sec"));
+          const allOpen = secs.every((s) => s.open);
+          const lbl = toggleAllBtn.querySelector(".toggle-all-lbl");
+          if (lbl) lbl.textContent = allOpen ? "Collapse all 全部收起" : "Expand all 全部展开";
+          toggleAllBtn.setAttribute("aria-expanded", String(allOpen));
+        });
+      });
+    }
+
     main.querySelectorAll("[data-rate]").forEach((b) => b.addEventListener("click", () => {
       speechRate = +b.dataset.rate;
       main.querySelectorAll("[data-rate]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.rate === b.dataset.rate));
@@ -905,7 +982,7 @@
     main.innerHTML = `<section class="narrow about">
       <h1>For teachers: how to use N1Mandarin</h1>
       <h2>The learning path</h2>
-      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 sounds English doesn't have, 02 everyday phrase cards, 03 how written Chinese works (六书 & stroke order), 04 where the grammar differs, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语, curated with Finley Jennings), then 07 the quiz. Grammar, mistakes, idiom, and quiz sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
+      <p>The <a href="#/">Learn</a> page is written for English-speaking students. Work through it in order: 01 everyday phrase cards, 02 how written Chinese works (六书 & stroke order), 03 where the grammar differs, 04 sounds English doesn't have, 05 common English-speaker mistakes, 06 essential Chinese idioms (成语, curated with Finley Jennings), then 07 the quiz. Each section is formatted as a collapsible drop-down tab that can be expanded or closed at any time. Grammar, mistakes, idiom, and quiz sections all offer interactive pinyin toggles to practice reading with or without pinyin. Each section links to the worksheets that practise it, so you can set the matching paper as homework. The content lives in <code>learn.js</code>.</p>
       <h2>Worksheets in class</h2>
       <p>Open a paper, switch off <b>Pinyin</b> for stronger students, and choose <b>Print / Save PDF</b>. The site header and buttons are hidden when printing, so you get a clean A4 worksheet with name, date and score boxes.</p>
       <h2>Marking</h2>
