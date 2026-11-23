@@ -1321,7 +1321,7 @@
             </div>
             <div class="char-chips-grid" data-char-chips>
               ${WRITE_CHARS.filter((c) => c.cat === writeState.cat).map((c) => `
-                <button class="char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("")}
+                <button class="char-chip write-char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("")}
             </div>
           </div>
         </div>
@@ -1636,7 +1636,7 @@
       main.querySelectorAll("[data-sel-cat]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
       const chipsBox = main.querySelector("[data-char-chips]");
       chipsBox.innerHTML = WRITE_CHARS.filter((c) => c.cat === writeState.cat).map((c) => `
-        <button class="char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("");
+        <button class="char-chip write-char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("");
       wireChips();
     }));
 
