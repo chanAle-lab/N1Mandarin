@@ -517,6 +517,48 @@ select, input[type="number"] { font: var(--text-sm) var(--font-body); padding: v
 .fc-progress { display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--color-muted); margin-bottom: var(--space-2); }
 .fc-bar { height: 3px; background: var(--color-line); border-radius: 3px; overflow: hidden; margin-bottom: var(--space-6); }
 .fc-bar span { display: block; height: 100%; background: var(--color-accent); transition: width .3s; }
+.fc-progress-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+.fc-prog-top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.fc-prog-top h2 { font-size: var(--text-sm); font-weight: 700; margin: 0; }
+.fc-prog-actions { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+.fc-prog-bars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: var(--space-3);
+}
+.fc-lv-stat { display: grid; gap: 4px; }
+.fc-lv-stat-head { display: flex; justify-content: space-between; font-size: var(--text-xs); }
+.fc-lv-track { height: 6px; background: var(--color-bg); border: 1px solid var(--color-line); border-radius: 99px; overflow: hidden; }
+.fc-lv-fill { height: 100%; background: var(--color-answer); transition: width .25s ease; }
+.fc-srs-btns { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; }
+.fc-srs-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+  font: inherit;
+  min-width: 4.5rem;
+  transition: border-color .15s, transform .15s, background .15s;
+}
+.fc-srs-btn:hover { transform: translateY(-1px); border-color: var(--color-ink); }
+.fc-srs-btn b { font-size: var(--text-xs); }
+.fc-srs-btn small { font-size: 0.68rem; color: var(--color-muted); }
+.fc-srs-btn.again:hover { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.fc-srs-btn.good { border-color: var(--color-answer); }
+.fc-srs-btn.good:hover, .fc-srs-btn.easy:hover { background: oklch(from var(--color-answer) l c h / .12); border-color: var(--color-answer); }
 .fc-card { position: relative; display: block; width: 100%; aspect-ratio: 3 / 2; perspective: 1200px; border: 0; padding: 0; background: none; cursor: pointer; font: inherit; color: inherit; }
 .fc-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2); padding: var(--space-6); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 10px; backface-visibility: hidden; transition: transform .5s cubic-bezier(.2,.7,.2,1); box-shadow: 0 12px 32px -18px oklch(0.3 0.03 60 / .25); text-align: center; }
 .fc-front::before { content: ""; position: absolute; inset: var(--space-4); border: 1px solid var(--color-accent-soft); border-radius: 6px; pointer-events: none; }

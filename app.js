@@ -1340,13 +1340,78 @@
     wireRows(); updateCount();
   }
 
-  /* ---------- Flashcards ---------- */
-  const fc = { group: "All", deck: [], i: 0, flipped: false, front: "zh", skipKnown: false };
+  /* ---------- Flashcards & Spaced Repetition (SRS) ---------- */
+  const fc = { group: "All", deck: [], i: 0, flipped: false, front: "zh", skipKnown: false, mode: "browse" };
+  const DAY_MS = 86400000;
+
+  function srsNext(rec, rating) {
+    const cur = rec || { ivl: 0, reps: 0, ease: 2.5, due: 0 };
+    let { ivl, reps, ease } = cur;
+    if (rating === 1) { // Again
+      reps = 0; ivl = 0; ease = Math.max(1.3, ease - 0.2);
+      return { ivl, reps, ease, due: Date.now() + 600000 };
+    }
+    if (rating === 2) { // Hard
+      ivl = reps === 0 ? 1 : Math.max(1, Math.round(ivl * 1.2));
+      reps = Math.max(1, reps);
+      ease = Math.max(1.3, ease - 0.15);
+    } else if (rating === 3) { // Good
+      ivl = reps === 0 ? 1 : (reps === 1 ? 3 : Math.max(2, Math.round(ivl * ease)));
+      reps += 1;
+    } else { // Easy
+      ivl = reps === 0 ? 4 : Math.max(4, Math.round(ivl * ease * 1.3));
+      reps += 1;
+      ease = Math.min(3.0, ease + 0.15);
+    }
+    return { ivl, reps, ease, due: Date.now() + ivl * DAY_MS };
+  }
+
+  function srsLabel(rec, rating) {
+    const next = srsNext(rec, rating);
+    return next.ivl === 0 ? "10m" : `${next.ivl}d`;
+  }
 
   function buildDeck(shuffle) {
+    const now = Date.now();
+    const srsMap = store.srs || {};
     let list = levelWords().filter((w) => (fc.group === "All" || w.group === fc.group) && (!fc.skipKnown || !known.has(w.id)));
-    if (shuffle) list = shuffleWith(list, Math.random);
+    if (fc.mode === "srs") {
+      list = list.filter((w) => {
+        const r = srsMap[w.id];
+        return !r || r.due <= now;
+      });
+      // Due reviews first, then unseen words
+      list.sort((a, b) => (srsMap[a.id] ? 0 : 1) - (srsMap[b.id] ? 0 : 1) || ((srsMap[a.id]?.due || 0) - (srsMap[b.id]?.due || 0)));
+    } else if (shuffle) {
+      list = shuffleWith(list, Math.random);
+    }
     fc.deck = list; fc.i = 0; fc.flipped = false;
+  }
+
+  function progressPanelHtml() {
+    const now = Date.now();
+    const srsMap = store.srs || {};
+    const dueCount = WORDS.filter((w) => srsMap[w.id] && srsMap[w.id].due <= now).length;
+    const bars = [1, 2, 3, 4].map((lv) => {
+      const total = WORDS.filter((w) => w.lv === lv).length;
+      const k = WORDS.filter((w) => w.lv === lv && known.has(w.id)).length;
+      const pct = total ? Math.round((k / total) * 100) : 0;
+      return `<div class="fc-lv-stat">
+        <div class="fc-lv-stat-head"><b>HSK ${lv}</b><span class="mono">${k}/${total} (${pct}%)</span></div>
+        <div class="fc-lv-track"><div class="fc-lv-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join("");
+    return `
+      <section class="fc-progress-panel no-print" aria-label="Study progress">
+        <div class="fc-prog-top">
+          <h2>Study progress · ${known.size} / ${WORDS.length} known · ${dueCount} SRS due</h2>
+          <div class="fc-prog-actions">
+            <button type="button" class="btn small ghost" data-export-prog>Export progress</button>
+            <label class="btn small ghost" style="cursor:pointer;">Import progress<input type="file" accept="application/json" data-import-prog hidden /></label>
+          </div>
+        </div>
+        <div class="fc-prog-bars">${bars}</div>
+      </section>`;
   }
 
   function renderFlashcards() {
@@ -1357,42 +1422,88 @@
       <section class="page-head">
         <p class="eyebrow">New HSK 3.0 · ${levelName(level)}</p>
         <h1>Flashcards <span class="zh">识字卡</span></h1>
-        <p class="lede">Tap the card or press Space to flip. Use the arrow keys to move, K for "know it" and L for "still learning".</p>
+        <p class="lede">Tap the card or press Space to flip. Rate with 1–4 (Again / Hard / Good / Easy) to schedule spaced-repetition reviews, or use K/L.</p>
       </section>
+      <div data-fc-progress>${progressPanelHtml()}</div>
       ${levelRow("data-flevel")}
       <div class="fc-controls">
         ${chipRow("Type", GROUPS, fc.group, "data-fgroup")}
         <div class="toggles">
+          <label class="switch"><span>Mode</span>
+            <select data-fmode>
+              <option value="browse" ${fc.mode === "browse" ? "selected" : ""}>Browse all</option>
+              <option value="srs" ${fc.mode === "srs" ? "selected" : ""}>SRS Due &amp; New</option>
+            </select></label>
           <label class="switch"><span>Front</span>
             <select data-front>
               <option value="zh" ${fc.front === "zh" ? "selected" : ""}>Characters</option>
               <option value="en" ${fc.front === "en" ? "selected" : ""}>English</option>
               <option value="py" ${fc.front === "py" ? "selected" : ""}>Pinyin</option>
             </select></label>
-          <label class="switch"><input type="checkbox" data-skip ${fc.skipKnown ? "checked" : ""}/> <span>Skip known words</span></label>
+          <label class="switch"><input type="checkbox" data-skip ${fc.skipKnown ? "checked" : ""}/> <span>Skip known</span></label>
           <button class="btn small ghost" data-shuffle>Shuffle</button>
         </div>
       </div>
       <div class="fc-stage" data-stage></div>`;
     drawCard();
+    wireProgressActions();
     main.querySelectorAll("[data-flevel]").forEach((b) => b.addEventListener("click", () => { level = b.dataset.flevel; renderFlashcards(); }));
     main.querySelectorAll("[data-fgroup]").forEach((b) => b.addEventListener("click", () => {
       fc.group = b.dataset.fgroup; main.querySelectorAll("[data-fgroup]").forEach((x) => x.setAttribute("aria-pressed", x === b)); buildDeck(false); drawCard();
     }));
+    main.querySelector("[data-fmode]").addEventListener("change", (e) => { fc.mode = e.target.value; buildDeck(false); drawCard(); });
     main.querySelector("[data-front]").addEventListener("change", (e) => { fc.front = e.target.value; fc.flipped = false; drawCard(); });
     main.querySelector("[data-skip]").addEventListener("change", (e) => { fc.skipKnown = e.target.checked; buildDeck(false); drawCard(); });
     main.querySelector("[data-shuffle]").addEventListener("click", () => { buildDeck(true); drawCard(); });
   }
 
+  function wireProgressActions() {
+    const exp = main.querySelector("[data-export-prog]");
+    if (exp) exp.addEventListener("click", () => {
+      const payload = JSON.stringify({ known: [...known], srs: store.srs || {} }, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "n1mandarin-progress.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+    const imp = main.querySelector("[data-import-prog]");
+    if (imp) imp.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || "{}"));
+          if (Array.isArray(data.known)) { known.clear(); data.known.forEach((id) => known.add(id)); }
+          if (data.srs && typeof data.srs === "object") store.srs = data.srs;
+          store.save();
+          buildDeck(false);
+          renderFlashcards();
+        } catch (err) {}
+      };
+      reader.readAsText(file);
+    });
+  }
+
   function drawCard() {
     const stage = main.querySelector("[data-stage]");
     if (!stage) return;
+    const progBox = main.querySelector("[data-fc-progress]");
+    if (progBox) { progBox.innerHTML = progressPanelHtml(); wireProgressActions(); }
     if (!fc.deck.length) {
-      stage.innerHTML = `<div class="fc-empty"><p>No cards left in this set. You've marked them all as known.</p><button class="btn small" data-reset-known>Reset known words</button></div>`;
-      stage.querySelector("[data-reset-known]").addEventListener("click", () => { levelWords().forEach((x) => known.delete(x.id)); store.save(); buildDeck(false); drawCard(); });
+      stage.innerHTML = fc.mode === "srs"
+        ? `<div class="fc-empty"><p>All caught up! No cards due for review right now.</p><button class="btn small" data-browse-all>Browse all cards</button></div>`
+        : `<div class="fc-empty"><p>No cards left in this set. You've marked them all as known.</p><button class="btn small" data-reset-known>Reset known words</button></div>`;
+      const rst = stage.querySelector("[data-reset-known]");
+      if (rst) rst.addEventListener("click", () => { levelWords().forEach((x) => known.delete(x.id)); store.save(); buildDeck(false); drawCard(); });
+      const br = stage.querySelector("[data-browse-all]");
+      if (br) br.addEventListener("click", () => { fc.mode = "browse"; const sel = main.querySelector("[data-fmode]"); if (sel) sel.value = "browse"; buildDeck(false); drawCard(); });
       return;
     }
     const w = fc.deck[fc.i];
+    const rec = (store.srs || {})[w.id];
     const faces = {
       zh: `<span class="fc-big zh" lang="zh-Hans">${esc(w.zh)}</span>`,
       en: `<span class="fc-en-front">${esc(shortEn(w.en))}</span>`,
@@ -1414,32 +1525,45 @@
       <div class="fc-actions">
         <button class="btn small ghost" data-prev aria-label="Previous card">←</button>
         ${canSpeak ? `<button class="btn small ghost" data-say="${esc(w.zh)}">${ICON_SOUND} Listen</button>` : ""}
-        <button class="btn small ghost" data-learning>Still learning</button>
-        <button class="btn small" data-know-card>Know it ✓</button>
+        <div class="fc-srs-btns">
+          <button class="fc-srs-btn again" data-srs="1"><b>Again</b><small>${srsLabel(rec, 1)}</small></button>
+          <button class="fc-srs-btn hard" data-srs="2"><b>Hard</b><small>${srsLabel(rec, 2)}</small></button>
+          <button class="fc-srs-btn good" data-srs="3"><b>Good</b><small>${srsLabel(rec, 3)}</small></button>
+          <button class="fc-srs-btn easy" data-srs="4"><b>Easy</b><small>${srsLabel(rec, 4)}</small></button>
+        </div>
         <button class="btn small ghost" data-next aria-label="Next card">→</button>
       </div>`;
     stage.querySelector("[data-flip]").addEventListener("click", flip);
     stage.querySelector("[data-prev]").addEventListener("click", () => move(-1));
     stage.querySelector("[data-next]").addEventListener("click", () => move(1));
-    stage.querySelector("[data-know-card]").addEventListener("click", () => mark(true));
-    stage.querySelector("[data-learning]").addEventListener("click", () => mark(false));
+    stage.querySelectorAll("[data-srs]").forEach((b) => b.addEventListener("click", () => rateCard(+b.dataset.srs)));
     wireSpeak(stage);
   }
   function flip() { fc.flipped = !fc.flipped; const c = main.querySelector(".fc-card"); if (c) c.classList.toggle("flipped", fc.flipped); }
   function move(d) { if (!fc.deck.length) return; fc.i = (fc.i + d + fc.deck.length) % fc.deck.length; fc.flipped = false; drawCard(); }
-  function mark(isKnown) {
+  function rateCard(rating) {
     const w = fc.deck[fc.i]; if (!w) return;
-    isKnown ? known.add(w.id) : known.delete(w.id); store.save();
-    if (isKnown && fc.skipKnown) { fc.deck.splice(fc.i, 1); if (fc.i >= fc.deck.length) fc.i = 0; fc.flipped = false; drawCard(); }
-    else move(1);
+    if (!store.srs) store.srs = {};
+    store.srs[w.id] = srsNext(store.srs[w.id], rating);
+    const isKnown = rating >= 3;
+    isKnown ? known.add(w.id) : known.delete(w.id);
+    store.save();
+    if (fc.mode === "srs" || (isKnown && fc.skipKnown)) {
+      fc.deck.splice(fc.i, 1);
+      if (fc.i >= fc.deck.length) fc.i = 0;
+      fc.flipped = false;
+      drawCard();
+    } else move(1);
   }
   document.addEventListener("keydown", (e) => {
     if (!location.hash.startsWith("#/flashcards") || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
     if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); }
     else if (e.key === "ArrowRight") move(1);
     else if (e.key === "ArrowLeft") move(-1);
-    else if (e.key.toLowerCase() === "k") mark(true);
-    else if (e.key.toLowerCase() === "l") mark(false);
+    else if (e.key === "1" || e.key.toLowerCase() === "l") rateCard(1);
+    else if (e.key === "2") rateCard(2);
+    else if (e.key === "3" || e.key.toLowerCase() === "k") rateCard(3);
+    else if (e.key === "4") rateCard(4);
   });
 
   /* ---------- Paper generator ---------- */
