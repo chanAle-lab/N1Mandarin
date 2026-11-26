@@ -687,7 +687,235 @@
   }
 
   /* ---------- Word list ---------- */
-  const wl = { q: "", group: "All", hidePy: false, hideEn: false, onlyLearning: false };
+  const wl = { q: "", group: "All", hidePy: false, hideEn: false, onlyLearning: false, drawOpen: false, drawStrokes: [] };
+
+  /* ---------- Draw-to-lookup handwriting recognizer ---------- */
+  let CHAR_TEMPLATES = null;
+  const CHAR_META = new Map();
+
+  function ensureCharTemplates() {
+    if (CHAR_TEMPLATES) return CHAR_TEMPLATES;
+    // Collect all unique Hanzi characters from HSK 1-4 words
+    WORDS.forEach((w) => {
+      for (const ch of w.zh) {
+        if (!/[\u4e00-\u9fff]/.test(ch)) continue;
+        let m = CHAR_META.get(ch);
+        if (!m) {
+          m = { ch, count: 0, minLv: w.lv, exact: null };
+          CHAR_META.set(ch, m);
+        }
+        m.count++;
+        if (w.lv < m.minLv) m.minLv = w.lv;
+        if (w.zh === ch && !m.exact) m.exact = w;
+      }
+    });
+
+    const S = 24;
+    const c = document.createElement("canvas");
+    c.width = S; c.height = S;
+    const ctx = c.getContext("2d", { willReadFrequently: true });
+
+    const normCanvas = document.createElement("canvas");
+    normCanvas.width = S; normCanvas.height = S;
+    const nctx = normCanvas.getContext("2d", { willReadFrequently: true });
+
+    const blur2 = (src) => {
+      const tmp = new Float32Array(S * S);
+      const dst = new Float32Array(S * S);
+      const pass = (a, b) => {
+        for (let y = 0; y < S; y++) {
+          for (let x = 0; x < S; x++) {
+            const v0 = a[y * S + Math.max(0, x - 1)];
+            const v1 = a[y * S + x];
+            const v2 = a[y * S + Math.min(S - 1, x + 1)];
+            tmp[y * S + x] = 0.25 * v0 + 0.5 * v1 + 0.25 * v2;
+          }
+        }
+        for (let y = 0; y < S; y++) {
+          for (let x = 0; x < S; x++) {
+            const v0 = tmp[Math.max(0, y - 1) * S + x];
+            const v1 = tmp[y * S + x];
+            const v2 = tmp[Math.min(S - 1, y + 1) * S + x];
+            b[y * S + x] = 0.25 * v0 + 0.5 * v1 + 0.25 * v2;
+          }
+        }
+      };
+      pass(src, dst);
+      pass(dst, src);
+      return src;
+    };
+
+    const l2norm = (arr) => {
+      let s = 0;
+      for (let i = 0; i < arr.length; i++) s += arr[i] * arr[i];
+      const d = Math.sqrt(s) || 1;
+      for (let i = 0; i < arr.length; i++) arr[i] /= d;
+      return arr;
+    };
+
+    const downsample8 = (arr24) => {
+      const out = new Float32Array(64);
+      for (let gy = 0; gy < 8; gy++) {
+        for (let gx = 0; gx < 8; gx++) {
+          let sum = 0;
+          for (let dy = 0; dy < 3; dy++) {
+            for (let dx = 0; dx < 3; dx++) {
+              sum += arr24[(gy * 3 + dy) * S + (gx * 3 + dx)];
+            }
+          }
+          out[gy * 8 + gx] = sum;
+        }
+      }
+      return l2norm(out);
+    };
+
+    CHAR_TEMPLATES = [];
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = '20px "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", "SimHei", sans-serif';
+    ctx.fillStyle = "#000";
+
+    CHAR_META.forEach((meta) => {
+      ctx.clearRect(0, 0, S, S);
+      ctx.fillText(meta.ch, S / 2, S / 2);
+      const data = ctx.getImageData(0, 0, S, S).data;
+      let x0 = S, y0 = S, x1 = -1, y1 = -1;
+      for (let y = 0; y < S; y++) {
+        for (let x = 0; x < S; x++) {
+          if (data[(y * S + x) * 4 + 3] > 24) {
+            if (x < x0) x0 = x;
+            if (x > x1) x1 = x;
+            if (y < y0) y0 = y;
+            if (y > y1) y1 = y;
+          }
+        }
+      }
+      if (x1 < x0) return;
+
+      const bw = x1 - x0 + 1;
+      const bh = y1 - y0 + 1;
+      const scale = 20 / Math.max(bw, bh, 6);
+      const dw = bw * scale;
+      const dh = bh * scale;
+      const dx = (S - dw) / 2;
+      const dy = (S - dh) / 2;
+
+      nctx.clearRect(0, 0, S, S);
+      nctx.drawImage(c, x0, y0, bw, bh, dx, dy, dw, dh);
+      const ndata = nctx.getImageData(0, 0, S, S).data;
+      const raw = new Float32Array(S * S);
+      for (let i = 0; i < S * S; i++) raw[i] = ndata[i * 4 + 3] / 255;
+
+      // 4-bin edge orientation energy from gradients (normal to stroke gives direction)
+      const grad4 = new Float32Array(4);
+      for (let y = 1; y < S - 1; y++) {
+        for (let x = 1; x < S - 1; x++) {
+          const gx = raw[y * S + (x + 1)] - raw[y * S + (x - 1)];
+          const gy = raw[(y + 1) * S + x] - raw[(y - 1) * S + x];
+          const mag = Math.hypot(gx, gy);
+          if (mag < 0.08) continue;
+          // Stroke direction is perpendicular to gradient: (-gy, gx)
+          const ang = ((Math.atan2(gx, -gy) % Math.PI) + Math.PI) % Math.PI;
+          if (ang < Math.PI / 8 || ang >= (7 * Math.PI) / 8) grad4[0] += mag;       // horizontal
+          else if (ang < (3 * Math.PI) / 8) grad4[2] += mag;                         // diag /
+          else if (ang < (5 * Math.PI) / 8) grad4[1] += mag;                         // vertical
+          else grad4[3] += mag;                                                      // diag \
+        }
+      }
+      l2norm(grad4);
+
+      const blurred = blur2(raw.slice());
+      const tpl8 = downsample8(blurred);
+      const tpl24 = l2norm(blurred);
+      const aspect = Math.log((bw + 4) / (bh + 4));
+
+      CHAR_TEMPLATES.push({ ch: meta.ch, meta, tpl24, tpl8, grad4, aspect });
+    });
+
+    // Attach helpers for query encoding
+    CHAR_TEMPLATES._encode = (strokes) => {
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      let pts = 0;
+      strokes.forEach((st) => st.forEach(([x, y]) => {
+        pts++;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }));
+      if (!pts) return null;
+      const bw = Math.max(maxX - minX, 1);
+      const bh = Math.max(maxY - minY, 1);
+      const scale = 20 / Math.max(bw, bh, 24);
+      const ox = (S - bw * scale) / 2 - minX * scale;
+      const oy = (S - bh * scale) / 2 - minY * scale;
+
+      nctx.clearRect(0, 0, S, S);
+      nctx.strokeStyle = "#000";
+      nctx.lineWidth = 2.0;
+      nctx.lineCap = "round";
+      nctx.lineJoin = "round";
+
+      const qGrad4 = new Float32Array(4);
+      strokes.forEach((st) => {
+        if (!st.length) return;
+        nctx.beginPath();
+        nctx.moveTo(st[0][0] * scale + ox, st[0][1] * scale + oy);
+        if (st.length === 1) {
+          nctx.lineTo(st[0][0] * scale + ox + 0.1, st[0][1] * scale + oy + 0.1);
+        }
+        for (let i = 1; i < st.length; i++) {
+          const x0 = st[i - 1][0], y0 = st[i - 1][1];
+          const x1 = st[i][0], y1 = st[i][1];
+          nctx.lineTo(x1 * scale + ox, y1 * scale + oy);
+          const dx = x1 - x0, dy = y1 - y0;
+          const len = Math.hypot(dx, dy);
+          if (len > 0.5) {
+            const ang = ((Math.atan2(dy, dx) % Math.PI) + Math.PI) % Math.PI;
+            if (ang < Math.PI / 8 || ang >= (7 * Math.PI) / 8) qGrad4[0] += len;
+            else if (ang < (3 * Math.PI) / 8) qGrad4[3] += len;
+            else if (ang < (5 * Math.PI) / 8) qGrad4[1] += len;
+            else qGrad4[2] += len;
+          }
+        }
+        nctx.stroke();
+      });
+      l2norm(qGrad4);
+
+      const ndata = nctx.getImageData(0, 0, S, S).data;
+      const raw = new Float32Array(S * S);
+      for (let i = 0; i < S * S; i++) raw[i] = ndata[i * 4 + 3] / 255;
+      const blurred = blur2(raw);
+      const q8 = downsample8(blurred);
+      const q24 = l2norm(blurred);
+      const qAspect = Math.log((bw * scale + 4) / (bh * scale + 4));
+      return { q24, q8, qGrad4, qAspect };
+    };
+
+    return CHAR_TEMPLATES;
+  }
+
+  function recognizeDrawnChar(strokes, limit = 10) {
+    if (!strokes.length) return [];
+    const tpls = ensureCharTemplates();
+    const q = tpls._encode(strokes);
+    if (!q) return [];
+    const { q24, q8, qGrad4, qAspect } = q;
+    const scored = new Array(tpls.length);
+    for (let i = 0; i < tpls.length; i++) {
+      const t = tpls[i];
+      let s24 = 0;
+      for (let j = 0; j < 576; j++) s24 += q24[j] * t.tpl24[j];
+      let s8 = 0;
+      for (let j = 0; j < 64; j++) s8 += q8[j] * t.tpl8[j];
+      const sG = qGrad4[0] * t.grad4[0] + qGrad4[1] * t.grad4[1] + qGrad4[2] * t.grad4[2] + qGrad4[3] * t.grad4[3];
+      const aspDiff = Math.abs(qAspect - t.aspect);
+      const score = 0.56 * s24 + 0.24 * s8 + 0.20 * sG - 0.12 * aspDiff;
+      scored[i] = { ch: t.ch, meta: t.meta, score };
+    }
+    scored.sort((a, b) => b.score - a.score || a.meta.minLv - b.meta.minLv);
+    return scored.slice(0, limit);
+  }
 
   function wordMatches(w) {
     const q = wl.q.trim().toLowerCase();
@@ -721,7 +949,10 @@
         <p class="lede">All 300 HSK 1, 200 HSK 2, 500 HSK 3 and 1,000 HSK 4 words. Search by characters, pinyin (tone marks optional) or English. Hide the pinyin or meanings to test yourself, then click a covered cell to check it.</p>
       </section>
       <div class="words-tools no-print">
-        <label class="search"><span class="sr">Search words</span><input type="search" placeholder="Search 爱, ai, love…" value="${esc(wl.q)}" data-wsearch /></label>
+        <div class="search-row">
+          <label class="search"><span class="sr">Search words</span><input type="search" placeholder="Search 爱, ai, love…" value="${esc(wl.q)}" data-wsearch /></label>
+          <button class="btn small ghost draw-toggle-btn" type="button" data-draw-toggle aria-expanded="${wl.drawOpen}">✍ Draw character</button>
+        </div>
         <div class="toggles">
           <label class="switch"><input type="checkbox" data-w="hidePy" ${wl.hidePy ? "checked" : ""}/> <span>Hide pinyin</span></label>
           <label class="switch"><input type="checkbox" data-w="hideEn" ${wl.hideEn ? "checked" : ""}/> <span>Hide meaning</span></label>
@@ -729,6 +960,27 @@
           <button class="btn small" data-print>Print list</button>
         </div>
       </div>
+      <section class="draw-lookup-panel no-print" data-draw-panel ${wl.drawOpen ? "" : "hidden"}>
+        <div class="draw-pad-col">
+          <div class="draw-canvas-wrap">
+            <canvas class="draw-canvas" width="200" height="200" data-draw-canvas aria-label="Draw a Chinese character to look it up"></canvas>
+          </div>
+          <div class="draw-pad-actions">
+            <button class="btn small ghost" type="button" data-draw-undo>↩ Undo</button>
+            <button class="btn small ghost" type="button" data-draw-clear>Clear</button>
+            <span class="draw-stroke-count mono" data-draw-count>0 strokes</span>
+          </div>
+        </div>
+        <div class="draw-results-col">
+          <div class="draw-results-head">
+            <h3>Draw to lookup <span class="zh">手写查字</span></h3>
+            <p>Draw a Chinese character on the Tian Zi Ge pad, then tap a matching character below to filter the HSK 1–4 word list.</p>
+          </div>
+          <div class="draw-candidates" data-draw-results>
+            <p class="muted small">Start drawing a character on the left…</p>
+          </div>
+        </div>
+      </section>
       <div class="no-print">${levelRow("data-wlevel")}${chipRow("Type", GROUPS, wl.group, "data-group")}</div>
       <p class="count no-print" data-count></p>
       <div class="table-wrap">
@@ -768,6 +1020,140 @@
       if (c.dataset.w === "onlyLearning") refresh();
     }));
     main.querySelector("[data-print]").addEventListener("click", () => window.print());
+
+    /* Draw-to-lookup wiring */
+    const drawToggle = main.querySelector("[data-draw-toggle]");
+    const drawPanel = main.querySelector("[data-draw-panel]");
+    const drawCanvas = main.querySelector("[data-draw-canvas]");
+    const drawResults = main.querySelector("[data-draw-results]");
+    const drawCount = main.querySelector("[data-draw-count]");
+    const dctx = drawCanvas.getContext("2d");
+    let isDrawing = false;
+    let activeStroke = null;
+
+    function renderDrawPad() {
+      const W = drawCanvas.width, H = drawCanvas.height;
+      dctx.clearRect(0, 0, W, H);
+      const cs = getComputedStyle(document.documentElement);
+      const lineCol = cs.getPropertyValue("--color-line").trim() || "#ddd";
+      const inkCol = cs.getPropertyValue("--color-ink").trim() || "#111";
+
+      // Tian Zi Ge guide lines
+      dctx.save();
+      dctx.strokeStyle = lineCol;
+      dctx.lineWidth = 1;
+      dctx.setLineDash([4, 4]);
+      dctx.beginPath();
+      dctx.moveTo(W / 2, 0); dctx.lineTo(W / 2, H);
+      dctx.moveTo(0, H / 2); dctx.lineTo(W, H / 2);
+      dctx.moveTo(0, 0); dctx.lineTo(W, H);
+      dctx.moveTo(W, 0); dctx.lineTo(0, H);
+      dctx.stroke();
+      dctx.restore();
+
+      // Drawn strokes
+      dctx.strokeStyle = inkCol;
+      dctx.lineWidth = 7;
+      dctx.lineCap = "round";
+      dctx.lineJoin = "round";
+      wl.drawStrokes.forEach((st) => {
+        if (!st.length) return;
+        dctx.beginPath();
+        dctx.moveTo(st[0][0], st[0][1]);
+        if (st.length === 1) dctx.lineTo(st[0][0] + 0.1, st[0][1] + 0.1);
+        for (let i = 1; i < st.length; i++) dctx.lineTo(st[i][0], st[i][1]);
+        dctx.stroke();
+      });
+
+      const n = wl.drawStrokes.length;
+      drawCount.textContent = `${n} stroke${n === 1 ? "" : "s"}`;
+    }
+
+    function updateDrawMatches() {
+      if (!wl.drawStrokes.length) {
+        drawResults.innerHTML = `<p class="muted small">Start drawing a character on the left…</p>`;
+        return;
+      }
+      const matches = recognizeDrawnChar(wl.drawStrokes, 10);
+      drawResults.innerHTML = matches.map(({ ch, meta }) => {
+        const py = meta.exact ? meta.exact.py : `HSK ${meta.minLv}+`;
+        const sub = meta.exact ? shortEn(meta.exact.en) : `${meta.count} word${meta.count === 1 ? "" : "s"}`;
+        return `<button class="draw-cand-btn" type="button" data-pick-char="${esc(ch)}" title="Search words with ${esc(ch)}">
+          <span class="draw-cand-zh zh" lang="zh-Hans">${esc(ch)}</span>
+          <span class="draw-cand-meta">
+            <span class="draw-cand-py lat">${esc(py)}</span>
+            <span class="draw-cand-sub">${esc(sub)}</span>
+          </span>
+        </button>`;
+      }).join("");
+      drawResults.querySelectorAll("[data-pick-char]").forEach((btn) => btn.addEventListener("click", () => {
+        const ch = btn.dataset.pickChar;
+        wl.q = ch;
+        const searchInput = main.querySelector("[data-wsearch]");
+        if (searchInput) searchInput.value = ch;
+        // If current level has no words with this character, switch to All (HSK 1-4)
+        if (!levelWords().some(wordMatches) && level !== "all") {
+          level = "all";
+          main.querySelectorAll("[data-wlevel]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.wlevel === "all"));
+        }
+        refresh();
+      }));
+    }
+
+    function canvasPt(e) {
+      const r = drawCanvas.getBoundingClientRect();
+      return [((e.clientX - r.left) / r.width) * drawCanvas.width, ((e.clientY - r.top) / r.height) * drawCanvas.height];
+    }
+
+    drawCanvas.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      drawCanvas.setPointerCapture(e.pointerId);
+      isDrawing = true;
+      activeStroke = [canvasPt(e)];
+      wl.drawStrokes.push(activeStroke);
+      renderDrawPad();
+    });
+    drawCanvas.addEventListener("pointermove", (e) => {
+      if (!isDrawing || !activeStroke) return;
+      activeStroke.push(canvasPt(e));
+      renderDrawPad();
+    });
+    const finishStroke = () => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      activeStroke = null;
+      updateDrawMatches();
+    };
+    drawCanvas.addEventListener("pointerup", finishStroke);
+    drawCanvas.addEventListener("pointercancel", finishStroke);
+
+    main.querySelector("[data-draw-undo]").addEventListener("click", () => {
+      if (!wl.drawStrokes.length) return;
+      wl.drawStrokes.pop();
+      renderDrawPad();
+      updateDrawMatches();
+    });
+    main.querySelector("[data-draw-clear]").addEventListener("click", () => {
+      wl.drawStrokes = [];
+      renderDrawPad();
+      updateDrawMatches();
+    });
+    drawToggle.addEventListener("click", () => {
+      wl.drawOpen = !wl.drawOpen;
+      drawPanel.hidden = !wl.drawOpen;
+      drawToggle.setAttribute("aria-expanded", String(wl.drawOpen));
+      if (wl.drawOpen) {
+        ensureCharTemplates();
+        renderDrawPad();
+        updateDrawMatches();
+      }
+    });
+    if (wl.drawOpen) {
+      ensureCharTemplates();
+      renderDrawPad();
+      updateDrawMatches();
+    }
+
     wireRows(); updateCount();
   }
 
