@@ -1640,6 +1640,21 @@ details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+.write-custom-form {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-2);
+}
+.write-custom-form input {
+  font: var(--text-sm) var(--font-body);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  width: min(14rem, 100%);
+}
 .char-chips-grid .char-chip,
 .write-char-chip {
   font-family: var(--font-zh);

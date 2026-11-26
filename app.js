@@ -1056,6 +1056,7 @@
           </div>
         </div>
         <div class="char-exp-actions">
+          <a class="btn small ghost" href="#/write?char=${encodeURIComponent(ch)}">✍ Practice writing</a>
           <button type="button" class="btn small ghost" data-filter-char="${esc(ch)}">Filter table to "${esc(ch)}"</button>
           <button type="button" class="icon-btn" data-close-explorer aria-label="Close character explorer" title="Close">✕</button>
         </div>
@@ -1882,13 +1883,35 @@
     { rad: "火 / 灬", name: "火字旁 / 四点底", en: "Fire / Heat", desc: "Flames, cooking, boiling, temperature", ex: [["热", "rè"], ["烤", "kǎo"], ["点", "diǎn"], ["照", "zhào"]] }
   ];
 
-  function renderWrite() {
+  function resolveWriteChar(ch) {
+    const preset = WRITE_CHARS.find((x) => x.zh === ch);
+    if (preset) return preset;
+    const exact = WORDS.find((w) => w.zh === ch);
+    const parent = exact || WORDS.find((w) => w.zh.includes(ch));
+    return {
+      zh: ch,
+      py: exact ? exact.py : (parent ? `${parent.py} (in ${parent.zh})` : "—"),
+      en: exact ? exact.en : (parent ? `appears in ${parent.zh} (${shortEn(parent.en)})` : "Custom character"),
+      cat: parent ? `HSK ${parent.lv}` : "Custom",
+      strokes: "?",
+      steps: [],
+      radical: parent ? `HSK ${parent.lv}` : "Custom",
+      tip: "Trace the faint guide using the 7 Golden Stroke Order Rules below: top to bottom, left to right, horizontal before vertical, and outside before closing."
+    };
+  }
+
+  function renderWrite(qs = "") {
     document.title = "How to write Chinese characters — N1Mandarin";
     setActiveNav("write");
 
+    const params = new URLSearchParams(qs);
+    const reqChar = (params.get("char") || "").trim();
+    const firstHanzi = Array.from(reqChar).find((c) => /[\u4e00-\u9fff]/.test(c));
+    const initialChar = firstHanzi ? resolveWriteChar(firstHanzi) : (WRITE_CHARS.find((x) => x.zh === "永") || WRITE_CHARS[0]);
+
     const writeState = {
-      char: WRITE_CHARS.find((x) => x.zh === "永") || WRITE_CHARS[0],
-      cat: "Masterpiece",
+      char: initialChar,
+      cat: ["Masterpiece", "Foundational", "Nature"].includes(initialChar.cat) ? initialChar.cat : "Masterpiece",
       guide: true,
       mizige: true,
       color: "#1e1c1b",
@@ -1954,9 +1977,9 @@
 
           <div class="stroke-steps-box" data-steps-box>
             <div class="steps-label">Stroke Order Sequence · 笔顺拆解</div>
-            <ol class="steps-list">${writeState.char.steps.map((st, i) => `
+            ${writeState.char.steps.length ? `<ol class="steps-list">${writeState.char.steps.map((st, i) => `
               <li class="step-item"><span class="step-num">${i + 1}</span> ${esc(st)}</li>`).join("")}
-            </ol>
+            </ol>` : `<p class="muted small" style="margin:0;">Custom / HSK character — apply the 7 Golden Stroke Order Rules below while tracing.</p>`}
           </div>
 
           <div class="char-selector-box">
@@ -1968,6 +1991,10 @@
               ${WRITE_CHARS.filter((c) => c.cat === writeState.cat).map((c) => `
                 <button class="char-chip write-char-chip zh" lang="zh-Hans" data-choose-char="${c.zh}" aria-pressed="${writeState.char.zh === c.zh}">${c.zh}</button>`).join("")}
             </div>
+            <form class="write-custom-form" data-write-custom>
+              <input type="text" maxlength="4" placeholder="Type any character, e.g. 爱" aria-label="Type any Chinese character to practice" data-custom-char />
+              <button type="submit" class="btn small ghost">Practice 练习</button>
+            </form>
           </div>
         </div>
       </section>
@@ -2224,9 +2251,9 @@
 
       stepsBox.innerHTML = `
         <div class="steps-label">Stroke Order Sequence · 笔顺拆解</div>
-        <ol class="steps-list">${writeState.char.steps.map((st, i) => `
+        ${writeState.char.steps.length ? `<ol class="steps-list">${writeState.char.steps.map((st, i) => `
           <li class="step-item"><span class="step-num">${i + 1}</span> ${esc(st)}</li>`).join("")}
-        </ol>`;
+        </ol>` : `<p class="muted small" style="margin:0;">Custom / HSK character — apply the 7 Golden Stroke Order Rules below while tracing.</p>`}`;
 
       wireSpeak(infoBox);
 
@@ -2298,6 +2325,22 @@
     }
     wireChips();
 
+    const customForm = main.querySelector("[data-write-custom]");
+    if (customForm) {
+      customForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = customForm.querySelector("[data-custom-char]");
+        const val = (input.value || "").trim();
+        const ch = Array.from(val).find((c) => /[\u4e00-\u9fff]/.test(c));
+        if (!ch) return;
+        writeState.char = resolveWriteChar(ch);
+        writeState.strokes = [];
+        speak(ch);
+        updateCharDisplay();
+        input.value = "";
+      });
+    }
+
     // Clicking example words on strokes and radicals
     main.querySelectorAll("[data-load-char]").forEach((b) => b.addEventListener("click", () => {
       const ch = b.dataset.loadChar;
@@ -2368,7 +2411,7 @@
     else if (path === "#/flashcards") renderFlashcards();
     else if (path === "#/generate") renderGenerate(qs || "");
     else if (path === "#/pinyin") renderPinyin();
-    else if (path === "#/write") renderWrite();
+    else if (path === "#/write") renderWrite(qs || "");
     else if (path === "#/about") renderAbout();
     else if (path === "#/papers") renderLibrary();
     else renderHome();
