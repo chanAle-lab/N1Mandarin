@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -336,6 +336,7 @@
             </div>
             <p class="gloss">${esc(g.gloss)}</p>
           </li>`).join("")}</ol>
+          <div class="sb-box${learnState.grammarPy ? "" : " hide-py"}" data-sb>${sentenceBuilderHtml()}</div>
           ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("de-de-de"), paperLink("zai"), paperLink("ba"), paperLink("jiu-cai")])}
         </div>
       </details>
@@ -500,6 +501,8 @@
         main.querySelectorAll(`[data-py-opt="grammar"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
         const grid = main.querySelector(".gram-grid");
         if (grid) grid.classList.toggle("hide-py", !show);
+        const sb = main.querySelector(".sb-box");
+        if (sb) sb.classList.toggle("hide-py", !show);
       } else if (sec === "mistakes") {
         learnState.mistakesPy = show;
         main.querySelectorAll(`[data-py-opt="mistakes"]`).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.show === String(show))));
@@ -519,6 +522,105 @@
     }));
     wireFlips();
     wireQuiz();
+    wireSentenceBuilder();
+  }
+
+  function sentenceBuilderHtml() {
+    const items = L.sentenceBuilder || [];
+    if (!items.length) return "";
+    const idx = ((learnState.sbIdx % items.length) + items.length) % items.length;
+    const item = items[idx];
+    if (!learnState.sbShuffled || learnState.sbShuffledIdx !== idx) {
+      const indices = item.tokens.map((_, i) => i);
+      let shuf = shuffled(indices, `sb-${idx}-${item.zh}`);
+      // Ensure it is actually scrambled when possible
+      if (shuf.length > 1 && shuf.every((v, i) => v === i)) shuf = [...shuf.slice(1), shuf[0]];
+      learnState.sbShuffled = shuf;
+      learnState.sbShuffledIdx = idx;
+    }
+    const picked = learnState.sbPicked;
+    const remaining = learnState.sbShuffled.filter((i) => !picked.includes(i));
+    const trayClass = learnState.sbChecked === true ? "is-right" : (learnState.sbChecked === false ? "is-wrong" : "");
+    return `
+      <div class="sb-head">
+        <h3>Sentence Word-Order Builder <span class="zh">组句练习</span></h3>
+        <span class="sb-progress mono">${idx + 1} / ${items.length}</span>
+      </div>
+      <div>
+        <span class="sb-rule-tag">${esc(item.rule)}</span>
+        <p class="sb-prompt-en">${esc(item.en)}</p>
+      </div>
+      <div class="sb-tray ${trayClass}" aria-label="Your sentence">
+        ${picked.length
+          ? picked.map((ti, pos) => `<button type="button" class="sb-tile in-tray" data-sb-remove="${pos}" title="Remove tile"><span class="sb-tile-zh zh" lang="zh-Hans">${esc(item.tokens[ti][0])}</span><span class="sb-tile-py lat">${esc(item.tokens[ti][1])}</span></button>`).join("")
+          : `<span class="sb-placeholder">Tap the Chinese word tiles below in the right Mandarin order…</span>`}
+      </div>
+      <div class="sb-bank" aria-label="Available word tiles">
+        ${remaining.map((ti) => `<button type="button" class="sb-tile" data-sb-add="${ti}"><span class="sb-tile-zh zh" lang="zh-Hans">${esc(item.tokens[ti][0])}</span><span class="sb-tile-py lat">${esc(item.tokens[ti][1])}</span></button>`).join("")}
+      </div>
+      ${learnState.sbChecked !== null ? `
+        <div class="sb-feedback ${learnState.sbChecked ? "good" : "bad"}">
+          <div class="sb-fb-head">
+            <span>${learnState.sbChecked ? "✓ Correct!" : "✗ Not quite — correct order:"}</span>
+            <button type="button" class="say-line" data-say="${esc(item.zh)}" title="Listen">${zh(item.zh)}</button>
+            <span class="py lat sb-fb-py">${esc(item.py)}</span>
+          </div>
+          <p class="sb-fb-note">${esc(item.note)}</p>
+        </div>` : ""}
+      <div class="sb-actions">
+        <div class="sb-actions-left">
+          <button type="button" class="btn small" data-sb-check ${picked.length === item.tokens.length ? "" : "disabled"}>Check 检查</button>
+          <button type="button" class="btn small ghost" data-sb-reset>Reset</button>
+        </div>
+        <div class="sb-actions-right">
+          <button type="button" class="btn small ghost" data-sb-prev>← Prev</button>
+          <button type="button" class="btn small ghost" data-sb-next>Next →</button>
+        </div>
+      </div>`;
+  }
+
+  function wireSentenceBuilder() {
+    const box = main.querySelector("[data-sb]");
+    if (!box) return;
+    const items = L.sentenceBuilder || [];
+    if (!items.length) return;
+    const redraw = () => {
+      box.innerHTML = sentenceBuilderHtml();
+      wireSpeak(box);
+      wireSentenceBuilder();
+    };
+    box.querySelectorAll("[data-sb-add]").forEach((b) => b.addEventListener("click", () => {
+      learnState.sbPicked.push(+b.dataset.sbAdd);
+      learnState.sbChecked = null;
+      redraw();
+    }));
+    box.querySelectorAll("[data-sb-remove]").forEach((b) => b.addEventListener("click", () => {
+      learnState.sbPicked.splice(+b.dataset.sbRemove, 1);
+      learnState.sbChecked = null;
+      redraw();
+    }));
+    const chk = box.querySelector("[data-sb-check]");
+    if (chk) chk.addEventListener("click", () => {
+      const item = items[learnState.sbIdx];
+      const built = learnState.sbPicked.map((ti) => item.tokens[ti][0]).join("");
+      const target = item.tokens.map((t) => t[0]).join("");
+      learnState.sbChecked = built === target;
+      if (learnState.sbChecked) speak(item.zh);
+      redraw();
+    });
+    const rst = box.querySelector("[data-sb-reset]");
+    if (rst) rst.addEventListener("click", () => { learnState.sbPicked = []; learnState.sbChecked = null; redraw(); });
+    const go = (delta) => {
+      learnState.sbIdx = (learnState.sbIdx + delta + items.length) % items.length;
+      learnState.sbPicked = [];
+      learnState.sbChecked = null;
+      learnState.sbShuffled = null;
+      redraw();
+    };
+    const prev = box.querySelector("[data-sb-prev]");
+    const next = box.querySelector("[data-sb-next]");
+    if (prev) prev.addEventListener("click", () => go(-1));
+    if (next) next.addEventListener("click", () => go(1));
   }
 
   function wireFlips() {

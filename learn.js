@@ -291,6 +291,46 @@ window.LEARN = {
       wrong: "他八点才来电影院了。", wrongPy: "Tā bā diǎn cái lái diànyǐngyuàn le.", right: "他八点才来电影院。", rightPy: "Tā bā diǎn cái lái diànyǐngyuàn.", gloss: "He didn't arrive at the cinema until 8:00 (late action with 才 takes no 了)." }
   ],
 
+  /* 03b Interactive Sentence Word-Order Builder */
+  sentenceBuilder: [
+    { rule: "Time before Verb", en: "I am going to Beijing tomorrow.", zh: "我明天去北京。", py: "Wǒ míngtiān qù Běijīng.",
+      tokens: [["我", "wǒ"], ["明天", "míngtiān"], ["去", "qù"], ["北京", "Běijīng"]],
+      note: "Time expressions (明天) always sit before the verb (去), never at the end." },
+    { rule: "Place before Action", en: "I read books in the library.", zh: "我在图书馆看书。", py: "Wǒ zài túshūguǎn kànshū.",
+      tokens: [["我", "wǒ"], ["在图书馆", "zài túshūguǎn"], ["看书", "kànshū"]],
+      note: "在 + place goes before the action verb (看书), not after it." },
+    { rule: "Question Words Stay in Place", en: "Where are you going to buy fruit?", zh: "你去哪儿买水果？", py: "Nǐ qù nǎr mǎi shuǐguǒ?",
+      tokens: [["你", "nǐ"], ["去", "qù"], ["哪儿", "nǎr"], ["买", "mǎi"], ["水果", "shuǐguǒ"]],
+      note: "Put the question word (哪儿) right where the answer would go." },
+    { rule: "Number + Measure Word + Noun", en: "I want to buy three Chinese books.", zh: "我要买三本中文书。", py: "Wǒ yào mǎi sān běn Zhōngwén shū.",
+      tokens: [["我", "wǒ"], ["要买", "yào mǎi"], ["三", "sān"], ["本", "běn"], ["中文书", "Zhōngwén shū"]],
+      note: "Books take the measure word 本 between the number (三) and the noun." },
+    { rule: "Past Negation with 没", en: "I didn't go to work yesterday.", zh: "我昨天没去上班。", py: "Wǒ zuótiān méi qù shàngbān.",
+      tokens: [["我", "wǒ"], ["昨天", "zuótiān"], ["没", "méi"], ["去", "qù"], ["上班", "shàngbān"]],
+      note: "Use 没 (not 不) for actions that didn't happen, after the time word." },
+    { rule: "是……的 Past Focus", en: "I came to Beijing by train.", zh: "我是坐火车来北京的。", py: "Wǒ shì zuò huǒchē lái Běijīng de.",
+      tokens: [["我", "wǒ"], ["是", "shì"], ["坐火车", "zuò huǒchē"], ["来", "lái"], ["北京", "Běijīng"], ["的", "de"]],
+      note: "Frame the emphasized detail (how you traveled) inside 是……的." },
+    { rule: "把 Object-Fronting", en: "Please open the window.", zh: "请把窗户打开。", py: "Qǐng bǎ chuānghu dǎkāi.",
+      tokens: [["请", "qǐng"], ["把", "bǎ"], ["窗户", "chuānghu"], ["打开", "dǎkāi"]],
+      note: "Put 把 + object (窗户) before the verb + result (打开)." },
+    { rule: "Comparison with 比", en: "Today is much colder than yesterday.", zh: "今天比昨天冷得多。", py: "Jīntiān bǐ zuótiān lěng de duō.",
+      tokens: [["今天", "jīntiān"], ["比", "bǐ"], ["昨天", "zuótiān"], ["冷得多", "lěng de duō"]],
+      note: "A + 比 + B + Adjective (+ 得多 for 'much more')." },
+    { rule: "因为……所以 (HSK 2)", en: "Because it's raining, we are staying at home.", zh: "因为下雨，所以我们留在家里。", py: "Yīnwèi xiàyǔ, suǒyǐ wǒmen liú zài jiālǐ.",
+      tokens: [["因为", "yīnwèi"], ["下雨", "xiàyǔ"], ["所以", "suǒyǐ"], ["我们", "wǒmen"], ["留在家里", "liú zài jiālǐ"]],
+      note: "Mandarin pairs 因为 (because) and 所以 (so) together in the same sentence." },
+    { rule: "虽然……但是 (HSK 2)", en: "Although Chinese characters are hard, they are very interesting.", zh: "虽然汉字很难，但是很有趣。", py: "Suīrán hànzì hěn nán, dànshì hěn yǒuqù.",
+      tokens: [["虽然", "suīrán"], ["汉字", "hànzì"], ["很难", "hěn nán"], ["但是", "dànshì"], ["很有趣", "hěn yǒuqù"]],
+      note: "虽然 (although) and 但是 (but) work together as a pair." },
+    { rule: "不仅……而且 (HSK 4)", en: "He can not only speak Chinese, but also writes very well.", zh: "他不仅会说中文，而且写得很好。", py: "Tā bùjǐn huì shuō Zhōngwén, érqiě xiě de hěn hǎo.",
+      tokens: [["他", "tā"], ["不仅", "bùjǐn"], ["会说中文", "huì shuō Zhōngwén"], ["而且", "érqiě"], ["写得很好", "xiě de hěn hǎo"]],
+      note: "When both clauses share the same subject (他), put 不仅 after the subject." },
+    { rule: "无论……都 (HSK 4)", en: "No matter what the weather is like, I still want to go running.", zh: "无论天气怎么样，我都要去跑步。", py: "Wúlùn tiānqì zěnmeyàng, wǒ dōu yào qù pǎobù.",
+      tokens: [["无论", "wúlùn"], ["天气怎么样", "tiānqì zěnmeyàng"], ["我", "wǒ"], ["都", "dōu"], ["要去跑步", "yào qù pǎobù"]],
+      note: "无论 introduces any condition and pairs with 都 before the main verb." }
+  ],
+
   /* 05 Common English-speaker mistakes */
   mistakes: [
     ["我是饿。", "我饿了。", "Wǒ shì è.", "Wǒ è le.", "Hungry is an adjective, so no 是. 了 shows that it's a new situation: I've become hungry."],
