@@ -687,7 +687,7 @@
   }
 
   /* ---------- Word list ---------- */
-  const wl = { q: "", group: "All", hidePy: false, hideEn: false, onlyLearning: false, drawOpen: false, drawStrokes: [] };
+  const wl = { q: "", group: "All", hidePy: false, hideEn: false, onlyLearning: false, drawOpen: false, drawStrokes: [], exploreChar: "" };
 
   /* ---------- Draw-to-lookup handwriting recognizer ---------- */
   let CHAR_TEMPLATES = null;
@@ -925,13 +925,60 @@
       (!q || w.zh.includes(q) || plain(w.py).replace(/\s/g, "").includes(plain(q).replace(/\s/g, "")) || w.en.toLowerCase().includes(q));
   }
 
+  function renderCharLinks(zhStr) {
+    return Array.from(zhStr).map((c) => /[\u4e00-\u9fff]/.test(c)
+      ? `<button type="button" class="char-explore-btn" data-explore-char="${esc(c)}" title="Explore HSK 1–4 words with ${esc(c)}">${esc(c)}</button>`
+      : esc(c)).join("");
+  }
+
+  function charExplorerHtml(ch) {
+    if (!ch) return "";
+    const matches = WORDS.filter((w) => w.zh.includes(ch))
+      .sort((a, b) => a.lv - b.lv || a.zh.length - b.zh.length || a.n - b.n);
+    const exact = matches.find((w) => w.zh === ch);
+    const byLv = [1, 2, 3, 4].map((lv) => {
+      const c = matches.filter((w) => w.lv === lv).length;
+      return c ? `HSK ${lv}: ${c}` : "";
+    }).filter(Boolean).join(" · ");
+    const highlight = (word) => Array.from(word).map((c) => c === ch ? `<mark>${esc(c)}</mark>` : esc(c)).join("");
+    return `
+      <div class="char-exp-head">
+        <div class="char-exp-main">
+          <span class="char-exp-glyph zh" lang="zh-Hans">${esc(ch)}</span>
+          <div class="char-exp-info">
+            <div class="char-exp-title">
+              ${exact ? `<span class="char-exp-py lat">${esc(exact.py)}</span><span class="char-exp-en">${esc(exact.en)}</span><span class="char-exp-lv">HSK ${exact.lv}</span>` : `<span class="char-exp-en">Character in ${matches.length} HSK 1–4 word${matches.length === 1 ? "" : "s"}</span>`}
+              ${speakBtn(ch)}
+            </div>
+            <p class="char-exp-counts">${matches.length} compound &amp; standalone word${matches.length === 1 ? "" : "s"} across HSK 1–4${byLv ? ` (${byLv})` : ""} · Tap any word to listen</p>
+          </div>
+        </div>
+        <div class="char-exp-actions">
+          <button type="button" class="btn small ghost" data-filter-char="${esc(ch)}">Filter table to "${esc(ch)}"</button>
+          <button type="button" class="icon-btn" data-close-explorer aria-label="Close character explorer" title="Close">✕</button>
+        </div>
+      </div>
+      <div class="char-exp-grid">
+        ${matches.map((w) => `
+          <button type="button" class="char-exp-card" data-say="${esc(w.zh)}" title="Listen to ${esc(w.zh)}">
+            <span class="char-exp-card-top">
+              <span class="char-exp-zh zh" lang="zh-Hans">${highlight(w.zh)}</span>
+              <span class="char-exp-lv">HSK ${w.lv}</span>
+            </span>
+            <span class="char-exp-py lat">${esc(w.py)}</span>
+            <span class="char-exp-en">${esc(shortEn(w.en))}</span>
+          </button>
+        `).join("")}
+      </div>`;
+  }
+
   function wordRows() {
     const list = levelWords().filter(wordMatches);
     if (!list.length) return `<tr><td colspan="6" class="empty">No words match. Try a different search or group.</td></tr>`;
     return list.map((w) => `
       <tr class="${known.has(w.id) ? "is-known" : ""}">
         <td class="num">${level === "all" || level === "12" ? `<span class="lv">${w.lv}</span>` : ""}${w.n}</td>
-        <td class="w-zh"><span class="zh" lang="zh-Hans">${esc(w.zh)}</span></td>
+        <td class="w-zh"><span class="zh" lang="zh-Hans">${renderCharLinks(w.zh)}</span></td>
         <td class="w-py"><span class="cover">${esc(w.py)}</span></td>
         <td class="w-pos">${esc(w.pos)}</td>
         <td class="w-en"><span class="cover">${esc(w.en)}</span></td>
@@ -946,7 +993,7 @@
       <section class="page-head">
         <p class="eyebrow">New HSK 3.0 · Levels 1 to 4</p>
         <h1>HSK word list <span class="zh">词汇表</span></h1>
-        <p class="lede">All 300 HSK 1, 200 HSK 2, 500 HSK 3 and 1,000 HSK 4 words. Search by characters, pinyin (tone marks optional) or English. Hide the pinyin or meanings to test yourself, then click a covered cell to check it.</p>
+        <p class="lede">All 300 HSK 1, 200 HSK 2, 500 HSK 3 and 1,000 HSK 4 words. Search by characters, pinyin (tone marks optional) or English, or click any character to explore its compound words. Hide the pinyin or meanings to test yourself, then click a covered cell to check it.</p>
       </section>
       <div class="words-tools no-print">
         <div class="search-row">
@@ -981,6 +1028,7 @@
           </div>
         </div>
       </section>
+      <section class="char-explorer-panel no-print" data-char-explorer ${wl.exploreChar ? "" : "hidden"}>${wl.exploreChar ? charExplorerHtml(wl.exploreChar) : ""}</section>
       <div class="no-print">${levelRow("data-wlevel")}${chipRow("Type", GROUPS, wl.group, "data-group")}</div>
       <p class="count no-print" data-count></p>
       <div class="table-wrap">
@@ -996,8 +1044,35 @@
       const shown = pool.filter(wordMatches).length;
       main.querySelector("[data-count]").textContent = `Showing ${shown} of ${pool.length} ${levelName(level)} words · ${pool.filter((w) => known.has(w.id)).length} marked as known`;
     };
+    const explorerBox = main.querySelector("[data-char-explorer]");
+    function openExplorer(ch, scroll = false) {
+      if (!explorerBox) return;
+      wl.exploreChar = ch || "";
+      if (!ch) { explorerBox.hidden = true; explorerBox.innerHTML = ""; return; }
+      explorerBox.innerHTML = charExplorerHtml(ch);
+      explorerBox.hidden = false;
+      wireSpeak(explorerBox);
+      explorerBox.querySelector("[data-close-explorer]").addEventListener("click", () => openExplorer(""));
+      explorerBox.querySelector("[data-filter-char]").addEventListener("click", (e) => {
+        const target = e.currentTarget.dataset.filterChar;
+        wl.q = target;
+        const searchInput = main.querySelector("[data-wsearch]");
+        if (searchInput) searchInput.value = target;
+        if (!levelWords().some(wordMatches) && level !== "all") {
+          level = "all";
+          main.querySelectorAll("[data-wlevel]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.wlevel === "all"));
+        }
+        refresh();
+      });
+      if (scroll) explorerBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+    if (wl.exploreChar) openExplorer(wl.exploreChar);
+
     function wireRows() {
       wireSpeak(main.querySelector("[data-wrows]"));
+      main.querySelectorAll("[data-explore-char]").forEach((b) => b.addEventListener("click", () => {
+        openExplorer(b.dataset.exploreChar, true);
+      }));
       main.querySelectorAll("[data-know]").forEach((b) => b.addEventListener("click", () => {
         const n = b.dataset.know;
         known.has(n) ? known.delete(n) : known.add(n); store.save();
@@ -1009,7 +1084,11 @@
     main.querySelectorAll("[data-wlevel]").forEach((b) => b.addEventListener("click", () => {
       level = b.dataset.wlevel; main.querySelectorAll("[data-wlevel]").forEach((x) => x.setAttribute("aria-pressed", x === b)); refresh();
     }));
-    main.querySelector("[data-wsearch]").addEventListener("input", (e) => { wl.q = e.target.value; refresh(); });
+    main.querySelector("[data-wsearch]").addEventListener("input", (e) => {
+      wl.q = e.target.value;
+      if (/^[\u4e00-\u9fff]$/.test(wl.q.trim())) openExplorer(wl.q.trim());
+      refresh();
+    });
     main.querySelectorAll("[data-group]").forEach((b) => b.addEventListener("click", () => {
       wl.group = b.dataset.group; main.querySelectorAll("[data-group]").forEach((x) => x.setAttribute("aria-pressed", x === b)); refresh();
     }));
@@ -1096,6 +1175,7 @@
           level = "all";
           main.querySelectorAll("[data-wlevel]").forEach((x) => x.setAttribute("aria-pressed", x.dataset.wlevel === "all"));
         }
+        openExplorer(ch);
         refresh();
       }));
     }
