@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, gramShown: 1, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, gramIdx: 0, gramAll: false, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -509,8 +509,9 @@
 
   function grammarSectionHtml() {
     const total = L.grammar.length;
-    const shown = Math.min(total, Math.max(1, learnState.gramShown));
-    const cards = L.grammar.slice(0, shown).map((g, i) => `<li class="gram">
+    const idx = ((learnState.gramIdx % total) + total) % total;
+    const list = learnState.gramAll ? L.grammar.map((g, i) => [g, i]) : [[L.grammar[idx], idx]];
+    const cards = list.map(([g, i]) => `<li class="gram">
       <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
       <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
       <p>${latin(esc(g.en))}</p>
@@ -530,37 +531,34 @@
       </div>
       <p class="gloss">${esc(g.gloss)}</p>
     </li>`).join("");
-    const nextNo = String(shown + 1).padStart(2, "0");
     return `
       <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${cards}</ol>
       <div class="gram-reveal-bar no-print">
-        <span class="gram-reveal-count mono">Showing ${shown} of ${total}</span>
-        <div class="gram-reveal-btns">
-          ${shown < total ? `<button type="button" class="btn small" data-gram-next>Reveal next (${nextNo}) →</button>` : ""}
-          ${shown < total ? `<button type="button" class="btn small ghost" data-gram-all>Show all (${total})</button>` : ""}
-          ${shown > 1 ? `<button type="button" class="btn small ghost" data-gram-reset>Reset to 01</button>` : ""}
-        </div>
+        ${learnState.gramAll
+          ? `<span class="gram-reveal-count mono">Showing all ${total} rules</span>`
+          : `<div class="gram-reveal-btns">
+              <button type="button" class="btn small ghost" data-gram-prev>← Prev</button>
+              <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-2);">${String(idx + 1).padStart(2, "0")} / ${total}</span>
+              <button type="button" class="btn small" data-gram-next>Next →</button>
+            </div>`}
+        <button type="button" class="btn small ghost" data-gram-all>${learnState.gramAll ? "One at a time" : `Show all (${total})`}</button>
       </div>`;
   }
 
   function wireGrammar() {
     const wrap = main.querySelector("[data-gram-wrap]");
     if (!wrap) return;
-    const redraw = (scrollLast) => {
+    const redraw = () => {
       wrap.innerHTML = grammarSectionHtml();
       wireSpeak(wrap);
       wireGrammar();
-      if (scrollLast) {
-        const last = wrap.querySelector(".gram-grid .gram:last-child");
-        if (last) last.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
     };
+    const prev = wrap.querySelector("[data-gram-prev]");
+    if (prev) prev.addEventListener("click", () => { learnState.gramIdx = (learnState.gramIdx - 1 + L.grammar.length) % L.grammar.length; redraw(); });
     const next = wrap.querySelector("[data-gram-next]");
-    if (next) next.addEventListener("click", () => { learnState.gramShown = Math.min(L.grammar.length, learnState.gramShown + 1); redraw(true); });
+    if (next) next.addEventListener("click", () => { learnState.gramIdx = (learnState.gramIdx + 1) % L.grammar.length; redraw(); });
     const all = wrap.querySelector("[data-gram-all]");
-    if (all) all.addEventListener("click", () => { learnState.gramShown = L.grammar.length; redraw(false); });
-    const rst = wrap.querySelector("[data-gram-reset]");
-    if (rst) rst.addEventListener("click", () => { learnState.gramShown = 1; redraw(false); });
+    if (all) all.addEventListener("click", () => { learnState.gramAll = !learnState.gramAll; redraw(); });
   }
 
   function sentenceBuilderHtml() {
