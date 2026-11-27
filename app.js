@@ -118,6 +118,46 @@
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
   const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, fixDeck: null, fixPos: 0, fixStatus: {}, idiomCat: "All", idiomPy: true, idiomDeck: null, idiomPos: 0, idiomStatus: {}, quizPy: false, quizDeck: null, quizPos: 0, quizStatus: {}, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  if (store.learn && typeof store.learn === "object") {
+    const sl = store.learn;
+    ["answers", "charDeck", "charPos", "charStatus", "soundDeck", "soundPos", "soundStatus", "gramDeck", "gramPos", "gramStatus", "fixDeck", "fixPos", "fixStatus", "idiomCat", "idiomDeck", "idiomPos", "idiomStatus", "quizDeck", "quizPos", "quizStatus"].forEach((k) => {
+      if (sl[k] !== undefined) learnState[k] = sl[k];
+    });
+  }
+  function saveLearnState() {
+    store.learn = {
+      answers: learnState.answers,
+      charDeck: learnState.charDeck, charPos: learnState.charPos, charStatus: learnState.charStatus,
+      soundDeck: learnState.soundDeck, soundPos: learnState.soundPos, soundStatus: learnState.soundStatus,
+      gramDeck: learnState.gramDeck, gramPos: learnState.gramPos, gramStatus: learnState.gramStatus,
+      fixDeck: learnState.fixDeck, fixPos: learnState.fixPos, fixStatus: learnState.fixStatus,
+      idiomCat: learnState.idiomCat, idiomDeck: learnState.idiomDeck, idiomPos: learnState.idiomPos, idiomStatus: learnState.idiomStatus,
+      quizDeck: learnState.quizDeck, quizPos: learnState.quizPos, quizStatus: learnState.quizStatus
+    };
+    store.save();
+    document.querySelectorAll("[data-sec-badge]").forEach((el) => {
+      el.innerHTML = secReviewBadge(el.dataset.secBadge);
+    });
+  }
+  function secReviewBadge(id) {
+    const map = {
+      characters: [learnState.charStatus, ((L.characters && L.characters.types) || []).length],
+      grammar: [learnState.gramStatus, (L.grammar || []).length],
+      sounds: [learnState.soundStatus, (L.sounds || []).length],
+      mistakes: [learnState.fixStatus, (L.mistakes || []).length],
+      idioms: [learnState.idiomStatus, (L.idioms || []).length],
+      quiz: [learnState.quizStatus, (L.quiz || []).length]
+    };
+    const entry = map[id];
+    if (!entry) return "";
+    const [st, total] = entry;
+    const vals = Object.values(st || {});
+    const notCount = vals.filter((v) => v === "not").length;
+    const gotCount = vals.filter((v) => v === "got").length;
+    if (notCount > 0) return `<span class="sec-review-badge needs-review">${notCount} to review</span>`;
+    if (total > 0 && gotCount >= total) return `<span class="sec-review-badge all-got">✓ All got it</span>`;
+    return "";
+  }
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -125,7 +165,7 @@
   const secHead = (no, id, en, zhs, intro) => `<summary class="sec-head">
       <span class="sec-no mono">${no}</span>
       <div class="sec-head-text">
-        <h2>${en} <span class="zh" lang="zh-Hans">${zhs}</span></h2>
+        <h2>${en} <span class="zh" lang="zh-Hans">${zhs}</span><span data-sec-badge="${id}">${secReviewBadge(id)}</span></h2>
         <p>${intro}</p>
       </div>
       <span class="sec-toggle-indicator" aria-hidden="true">
@@ -224,6 +264,7 @@
     const wrap = main.querySelector("[data-idioms]");
     if (!wrap) return;
     const redraw = () => {
+      saveLearnState();
       wrap.innerHTML = idiomCards();
       wireSpeak(wrap);
       wireIdioms();
@@ -632,6 +673,7 @@
     if (!wrap) return;
     const items = L.mistakes || [];
     const redraw = () => {
+      saveLearnState();
       wrap.innerHTML = mistakesSectionHtml();
       wireSpeak(wrap);
       wireMistakes();
@@ -709,6 +751,7 @@
     if (!wrap) return;
     const sounds = L.sounds || [];
     const redraw = () => {
+      saveLearnState();
       wrap.innerHTML = soundSectionHtml();
       wireSpeak(wrap);
       wireSounds();
@@ -800,6 +843,7 @@
     if (!wrap) return;
     const types = (L.characters && L.characters.types) || [];
     const redraw = () => {
+      saveLearnState();
       wrap.innerHTML = liushuSectionHtml();
       wireSpeak(wrap);
       wireLiushu();
@@ -889,6 +933,7 @@
     const wrap = main.querySelector("[data-gram-wrap]");
     if (!wrap) return;
     const redraw = () => {
+      saveLearnState();
       wrap.innerHTML = grammarSectionHtml();
       wireSpeak(wrap);
       wireGrammar();
@@ -1026,6 +1071,7 @@
     const box = main.querySelector("[data-quiz]");
     if (!box) return;
     const redraw = () => {
+      saveLearnState();
       box.innerHTML = quizHtml();
       wireQuiz();
     };

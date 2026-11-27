@@ -893,6 +893,25 @@ details.learn-sec[open] .sec-toggle-indicator {
 .sec-toggle-indicator .chevron-icon {
   transition: transform .25s ease;
 }
+.sec-review-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 99px;
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+.sec-review-badge.needs-review {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+.sec-review-badge.all-got {
+  background: oklch(from var(--color-answer) l c h / .12);
+  color: var(--color-answer);
+  border: 1px solid var(--color-answer);
+}
 details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
   transform: rotate(180deg);
 }
