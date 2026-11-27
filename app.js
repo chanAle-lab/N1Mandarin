@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, gramShown: 1, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -316,26 +316,7 @@
             <button class="chip" data-py-opt="grammar" data-show="true" aria-pressed="${learnState.grammarPy}">Show 显示</button>
             <button class="chip" data-py-opt="grammar" data-show="false" aria-pressed="${!learnState.grammarPy}">Hide 隐藏</button>
           </div>
-          <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${L.grammar.map((g, i) => `<li class="gram">
-            <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
-            <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
-            <p>${latin(esc(g.en))}</p>
-            <div class="ex bad">
-              <span class="mark" aria-label="Wrong">✗</span>
-              <div class="ex-body">
-                ${zh(g.wrong)}
-                ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
-              </div>
-            </div>
-            <div class="ex good">
-              <span class="mark" aria-label="Right">✓</span>
-              <div class="ex-body">
-                <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
-                ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
-              </div>
-            </div>
-            <p class="gloss">${esc(g.gloss)}</p>
-          </li>`).join("")}</ol>
+          <div data-gram-wrap>${grammarSectionHtml()}</div>
           <div class="sb-box${learnState.grammarPy ? "" : " hide-py"}" data-sb>${sentenceBuilderHtml()}</div>
           ${further([paperLink("measure-words"), paperLink("question-words"), paperLink("le-guo"), paperLink("de"), paperLink("de-de-de"), paperLink("zai"), paperLink("ba"), paperLink("jiu-cai")])}
         </div>
@@ -521,8 +502,65 @@
       }
     }));
     wireFlips();
+    wireGrammar();
     wireQuiz();
     wireSentenceBuilder();
+  }
+
+  function grammarSectionHtml() {
+    const total = L.grammar.length;
+    const shown = Math.min(total, Math.max(1, learnState.gramShown));
+    const cards = L.grammar.slice(0, shown).map((g, i) => `<li class="gram">
+      <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
+      <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
+      <p>${latin(esc(g.en))}</p>
+      <div class="ex bad">
+        <span class="mark" aria-label="Wrong">✗</span>
+        <div class="ex-body">
+          ${zh(g.wrong)}
+          ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
+        </div>
+      </div>
+      <div class="ex good">
+        <span class="mark" aria-label="Right">✓</span>
+        <div class="ex-body">
+          <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
+          ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
+        </div>
+      </div>
+      <p class="gloss">${esc(g.gloss)}</p>
+    </li>`).join("");
+    const nextNo = String(shown + 1).padStart(2, "0");
+    return `
+      <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${cards}</ol>
+      <div class="gram-reveal-bar no-print">
+        <span class="gram-reveal-count mono">Showing ${shown} of ${total}</span>
+        <div class="gram-reveal-btns">
+          ${shown < total ? `<button type="button" class="btn small" data-gram-next>Reveal next (${nextNo}) →</button>` : ""}
+          ${shown < total ? `<button type="button" class="btn small ghost" data-gram-all>Show all (${total})</button>` : ""}
+          ${shown > 1 ? `<button type="button" class="btn small ghost" data-gram-reset>Reset to 01</button>` : ""}
+        </div>
+      </div>`;
+  }
+
+  function wireGrammar() {
+    const wrap = main.querySelector("[data-gram-wrap]");
+    if (!wrap) return;
+    const redraw = (scrollLast) => {
+      wrap.innerHTML = grammarSectionHtml();
+      wireSpeak(wrap);
+      wireGrammar();
+      if (scrollLast) {
+        const last = wrap.querySelector(".gram-grid .gram:last-child");
+        if (last) last.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    };
+    const next = wrap.querySelector("[data-gram-next]");
+    if (next) next.addEventListener("click", () => { learnState.gramShown = Math.min(L.grammar.length, learnState.gramShown + 1); redraw(true); });
+    const all = wrap.querySelector("[data-gram-all]");
+    if (all) all.addEventListener("click", () => { learnState.gramShown = L.grammar.length; redraw(false); });
+    const rst = wrap.querySelector("[data-gram-reset]");
+    if (rst) rst.addEventListener("click", () => { learnState.gramShown = 1; redraw(false); });
   }
 
   function sentenceBuilderHtml() {
