@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, gramIdx: 0, gramAll: false, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -508,40 +508,60 @@
   }
 
   function grammarSectionHtml() {
+    if (!learnState.gramDeck) learnState.gramDeck = L.grammar.map((_, i) => i);
+    const deck = learnState.gramDeck;
     const total = L.grammar.length;
-    const idx = ((learnState.gramIdx % total) + total) % total;
-    const list = learnState.gramAll ? L.grammar.map((g, i) => [g, i]) : [[L.grammar[idx], idx]];
-    const cards = list.map(([g, i]) => `<li class="gram">
-      <span class="gram-no mono">${String(i + 1).padStart(2, "0")}</span>
-      <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
-      <p>${latin(esc(g.en))}</p>
-      <div class="ex bad">
-        <span class="mark" aria-label="Wrong">✗</span>
-        <div class="ex-body">
-          ${zh(g.wrong)}
-          ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
-        </div>
-      </div>
-      <div class="ex good">
-        <span class="mark" aria-label="Right">✓</span>
-        <div class="ex-body">
-          <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
-          ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
-        </div>
-      </div>
-      <p class="gloss">${esc(g.gloss)}</p>
-    </li>`).join("");
+    const gotCount = Object.values(learnState.gramStatus).filter((v) => v === "got").length;
+    const notYetList = deck.filter((i) => learnState.gramStatus[i] === "not");
+
+    if (learnState.gramPos >= deck.length) {
+      return `
+        <div class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">
+          <div class="gram" style="text-align:center;justify-items:center;padding:var(--space-8) var(--space-6);">
+            <h3>All ${deck.length} rule${deck.length === 1 ? "" : "s"} reviewed!</h3>
+            <p>${gotCount} of ${total} marked <b>Got it ✓</b>${notYetList.length ? ` · ${notYetList.length} marked <b>Not yet</b>` : ""}.</p>
+            <div class="gram-reveal-btns" style="margin-top:var(--space-3);">
+              ${notYetList.length ? `<button type="button" class="btn small" data-gram-review>Review "Not yet" (${notYetList.length}) →</button>` : ""}
+              <button type="button" class="btn small ghost" data-gram-restart>Start over (all ${total})</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const idx = deck[learnState.gramPos];
+    const g = L.grammar[idx];
     return `
-      <ol class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">${cards}</ol>
+      <div class="gram-grid${learnState.grammarPy ? "" : " hide-py"}">
+        <article class="gram">
+          <span class="gram-no mono">${String(idx + 1).padStart(2, "0")}</span>
+          <h3>${esc(g.title)} <span class="zh" lang="zh-Hans">${esc(g.zh)}</span></h3>
+          <p>${latin(esc(g.en))}</p>
+          <div class="ex bad">
+            <span class="mark" aria-label="Wrong">✗</span>
+            <div class="ex-body">
+              ${zh(g.wrong)}
+              ${g.wrongPy ? `<span class="py lat ex-py">${esc(g.wrongPy)}</span>` : ""}
+            </div>
+          </div>
+          <div class="ex good">
+            <span class="mark" aria-label="Right">✓</span>
+            <div class="ex-body">
+              <button class="say-line" data-say="${esc(g.right)}" title="Listen">${zh(g.right)}</button>
+              ${g.rightPy ? `<span class="py lat ex-py">${esc(g.rightPy)}</span>` : ""}
+            </div>
+          </div>
+          <p class="gloss">${esc(g.gloss)}</p>
+        </article>
+      </div>
       <div class="gram-reveal-bar no-print">
-        ${learnState.gramAll
-          ? `<span class="gram-reveal-count mono">Showing all ${total} rules</span>`
-          : `<div class="gram-reveal-btns">
-              <button type="button" class="btn small ghost" data-gram-prev>← Prev</button>
-              <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-2);">${String(idx + 1).padStart(2, "0")} / ${total}</span>
-              <button type="button" class="btn small" data-gram-next>Next →</button>
-            </div>`}
-        <button type="button" class="btn small ghost" data-gram-all>${learnState.gramAll ? "One at a time" : `Show all (${total})`}</button>
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-gram-prev ${learnState.gramPos === 0 ? "disabled" : ""} aria-label="Previous rule">←</button>
+          <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-1);">${learnState.gramPos + 1} / ${deck.length} · ${gotCount} got it</span>
+        </div>
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-gram-rate="not">Not yet ✗</button>
+          <button type="button" class="btn small" data-gram-rate="got">Got it ✓</button>
+        </div>
       </div>`;
   }
 
@@ -554,11 +574,26 @@
       wireGrammar();
     };
     const prev = wrap.querySelector("[data-gram-prev]");
-    if (prev) prev.addEventListener("click", () => { learnState.gramIdx = (learnState.gramIdx - 1 + L.grammar.length) % L.grammar.length; redraw(); });
-    const next = wrap.querySelector("[data-gram-next]");
-    if (next) next.addEventListener("click", () => { learnState.gramIdx = (learnState.gramIdx + 1) % L.grammar.length; redraw(); });
-    const all = wrap.querySelector("[data-gram-all]");
-    if (all) all.addEventListener("click", () => { learnState.gramAll = !learnState.gramAll; redraw(); });
+    if (prev) prev.addEventListener("click", () => { if (learnState.gramPos > 0) { learnState.gramPos--; redraw(); } });
+    wrap.querySelectorAll("[data-gram-rate]").forEach((b) => b.addEventListener("click", () => {
+      const idx = learnState.gramDeck[learnState.gramPos];
+      learnState.gramStatus[idx] = b.dataset.gramRate;
+      learnState.gramPos++;
+      redraw();
+    }));
+    const rev = wrap.querySelector("[data-gram-review]");
+    if (rev) rev.addEventListener("click", () => {
+      learnState.gramDeck = learnState.gramDeck.filter((i) => learnState.gramStatus[i] === "not");
+      learnState.gramPos = 0;
+      redraw();
+    });
+    const rst = wrap.querySelector("[data-gram-restart]");
+    if (rst) rst.addEventListener("click", () => {
+      learnState.gramDeck = L.grammar.map((_, i) => i);
+      learnState.gramPos = 0;
+      learnState.gramStatus = {};
+      redraw();
+    });
   }
 
   function sentenceBuilderHtml() {
