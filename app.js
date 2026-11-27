@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, fixDeck: null, fixPos: 0, fixStatus: {}, idiomCat: "All", idiomPy: true, idiomDeck: null, idiomPos: 0, idiomStatus: {}, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, fixDeck: null, fixPos: 0, fixStatus: {}, idiomCat: "All", idiomPy: true, idiomDeck: null, idiomPos: 0, idiomStatus: {}, quizPy: false, quizDeck: null, quizPos: 0, quizStatus: {}, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -254,19 +254,50 @@
   }
 
   function quizHtml() {
-    const done = Object.keys(learnState.answers).length;
-    const right = L.quiz.filter((q, i) => learnState.answers[i] === q[2]).length;
-    return `<ol class="quiz${learnState.quizPy ? "" : " hide-py"}">${L.quiz.map(([q, opts, ok, why, optsPy, qPy], i) => {
-      const a = learnState.answers[i];
-      const answered = a !== undefined;
-      return `<li class="q${answered ? (a === ok ? " is-right" : " is-wrong") : ""}">
-        <p class="q-text">${latin(esc(q))}${qPy ? ` <span class="py lat q-py">${esc(qPy)}</span>` : ""}</p>
-        <div class="q-opts">${opts.map((o, j) => `<button class="q-opt${answered && j === ok ? " ok" : ""}${answered && j === a && a !== ok ? " no" : ""}" data-q="${i}" data-a="${j}" ${answered ? "disabled" : ""}><span class="q-letter">${LETTERS[j]}</span><span class="q-opt-body">${hasZh(o) ? zh(o) : `<span class="lat">${esc(o)}</span>`}${optsPy && optsPy[j] ? `<span class="py lat q-py">${esc(optsPy[j])}</span>` : ""}</span></button>`).join("")}</div>
-        ${answered ? `<p class="q-why"><b>${a === ok ? "Correct." : "Not quite."}</b> ${latin(esc(why))}</p>` : ""}
-      </li>`; }).join("")}</ol>
-      <div class="quiz-score" aria-live="polite">
-        <p><b class="mono">${right} / ${L.quiz.length}</b> ${done < L.quiz.length ? `· ${L.quiz.length - done} left to answer` : right === L.quiz.length ? "· Perfect score. 太棒了！" : right >= 7 ? "· Great work. Review the ones you missed above." : "· Read sections 03 and 04 again, then try once more."}</p>
-        ${done ? `<button class="btn ghost small" data-quiz-reset>Try again</button>` : ""}
+    const items = L.quiz || [];
+    if (!items.length) return "";
+    if (!learnState.quizDeck) learnState.quizDeck = items.map((_, i) => i);
+    const deck = learnState.quizDeck;
+    const total = items.length;
+    const right = items.filter((q, i) => learnState.answers[i] === q[2]).length;
+    const gotCount = Object.values(learnState.quizStatus).filter((v) => v === "got").length;
+    const notYetList = deck.filter((i) => learnState.quizStatus[i] === "not");
+
+    if (learnState.quizPos >= deck.length) {
+      return `
+        <div class="quiz${learnState.quizPy ? "" : " hide-py"}">
+          <div class="q" style="text-align:center;justify-items:center;padding:var(--space-8) var(--space-6);">
+            <h3>All ${deck.length} question${deck.length === 1 ? "" : "s"} reviewed!</h3>
+            <p class="q-why">${right} / ${total} answered correctly · ${gotCount} marked <b>Got it ✓</b>${notYetList.length ? ` · ${notYetList.length} marked <b>Not yet</b>` : ""}.</p>
+            <div class="gram-reveal-btns" style="margin-top:var(--space-3);">
+              ${notYetList.length ? `<button type="button" class="btn small" data-quiz-review>Review "Not yet" (${notYetList.length}) →</button>` : ""}
+              <button type="button" class="btn small ghost" data-quiz-reset>Start over (all ${total})</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const i = deck[learnState.quizPos];
+    const [q, opts, ok, why, optsPy, qPy] = items[i];
+    const a = learnState.answers[i];
+    const answered = a !== undefined;
+    return `
+      <div class="quiz${learnState.quizPy ? "" : " hide-py"}">
+        <article class="q${answered ? (a === ok ? " is-right" : " is-wrong") : ""}">
+          <p class="q-text"><span class="q-no mono">${i + 1}.</span>${latin(esc(q))}${qPy ? ` <span class="py lat q-py">${esc(qPy)}</span>` : ""}</p>
+          <div class="q-opts">${opts.map((o, j) => `<button class="q-opt${answered && j === ok ? " ok" : ""}${answered && j === a && a !== ok ? " no" : ""}" data-q="${i}" data-a="${j}" ${answered ? "disabled" : ""}><span class="q-letter">${LETTERS[j]}</span><span class="q-opt-body">${hasZh(o) ? zh(o) : `<span class="lat">${esc(o)}</span>`}${optsPy && optsPy[j] ? `<span class="py lat q-py">${esc(optsPy[j])}</span>` : ""}</span></button>`).join("")}</div>
+          ${answered ? `<p class="q-why"><b>${a === ok ? "Correct." : "Not quite."}</b> ${latin(esc(why))}</p>` : ""}
+        </article>
+      </div>
+      <div class="gram-reveal-bar no-print">
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-quiz-prev ${learnState.quizPos === 0 ? "disabled" : ""} aria-label="Previous question">←</button>
+          <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-1);">${learnState.quizPos + 1} / ${deck.length} · ${gotCount} got it</span>
+        </div>
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-quiz-rate="not">Not yet ✗</button>
+          <button type="button" class="btn small" data-quiz-rate="got">Got it ✓</button>
+        </div>
       </div>`;
   }
 
@@ -993,13 +1024,38 @@
 
   function wireQuiz() {
     const box = main.querySelector("[data-quiz]");
-    box.querySelectorAll("[data-q]").forEach((b) => b.addEventListener("click", () => {
-      learnState.answers[+b.dataset.q] = +b.dataset.a;
+    if (!box) return;
+    const redraw = () => {
       box.innerHTML = quizHtml();
       wireQuiz();
+    };
+    box.querySelectorAll("[data-q]").forEach((b) => b.addEventListener("click", () => {
+      learnState.answers[+b.dataset.q] = +b.dataset.a;
+      redraw();
     }));
+    const prev = box.querySelector("[data-quiz-prev]");
+    if (prev) prev.addEventListener("click", () => { if (learnState.quizPos > 0) { learnState.quizPos--; redraw(); } });
+    box.querySelectorAll("[data-quiz-rate]").forEach((b) => b.addEventListener("click", () => {
+      const idx = learnState.quizDeck[learnState.quizPos];
+      learnState.quizStatus[idx] = b.dataset.quizRate;
+      learnState.quizPos++;
+      redraw();
+    }));
+    const rev = box.querySelector("[data-quiz-review]");
+    if (rev) rev.addEventListener("click", () => {
+      learnState.quizDeck = learnState.quizDeck.filter((i) => learnState.quizStatus[i] === "not");
+      learnState.quizDeck.forEach((i) => { delete learnState.answers[i]; });
+      learnState.quizPos = 0;
+      redraw();
+    });
     const r = box.querySelector("[data-quiz-reset]");
-    if (r) r.addEventListener("click", () => { learnState.answers = {}; box.innerHTML = quizHtml(); wireQuiz(); box.scrollIntoView({ behavior: "smooth" }); });
+    if (r) r.addEventListener("click", () => {
+      learnState.answers = {};
+      learnState.quizDeck = (L.quiz || []).map((_, i) => i);
+      learnState.quizPos = 0;
+      learnState.quizStatus = {};
+      redraw();
+    });
   }
 
   /* ---------- Library ---------- */

@@ -1482,12 +1482,12 @@ details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
 .further a { color: var(--color-ink); text-decoration-color: var(--color-faint); text-underline-offset: 3px; }
 .further a:hover { text-decoration-color: var(--color-accent); }
 
-.quiz { list-style: none; counter-reset: q; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr)); gap: var(--space-4); }
-.q { counter-increment: q; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius); padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
+.quiz { list-style: none; padding: 0; margin: 0 auto; max-width: 34rem; display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+.q { animation: fadeInSec .22s ease; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius); padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
 .q.is-right { border-color: var(--color-answer); }
 .q.is-wrong { border-color: var(--color-accent); }
 .q-text { font-weight: 600; }
-.q-text::before { content: counter(q) ". "; color: var(--color-accent); }
+.q-no { color: var(--color-accent); margin-right: 4px; }
 .q-opts { display: grid; gap: var(--space-2); }
 .q-opt { display: flex; align-items: center; gap: var(--space-3); font: inherit; font-size: var(--text-lg); text-align: left; color: var(--color-ink); background: var(--color-bg); border: 1px solid var(--color-line); border-radius: var(--radius); padding: var(--space-2) var(--space-3); cursor: pointer; min-height: 44px; }
 .q-opt-body { display: grid; gap: 1px; }
