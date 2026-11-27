@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -304,12 +304,7 @@
         ${secHead("04", "sounds", "Sounds English doesn't have", "英语里没有的音", "Most Mandarin sounds are close to English, but a few have no English match and change the meaning of a word. Each card says how to make the sound. Tap the pairs and listen for the difference.")}
         <div class="sec-body">
           ${speedRow()}
-          <div class="sound-grid">${L.sounds.map((s) => `<article class="sound">
-            <p class="sound-sym lat">${esc(s.sym)}</p>
-            <h3>${esc(s.title)}</h3>
-            <p class="sound-tip">${esc(s.tip)}</p>
-            <ul class="pairs">${s.pairs.reduce((rows, p, i) => (i % 2 ? rows[rows.length - 1].push(p) : rows.push([p]), rows), []).map(([a, b]) => `<li>${sayItem(...a)}<span class="vs">vs</span>${sayItem(...b)}</li>`).join("")}</ul>
-          </article>`).join("")}</div>
+          <div data-sound-wrap>${soundSectionHtml()}</div>
           ${further([`<a href="#/pinyin">Pinyin sounds: split any syllable and hear every initial and final</a>`, paperLink("tones"), paperLink("initials-finals"), paperLink("tricky-sounds")])}
         </div>
       </details>
@@ -481,8 +476,86 @@
     wireFlips();
     wireLiushu();
     wireGrammar();
+    wireSounds();
     wireQuiz();
     wireSentenceBuilder();
+  }
+
+  function soundSectionHtml() {
+    const sounds = L.sounds || [];
+    if (!sounds.length) return "";
+    if (!learnState.soundDeck) learnState.soundDeck = sounds.map((_, i) => i);
+    const deck = learnState.soundDeck;
+    const total = sounds.length;
+    const gotCount = Object.values(learnState.soundStatus).filter((v) => v === "got").length;
+    const notYetList = deck.filter((i) => learnState.soundStatus[i] === "not");
+
+    if (learnState.soundPos >= deck.length) {
+      return `
+        <div class="sound-grid">
+          <div class="sound" style="text-align:center;justify-items:center;padding:var(--space-8) var(--space-6);">
+            <h3>All ${deck.length} sound${deck.length === 1 ? "" : "s"} reviewed!</h3>
+            <p class="sound-tip">${gotCount} of ${total} marked <b>Got it ✓</b>${notYetList.length ? ` · ${notYetList.length} marked <b>Not yet</b>` : ""}.</p>
+            <div class="gram-reveal-btns" style="margin-top:var(--space-3);">
+              ${notYetList.length ? `<button type="button" class="btn small" data-sound-review>Review "Not yet" (${notYetList.length}) →</button>` : ""}
+              <button type="button" class="btn small ghost" data-sound-restart>Start over (all ${total})</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const s = sounds[deck[learnState.soundPos]];
+    return `
+      <div class="sound-grid">
+        <article class="sound">
+          <p class="sound-sym lat">${esc(s.sym)}</p>
+          <h3>${esc(s.title)}</h3>
+          <p class="sound-tip">${esc(s.tip)}</p>
+          <ul class="pairs">${s.pairs.reduce((rows, p, i) => (i % 2 ? rows[rows.length - 1].push(p) : rows.push([p]), rows), []).map(([a, b]) => `<li>${sayItem(...a)}<span class="vs">vs</span>${sayItem(...b)}</li>`).join("")}</ul>
+        </article>
+      </div>
+      <div class="gram-reveal-bar no-print">
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-sound-prev ${learnState.soundPos === 0 ? "disabled" : ""} aria-label="Previous sound">←</button>
+          <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-1);">${learnState.soundPos + 1} / ${deck.length} · ${gotCount} got it</span>
+        </div>
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-sound-rate="not">Not yet ✗</button>
+          <button type="button" class="btn small" data-sound-rate="got">Got it ✓</button>
+        </div>
+      </div>`;
+  }
+
+  function wireSounds() {
+    const wrap = main.querySelector("[data-sound-wrap]");
+    if (!wrap) return;
+    const sounds = L.sounds || [];
+    const redraw = () => {
+      wrap.innerHTML = soundSectionHtml();
+      wireSpeak(wrap);
+      wireSounds();
+    };
+    const prev = wrap.querySelector("[data-sound-prev]");
+    if (prev) prev.addEventListener("click", () => { if (learnState.soundPos > 0) { learnState.soundPos--; redraw(); } });
+    wrap.querySelectorAll("[data-sound-rate]").forEach((b) => b.addEventListener("click", () => {
+      const idx = learnState.soundDeck[learnState.soundPos];
+      learnState.soundStatus[idx] = b.dataset.soundRate;
+      learnState.soundPos++;
+      redraw();
+    }));
+    const rev = wrap.querySelector("[data-sound-review]");
+    if (rev) rev.addEventListener("click", () => {
+      learnState.soundDeck = learnState.soundDeck.filter((i) => learnState.soundStatus[i] === "not");
+      learnState.soundPos = 0;
+      redraw();
+    });
+    const rst = wrap.querySelector("[data-sound-restart]");
+    if (rst) rst.addEventListener("click", () => {
+      learnState.soundDeck = sounds.map((_, i) => i);
+      learnState.soundPos = 0;
+      learnState.soundStatus = {};
+      redraw();
+    });
   }
 
   function liushuSectionHtml() {

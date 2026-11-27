@@ -907,8 +907,8 @@ details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
 
 .speed-row { margin-bottom: var(--space-4); }
 
-.sound-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: var(--space-4); }
-.sound { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius); padding: var(--space-6); display: grid; gap: var(--space-2); align-content: start; }
+.sound-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-4); max-width: 34rem; margin: 0 auto; }
+.sound { animation: fadeInSec .22s ease; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius); padding: var(--space-6); display: grid; gap: var(--space-2); align-content: start; }
 .sound-sym { font-family: var(--font-display); font-size: var(--text-xl); color: var(--color-accent); line-height: 1; }
 .sound h3 { font-size: var(--text-base); font-weight: 700; }
 .sound-tip { font-size: var(--text-sm); color: var(--color-muted); }
