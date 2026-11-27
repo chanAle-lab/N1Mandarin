@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -259,30 +259,7 @@
         ${secHead("02", "characters", "How written Chinese works", "汉字造字法 · 六书", (L.characters && L.characters.intro) || "Understand the Six Writings (六书): pictograms, ideograms, and the phono-semantic formula behind 80%+ of characters.")}
         <div class="sec-body">
           ${L.characters ? `
-            <div class="liushu-grid">
-              ${L.characters.types.map((t) => `
-                <article class="liushu-card ${t.no === "04" ? "featured" : ""}">
-                  <div class="liushu-card-head">
-                    <span class="sec-no mono">${t.no}</span>
-                    <div>
-                      <h3>${esc(t.name)} <span class="zh" lang="zh-Hans">${esc(t.zh)}</span> <span class="py lat">${esc(t.py)}</span></h3>
-                      <p class="liushu-summary">${esc(t.summary)}</p>
-                    </div>
-                  </div>
-                  <p class="liushu-details">${esc(t.details)}</p>
-                  <div class="liushu-examples">
-                    ${t.examples.map(([char, py, en, note]) => `
-                      <button class="char-chip" data-say="${esc(char)}" title="Listen to ${esc(char)}">
-                        <span class="char-glyph zh" lang="zh-Hans">${esc(char)}</span>
-                        <span class="char-py lat">${esc(py)}</span>
-                        <span class="char-en">${esc(en)}</span>
-                        <small class="char-note">${esc(note)}</small>
-                      </button>
-                    `).join("")}
-                  </div>
-                </article>
-              `).join("")}
-            </div>
+            <div class="liushu-wrap" data-liushu-wrap>${liushuSectionHtml()}</div>
 
             <div class="rules-box">
               <div class="rules-head">
@@ -502,9 +479,101 @@
       }
     }));
     wireFlips();
+    wireLiushu();
     wireGrammar();
     wireQuiz();
     wireSentenceBuilder();
+  }
+
+  function liushuSectionHtml() {
+    const types = (L.characters && L.characters.types) || [];
+    if (!types.length) return "";
+    if (!learnState.charDeck) learnState.charDeck = types.map((_, i) => i);
+    const deck = learnState.charDeck;
+    const total = types.length;
+    const gotCount = Object.values(learnState.charStatus).filter((v) => v === "got").length;
+    const notYetList = deck.filter((i) => learnState.charStatus[i] === "not");
+
+    if (learnState.charPos >= deck.length) {
+      return `
+        <div class="liushu-grid">
+          <div class="liushu-card" style="text-align:center;justify-items:center;padding:var(--space-8) var(--space-6);">
+            <h3>All ${deck.length} writing principle${deck.length === 1 ? "" : "s"} reviewed!</h3>
+            <p class="liushu-details">${gotCount} of ${total} marked <b>Got it ✓</b>${notYetList.length ? ` · ${notYetList.length} marked <b>Not yet</b>` : ""}.</p>
+            <div class="gram-reveal-btns" style="margin-top:var(--space-3);">
+              ${notYetList.length ? `<button type="button" class="btn small" data-liushu-review>Review "Not yet" (${notYetList.length}) →</button>` : ""}
+              <button type="button" class="btn small ghost" data-liushu-restart>Start over (all ${total})</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const t = types[deck[learnState.charPos]];
+    return `
+      <div class="liushu-grid">
+        <article class="liushu-card ${t.no === "04" ? "featured" : ""}">
+          <div class="liushu-card-head">
+            <span class="sec-no mono">${t.no}</span>
+            <div>
+              <h3>${esc(t.name)} <span class="zh" lang="zh-Hans">${esc(t.zh)}</span> <span class="py lat">${esc(t.py)}</span></h3>
+              <p class="liushu-summary">${esc(t.summary)}</p>
+            </div>
+          </div>
+          <p class="liushu-details">${esc(t.details)}</p>
+          <div class="liushu-examples">
+            ${t.examples.map(([char, py, en, note]) => `
+              <button class="char-chip" data-say="${esc(char)}" title="Listen to ${esc(char)}">
+                <span class="char-glyph zh" lang="zh-Hans">${esc(char)}</span>
+                <span class="char-py lat">${esc(py)}</span>
+                <span class="char-en">${esc(en)}</span>
+                <small class="char-note">${esc(note)}</small>
+              </button>
+            `).join("")}
+          </div>
+        </article>
+      </div>
+      <div class="gram-reveal-bar no-print">
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-liushu-prev ${learnState.charPos === 0 ? "disabled" : ""} aria-label="Previous card">←</button>
+          <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-1);">${learnState.charPos + 1} / ${deck.length} · ${gotCount} got it</span>
+        </div>
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-liushu-rate="not">Not yet ✗</button>
+          <button type="button" class="btn small" data-liushu-rate="got">Got it ✓</button>
+        </div>
+      </div>`;
+  }
+
+  function wireLiushu() {
+    const wrap = main.querySelector("[data-liushu-wrap]");
+    if (!wrap) return;
+    const types = (L.characters && L.characters.types) || [];
+    const redraw = () => {
+      wrap.innerHTML = liushuSectionHtml();
+      wireSpeak(wrap);
+      wireLiushu();
+    };
+    const prev = wrap.querySelector("[data-liushu-prev]");
+    if (prev) prev.addEventListener("click", () => { if (learnState.charPos > 0) { learnState.charPos--; redraw(); } });
+    wrap.querySelectorAll("[data-liushu-rate]").forEach((b) => b.addEventListener("click", () => {
+      const idx = learnState.charDeck[learnState.charPos];
+      learnState.charStatus[idx] = b.dataset.liushuRate;
+      learnState.charPos++;
+      redraw();
+    }));
+    const rev = wrap.querySelector("[data-liushu-review]");
+    if (rev) rev.addEventListener("click", () => {
+      learnState.charDeck = learnState.charDeck.filter((i) => learnState.charStatus[i] === "not");
+      learnState.charPos = 0;
+      redraw();
+    });
+    const rst = wrap.querySelector("[data-liushu-restart]");
+    if (rst) rst.addEventListener("click", () => {
+      learnState.charDeck = types.map((_, i) => i);
+      learnState.charPos = 0;
+      learnState.charStatus = {};
+      redraw();
+    });
   }
 
   function grammarSectionHtml() {

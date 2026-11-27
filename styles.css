@@ -936,11 +936,18 @@ details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
 .flip-note { font-size: var(--text-xs); opacity: .75; margin-top: var(--space-1); }
 
 /* How written Chinese works (Liushu & Stroke Rules) */
+.liushu-wrap {
+  margin-bottom: var(--space-8);
+}
 .liushu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--space-4);
-  margin-bottom: var(--space-8);
+  max-width: 34rem;
+  margin: 0 auto;
+}
+.liushu-card {
+  animation: fadeInSec .22s ease;
 }
 .liushu-card {
   background: var(--color-surface);
