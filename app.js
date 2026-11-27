@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, fixDeck: null, fixPos: 0, fixStatus: {}, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, fixDeck: null, fixPos: 0, fixStatus: {}, idiomCat: "All", idiomPy: true, idiomDeck: null, idiomPos: 0, idiomStatus: {}, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -153,36 +153,104 @@
   }
 
   function idiomCards() {
-    const pool = (L.idioms || []).filter((item) => learnState.idiomCat === "All" || item.cat === learnState.idiomCat);
-    return pool.map((item) => `
-      <article class="idiom-card">
-        <div class="idiom-head">
-          <div class="idiom-title-wrap">
-            <h3 class="idiom-zh zh" lang="zh-Hans">
-              <button class="say-line idiom-btn" data-say="${esc(item.zh)}" title="Listen to ${esc(item.zh)}">${esc(item.zh)}</button>
-            </h3>
-            <span class="py lat idiom-py">${esc(item.py)}</span>
+    const pool = (L.idioms || []).map((item, origIdx) => ({ item, origIdx }))
+      .filter(({ item }) => learnState.idiomCat === "All" || item.cat === learnState.idiomCat);
+    if (!pool.length) return "";
+    if (!learnState.idiomDeck) learnState.idiomDeck = pool.map((x) => x.origIdx);
+    const deck = learnState.idiomDeck;
+    const total = pool.length;
+    const gotCount = pool.filter(({ origIdx }) => learnState.idiomStatus[origIdx] === "got").length;
+    const notYetList = deck.filter((origIdx) => learnState.idiomStatus[origIdx] === "not");
+
+    if (learnState.idiomPos >= deck.length) {
+      return `
+        <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}">
+          <div class="idiom-card" style="text-align:center;justify-items:center;padding:var(--space-8) var(--space-6);">
+            <h3>All ${deck.length} idiom${deck.length === 1 ? "" : "s"} reviewed!</h3>
+            <p class="idiom-literal">${gotCount} of ${total} marked <b>Got it ✓</b>${notYetList.length ? ` · ${notYetList.length} marked <b>Not yet</b>` : ""}.</p>
+            <div class="gram-reveal-btns" style="margin-top:var(--space-3);">
+              ${notYetList.length ? `<button type="button" class="btn small" data-idiom-review>Review "Not yet" (${notYetList.length}) →</button>` : ""}
+              <button type="button" class="btn small ghost" data-idiom-restart>Start over (all ${total})</button>
+            </div>
           </div>
-          <span class="idiom-cat-tag">${esc(item.cat)}</span>
-        </div>
-        <p class="idiom-literal"><span class="lbl-inline">Literal:</span> ${esc(item.literal)}</p>
-        <p class="idiom-meaning"><span class="lbl-inline">Meaning:</span> <b>${esc(item.meaning)}</b></p>
-        <div class="idiom-story">
-          <span class="story-tag">Origin & Fable · 典故</span>
-          <p>${esc(item.story)}</p>
-        </div>
-        <div class="idiom-ex">
-          <span class="ex-lbl">Example · 例句</span>
-          <div class="ex-speech">
-            <button class="say-line" data-say="${esc(item.exZh)}" title="Listen">
-              <span class="zh" lang="zh-Hans">${esc(item.exZh)}</span>
-            </button>
-            <span class="py lat ex-py">${esc(item.exPy)}</span>
+        </div>`;
+    }
+
+    const origIdx = deck[learnState.idiomPos];
+    const item = (L.idioms || [])[origIdx];
+    return `
+      <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}">
+        <article class="idiom-card">
+          <div class="idiom-head">
+            <div class="idiom-title-wrap">
+              <h3 class="idiom-zh zh" lang="zh-Hans">
+                <button class="say-line idiom-btn" data-say="${esc(item.zh)}" title="Listen to ${esc(item.zh)}">${esc(item.zh)}</button>
+              </h3>
+              <span class="py lat idiom-py">${esc(item.py)}</span>
+            </div>
+            <span class="idiom-cat-tag">${esc(item.cat)}</span>
           </div>
-          <p class="ex-en">${esc(item.exEn)}</p>
+          <p class="idiom-literal"><span class="lbl-inline">Literal:</span> ${esc(item.literal)}</p>
+          <p class="idiom-meaning"><span class="lbl-inline">Meaning:</span> <b>${esc(item.meaning)}</b></p>
+          <div class="idiom-story">
+            <span class="story-tag">Origin & Fable · 典故</span>
+            <p>${esc(item.story)}</p>
+          </div>
+          <div class="idiom-ex">
+            <span class="ex-lbl">Example · 例句</span>
+            <div class="ex-speech">
+              <button class="say-line" data-say="${esc(item.exZh)}" title="Listen">
+                <span class="zh" lang="zh-Hans">${esc(item.exZh)}</span>
+              </button>
+              <span class="py lat ex-py">${esc(item.exPy)}</span>
+            </div>
+            <p class="ex-en">${esc(item.exEn)}</p>
+          </div>
+        </article>
+      </div>
+      <div class="gram-reveal-bar no-print">
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-idiom-prev ${learnState.idiomPos === 0 ? "disabled" : ""} aria-label="Previous idiom">←</button>
+          <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-1);">${learnState.idiomPos + 1} / ${deck.length} · ${gotCount} got it</span>
         </div>
-      </article>
-    `).join("");
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-idiom-rate="not">Not yet ✗</button>
+          <button type="button" class="btn small" data-idiom-rate="got">Got it ✓</button>
+        </div>
+      </div>`;
+  }
+
+  function wireIdioms() {
+    const wrap = main.querySelector("[data-idioms]");
+    if (!wrap) return;
+    const redraw = () => {
+      wrap.innerHTML = idiomCards();
+      wireSpeak(wrap);
+      wireIdioms();
+    };
+    const prev = wrap.querySelector("[data-idiom-prev]");
+    if (prev) prev.addEventListener("click", () => { if (learnState.idiomPos > 0) { learnState.idiomPos--; redraw(); } });
+    wrap.querySelectorAll("[data-idiom-rate]").forEach((b) => b.addEventListener("click", () => {
+      const origIdx = learnState.idiomDeck[learnState.idiomPos];
+      learnState.idiomStatus[origIdx] = b.dataset.idiomRate;
+      learnState.idiomPos++;
+      redraw();
+    }));
+    const rev = wrap.querySelector("[data-idiom-review]");
+    if (rev) rev.addEventListener("click", () => {
+      learnState.idiomDeck = learnState.idiomDeck.filter((i) => learnState.idiomStatus[i] === "not");
+      learnState.idiomPos = 0;
+      redraw();
+    });
+    const rst = wrap.querySelector("[data-idiom-restart]");
+    if (rst) rst.addEventListener("click", () => {
+      const pool = (L.idioms || []).map((item, origIdx) => ({ item, origIdx }))
+        .filter(({ item }) => learnState.idiomCat === "All" || item.cat === learnState.idiomCat);
+      pool.forEach(({ origIdx }) => { delete learnState.idiomStatus[origIdx]; });
+      learnState.idiomDeck = pool.map((x) => x.origIdx);
+      learnState.idiomPos = 0;
+      redraw();
+    });
   }
 
   function quizHtml() {
@@ -335,7 +403,7 @@
               <button class="chip" data-py-opt="idioms" data-show="false" aria-pressed="${!learnState.idiomPy}">Hide 隐藏</button>
             </div>
           </div>
-          <div class="idioms-grid${learnState.idiomPy ? "" : " hide-py"}" data-idioms>${idiomCards()}</div>
+          <div class="idioms-wrap" data-idioms>${idiomCards()}</div>
           <p class="sec-credit"><span class="credit-badge">Credit</span> Curated with special thanks to <b>Finley Jennings</b> · 特别鸣谢 Finley Jennings</p>
           ${further([paperLink("idioms")])}
         </div>
@@ -423,11 +491,14 @@
     }));
     main.querySelectorAll("[data-idiom-cat]").forEach((b) => b.addEventListener("click", () => {
       learnState.idiomCat = b.dataset.idiomCat;
+      learnState.idiomDeck = null;
+      learnState.idiomPos = 0;
       main.querySelectorAll("[data-idiom-cat]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
       const grid = main.querySelector("[data-idioms]");
       if (grid) {
         grid.innerHTML = idiomCards();
         wireSpeak(grid);
+        wireIdioms();
       }
     }));
     main.querySelectorAll("[data-py-opt]").forEach((b) => b.addEventListener("click", () => {
@@ -462,6 +533,7 @@
     wireGrammar();
     wireSounds();
     wireMistakes();
+    wireIdioms();
     wireQuiz();
     wireSentenceBuilder();
   }
