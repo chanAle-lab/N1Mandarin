@@ -1128,6 +1128,8 @@ details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
 .gram-grid { list-style: none; padding: 0; margin: 0 auto; max-width: 34rem; display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
 .gram { animation: fadeInSec .22s ease; }
 .gram .ex { justify-content: center; }
+.gram .ex-body { justify-items: center; text-align: center; }
+.gram .say-line { text-align: center; }
 .gram .gloss { text-align: center; }
 .gram-reveal-bar {
   display: flex;
