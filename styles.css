@@ -1249,8 +1249,12 @@ details.learn-sec[open] .sec-toggle-indicator .chevron-icon {
 .sb-fb-head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font-weight: 600; }
 .sb-fb-note { margin: 0; color: var(--color-muted); font-size: var(--text-xs); }
 .gloss { font-size: var(--text-xs); color: var(--color-muted); font-style: normal; }
-.fix-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: var(--space-4); }
-.fix-note { font-size: var(--text-sm); color: var(--color-muted); }
+.fix-list { list-style: none; padding: 0; margin: 0 auto; max-width: 34rem; display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+.fix { animation: fadeInSec .22s ease; }
+.fix .ex { justify-content: center; }
+.fix .ex-body { justify-items: center; text-align: center; }
+.fix .say-line { text-align: center; }
+.fix-note { font-size: var(--text-sm); color: var(--color-muted); text-align: center; }
 
 /* Idioms (成语 chéngyǔ) */
 .idiom-controls { margin-bottom: var(--space-4); }

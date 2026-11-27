@@ -117,7 +117,7 @@
   /* ---------- Learn (home): a path for English speakers ---------- */
   const L = window.LEARN || { sounds: [], phrases: {}, characters: { types: [], rules: [] }, grammar: [], mistakes: [], idioms: [], quiz: [] };
   const IDIOM_CATS = ["All", "Wisdom & Perspective", "Learning & Perseverance", "Daily Life & Culture", "Strategy & Action"];
-  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
+  const learnState = { topic: Object.keys(L.phrases)[0], answers: {}, charDeck: null, charPos: 0, charStatus: {}, soundDeck: null, soundPos: 0, soundStatus: {}, grammarPy: true, gramDeck: null, gramPos: 0, gramStatus: {}, mistakesPy: true, fixDeck: null, fixPos: 0, fixStatus: {}, idiomCat: "All", idiomPy: true, quizPy: false, sbIdx: 0, sbPicked: [], sbChecked: null, sbShuffled: null };
   const paperLink = (id) => { const p = papers.find((x) => x.id === id); return p ? `<a href="#/paper/${p.id}">${p.no} ${esc(p.title)}</a>` : ""; };
   const sayItem = (zhs, py, en) => `<button class="say" data-say="${esc(zhs)}" title="Listen"><span class="zh" lang="zh-Hans">${esc(zhs)}</span><span class="py lat">${esc(py)}</span>${en ? `<span class="en">${esc(en)}</span>` : ""}</button>`;
   const speedRow = () => canSpeak ? `<div class="chip-row speed-row" role="group" aria-label="Speaking speed"><span class="chip-label">Speed</span>
@@ -318,23 +318,7 @@
             <button class="chip" data-py-opt="mistakes" data-show="true" aria-pressed="${learnState.mistakesPy}">Show 显示</button>
             <button class="chip" data-py-opt="mistakes" data-show="false" aria-pressed="${!learnState.mistakesPy}">Hide 隐藏</button>
           </div>
-          <ul class="fix-list${learnState.mistakesPy ? "" : " hide-py"}">${L.mistakes.map(([bad, good, badPy, goodPy, note]) => `<li class="fix">
-            <div class="ex bad">
-              <span class="mark" aria-label="Wrong">✗</span>
-              <div class="ex-body">
-                ${zh(bad)}
-                ${badPy ? `<span class="py lat ex-py">${esc(badPy)}</span>` : ""}
-              </div>
-            </div>
-            <div class="ex good">
-              <span class="mark" aria-label="Right">✓</span>
-              <div class="ex-body">
-                <button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button>
-                ${goodPy ? `<span class="py lat ex-py">${esc(goodPy)}</span>` : ""}
-              </div>
-            </div>
-            <p class="fix-note">${latin(esc(note))}</p>
-          </li>`).join("")}</ul>
+          <div data-fix-wrap>${mistakesSectionHtml()}</div>
           ${further([paperLink("hui-neng-keyi"), paperLink("comparisons"), paperLink("yiyang-yuelaiyue"), paperLink("connectors"), paperLink("chule-yijiu")])}
         </div>
       </details>
@@ -477,8 +461,99 @@
     wireLiushu();
     wireGrammar();
     wireSounds();
+    wireMistakes();
     wireQuiz();
     wireSentenceBuilder();
+  }
+
+  function mistakesSectionHtml() {
+    const items = L.mistakes || [];
+    if (!items.length) return "";
+    if (!learnState.fixDeck) learnState.fixDeck = items.map((_, i) => i);
+    const deck = learnState.fixDeck;
+    const total = items.length;
+    const gotCount = Object.values(learnState.fixStatus).filter((v) => v === "got").length;
+    const notYetList = deck.filter((i) => learnState.fixStatus[i] === "not");
+
+    if (learnState.fixPos >= deck.length) {
+      return `
+        <div class="fix-list${learnState.mistakesPy ? "" : " hide-py"}">
+          <div class="fix" style="text-align:center;justify-items:center;padding:var(--space-8) var(--space-6);">
+            <h3>All ${deck.length} mistake${deck.length === 1 ? "" : "s"} reviewed!</h3>
+            <p class="fix-note">${gotCount} of ${total} marked <b>Got it ✓</b>${notYetList.length ? ` · ${notYetList.length} marked <b>Not yet</b>` : ""}.</p>
+            <div class="gram-reveal-btns" style="margin-top:var(--space-3);">
+              ${notYetList.length ? `<button type="button" class="btn small" data-fix-review>Review "Not yet" (${notYetList.length}) →</button>` : ""}
+              <button type="button" class="btn small ghost" data-fix-restart>Start over (all ${total})</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    const idx = deck[learnState.fixPos];
+    const [bad, good, badPy, goodPy, note] = items[idx];
+    return `
+      <div class="fix-list${learnState.mistakesPy ? "" : " hide-py"}">
+        <article class="fix">
+          <span class="gram-no mono">${String(idx + 1).padStart(2, "0")}</span>
+          <div class="ex bad">
+            <span class="mark" aria-label="Wrong">✗</span>
+            <div class="ex-body">
+              ${zh(bad)}
+              ${badPy ? `<span class="py lat ex-py">${esc(badPy)}</span>` : ""}
+            </div>
+          </div>
+          <div class="ex good">
+            <span class="mark" aria-label="Right">✓</span>
+            <div class="ex-body">
+              <button class="say-line" data-say="${esc(good)}" title="Listen">${zh(good)}</button>
+              ${goodPy ? `<span class="py lat ex-py">${esc(goodPy)}</span>` : ""}
+            </div>
+          </div>
+          <p class="fix-note">${latin(esc(note))}</p>
+        </article>
+      </div>
+      <div class="gram-reveal-bar no-print">
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-fix-prev ${learnState.fixPos === 0 ? "disabled" : ""} aria-label="Previous mistake">←</button>
+          <span class="gram-reveal-count mono" style="align-self:center;padding:0 var(--space-1);">${learnState.fixPos + 1} / ${deck.length} · ${gotCount} got it</span>
+        </div>
+        <div class="gram-reveal-btns">
+          <button type="button" class="btn small ghost" data-fix-rate="not">Not yet ✗</button>
+          <button type="button" class="btn small" data-fix-rate="got">Got it ✓</button>
+        </div>
+      </div>`;
+  }
+
+  function wireMistakes() {
+    const wrap = main.querySelector("[data-fix-wrap]");
+    if (!wrap) return;
+    const items = L.mistakes || [];
+    const redraw = () => {
+      wrap.innerHTML = mistakesSectionHtml();
+      wireSpeak(wrap);
+      wireMistakes();
+    };
+    const prev = wrap.querySelector("[data-fix-prev]");
+    if (prev) prev.addEventListener("click", () => { if (learnState.fixPos > 0) { learnState.fixPos--; redraw(); } });
+    wrap.querySelectorAll("[data-fix-rate]").forEach((b) => b.addEventListener("click", () => {
+      const idx = learnState.fixDeck[learnState.fixPos];
+      learnState.fixStatus[idx] = b.dataset.fixRate;
+      learnState.fixPos++;
+      redraw();
+    }));
+    const rev = wrap.querySelector("[data-fix-review]");
+    if (rev) rev.addEventListener("click", () => {
+      learnState.fixDeck = learnState.fixDeck.filter((i) => learnState.fixStatus[i] === "not");
+      learnState.fixPos = 0;
+      redraw();
+    });
+    const rst = wrap.querySelector("[data-fix-restart]");
+    if (rst) rst.addEventListener("click", () => {
+      learnState.fixDeck = items.map((_, i) => i);
+      learnState.fixPos = 0;
+      learnState.fixStatus = {};
+      redraw();
+    });
   }
 
   function soundSectionHtml() {
